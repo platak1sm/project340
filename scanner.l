@@ -27,6 +27,7 @@ pmarks      (\{)|(\})|(\[)|(\])|(\()|(\))|(\;)|(\,)|(\:)|(\::)|(\.)|(\..)
 comment1    "//".*
 comment2    "/*".*"*/"
 
-%x COMMENT
+%x COMMENTS
+%x STRINGS
 %%
 
