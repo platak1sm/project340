@@ -7,9 +7,13 @@ static int isatty(int i){ return 0; }
 static int isatty(void *i){ return 0; }
 #endif
 
-#include <iostream.h>
+#include <iostream>
+using namespace std;
 
 #define YY_DECL int alpha_yylex(void* ylval)
+
+typedef enum kword {IF,ELSE,WHILE,FOR,FUNCTION,RETURN,BREAK,CONTINUE,AND,NOT,OR,LOCAL,TRUE,FALSE,NIL} kwords;
+typedef enum op {ASGN,ADD,SUB,MUL,DIV,PC,EQ,NE,INC,DEC,GT,LT,GE,LE} ops;
 %}
 
 %option noyywrap
@@ -29,5 +33,6 @@ comment2    "/*".*"*/"
 
 %x COMMENTS
 %x STRINGS
+
 %%
 
