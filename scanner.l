@@ -25,44 +25,16 @@ typedef struct node{
     string tokenval;
     string type;
     string value;
-    string cpptype;
+    string cpptype; /* px <-enumerated  den exei ylopoihthei akoma*/
 } alpha_token_t; /*mporei na thelei prosthikes*/
 
 list<alpha_token_t> tokens;
 
 int yytokenno = 1; /*kratame to token number gia na to auskanoume kai na to vazoume sto kathe node*/
 
-string operator2str(string s){
-    if(s=="=") return "ASSIGNMENT";
-	else if(s=="+") return "PLUS";
-	else if(s=="-") return "MINUS";
-    else if(s=="*") return "MULTIPLICATION";
-    else if(s=="/") return "DIVISION";
-    else if(s=="%") return "PERCENT";
-    else if(s=="==") return "EQUAL";
-    else if(s=="!=") return "NOT_EQUAL";
-    else if(s=="++") return "PLUS_PLUS";
-    else if(s=="--") return "MINUS_MINUS";
-    else if(s==">") return "GREATER_THAN";
-    else if(s=="<") return "LESS_THAN";
-    else if(s==">=") return "GREATER_EQUAL";
-    else if(s=="<=") return "LESS_EQUAL";
-}
+string operator2str(string s);
 
-string punctuation2str(string s){
-    if(s=="{") return "LEFT_BRACE";
-	else if(s=="}") return "RIGHT_BRACE";
-	else if(s=="[") return "LEFT_BRACKET";
-    else if(s=="]") return "RIGHT_BRACKET";
-    else if(s=="(") return "LEFT_PARENTHESIS";
-    else if(s==")") return "RIGHT_PARENTHESIS";
-    else if(s==";") return "SEMICOLON";
-    else if(s==",") return "COMMA";
-    else if(s==":") return "COLON";
-    else if(s=="::") return "DOUBLE COLON";
-    else if(s==".") return "PERIOD";
-    else if(s=="..") return "DOUBLE PERIOD";
-}
+string punctuation2str(string s);
 
 %}
 
@@ -119,3 +91,37 @@ comment2    "/*".*"*/"
              token.value= punctuation2str(yytext);
              list.push_back(token);
             } 
+
+%%
+
+string operator2str(string s){
+    if(s=="=") return "ASSIGNMENT";
+	else if(s=="+") return "PLUS";
+	else if(s=="-") return "MINUS";
+    else if(s=="*") return "MULTIPLICATION";
+    else if(s=="/") return "DIVISION";
+    else if(s=="%") return "PERCENT";
+    else if(s=="==") return "EQUAL";
+    else if(s=="!=") return "NOT_EQUAL";
+    else if(s=="++") return "PLUS_PLUS";
+    else if(s=="--") return "MINUS_MINUS";
+    else if(s==">") return "GREATER_THAN";
+    else if(s=="<") return "LESS_THAN";
+    else if(s==">=") return "GREATER_EQUAL";
+    else if(s=="<=") return "LESS_EQUAL";
+}
+
+string punctuation2str(string s){
+    if(s=="{") return "LEFT_BRACE";
+	else if(s=="}") return "RIGHT_BRACE";
+	else if(s=="[") return "LEFT_BRACKET";
+    else if(s=="]") return "RIGHT_BRACKET";
+    else if(s=="(") return "LEFT_PARENTHESIS";
+    else if(s==")") return "RIGHT_PARENTHESIS";
+    else if(s==";") return "SEMICOLON";
+    else if(s==",") return "COMMA";
+    else if(s==":") return "COLON";
+    else if(s=="::") return "DOUBLE COLON";
+    else if(s==".") return "PERIOD";
+    else if(s=="..") return "DOUBLE PERIOD";
+}
