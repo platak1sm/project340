@@ -7,7 +7,6 @@ static int isatty(int i){ return 0; }
 static int isatty(void *i){ return 0; }
 #endif
 
-#define stringify(x) #x
 
 #include <iostream>
 #include <list>
@@ -119,4 +118,4 @@ comment2    "/*".*"*/"
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
              list.push_back(token);
-            }
+            } 
