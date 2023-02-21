@@ -42,7 +42,6 @@ string punctuation2str(string s);
 
 %option noyywrap
 %option yylineno
- // %option nounistd
 
 
 id          [a-zA-Z][a-zA-Z_0-9]*
