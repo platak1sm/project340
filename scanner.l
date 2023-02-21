@@ -532,6 +532,6 @@ int main(int argc, char *argv[]){
     }
     it1 = &*it;
     cout << it1->lineno << ": #" << it1->tokenno << " \"" << it1->tokenval << "\" " << it1->type << " " << it1->value;
-
+    free(it1);
     return 0;
 }
