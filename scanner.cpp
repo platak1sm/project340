@@ -571,7 +571,7 @@ typedef struct node{
     string tokenval;
     string type;
     string value;
-    string cpptype; /* px <-enumerated  den exei ylopoihthei akoma*/
+    string cpptype; 
 } alpha_token_t; /*mporei na thelei prosthikes*/
 
 vector<alpha_token_t> tokens;
@@ -883,12 +883,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="INTEGER";
              token.value= strdup(yytext);
+             token.cpptype= "int";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 72 "scanner.l"
+#line 73 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -896,18 +897,19 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="REAL";
              token.value= strdup(yytext);
+             token.cpptype= "double";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 83 "scanner.l"
+#line 85 "scanner.l"
 { }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 86 "scanner.l"
+#line 88 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -915,12 +917,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "IF";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 96 "scanner.l"
+#line 99 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -928,12 +931,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "ELSE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 106 "scanner.l"
+#line 110 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -941,12 +945,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "WHILE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 116 "scanner.l"
+#line 121 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -954,12 +959,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "FOR";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 126 "scanner.l"
+#line 132 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -967,12 +973,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "FUNCTION";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 136 "scanner.l"
+#line 143 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -980,12 +987,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "RETURN";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 146 "scanner.l"
+#line 154 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -993,12 +1001,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "BREAK";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 156 "scanner.l"
+#line 165 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1006,23 +1015,11 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "CONTINUE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 12:
-YY_RULE_SETUP
-#line 166 "scanner.l"
-{
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "AND";
-             tokens.push_back(token);
-            }       
-	YY_BREAK
-case 13:
 YY_RULE_SETUP
 #line 176 "scanner.l"
 {
@@ -1031,13 +1028,28 @@ YY_RULE_SETUP
              token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
+             token.value= "AND";
+             token.cpptype= "enumerated";
+             tokens.push_back(token);
+            }       
+	YY_BREAK
+case 13:
+YY_RULE_SETUP
+#line 187 "scanner.l"
+{
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
+             token.type="KEYWORD";
              token.value= "NOT";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 186 "scanner.l"
+#line 198 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1045,12 +1057,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "OR";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 196 "scanner.l"
+#line 209 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1058,12 +1071,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "LOCAL";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 206 "scanner.l"
+#line 220 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1071,12 +1085,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "TRUE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 216 "scanner.l"
+#line 231 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1084,12 +1099,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "FALSE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 226 "scanner.l"
+#line 242 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1097,12 +1113,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "NIL";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 237 "scanner.l"
+#line 254 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1110,12 +1127,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 247 "scanner.l"
+#line 265 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1123,12 +1141,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 257 "scanner.l"
+#line 276 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1136,12 +1155,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 267 "scanner.l"
+#line 287 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1149,36 +1169,11 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 23:
-YY_RULE_SETUP
-#line 277 "scanner.l"
-{
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             tokens.push_back(token);
-            }
-	YY_BREAK
-case 24:
-YY_RULE_SETUP
-#line 288 "scanner.l"
-{
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             tokens.push_back(token);
-            }
-	YY_BREAK
-case 25:
 YY_RULE_SETUP
 #line 298 "scanner.l"
 {
@@ -1188,12 +1183,41 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
+             tokens.push_back(token);
+            }
+	YY_BREAK
+case 24:
+YY_RULE_SETUP
+#line 310 "scanner.l"
+{
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
+             token.type="OPERATOR";
+             token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
+             tokens.push_back(token);
+            }
+	YY_BREAK
+case 25:
+YY_RULE_SETUP
+#line 321 "scanner.l"
+{
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
+             token.type="OPERATOR";
+             token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }                                    
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 308 "scanner.l"
+#line 332 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1201,12 +1225,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 318 "scanner.l"
+#line 343 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1214,12 +1239,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 328 "scanner.l"
+#line 354 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1227,12 +1253,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 338 "scanner.l"
+#line 365 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1240,12 +1267,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 348 "scanner.l"
+#line 376 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1253,12 +1281,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 359 "scanner.l"
+#line 388 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1266,49 +1295,11 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 32:
-YY_RULE_SETUP
-#line 369 "scanner.l"
-{
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             tokens.push_back(token);
-            }  
-	YY_BREAK
-case 33:
-YY_RULE_SETUP
-#line 379 "scanner.l"
-{
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             tokens.push_back(token);
-            }
-	YY_BREAK
-case 34:
-YY_RULE_SETUP
-#line 389 "scanner.l"
-{
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             tokens.push_back(token);
-            }
-	YY_BREAK
-case 35:
 YY_RULE_SETUP
 #line 399 "scanner.l"
 {
@@ -1316,14 +1307,57 @@ YY_RULE_SETUP
              token.lineno= yylineno;
              token.tokenno= yytokenno++;
              token.tokenval= yytext;
+             token.type="OPERATOR";
+             token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
+             tokens.push_back(token);
+            }  
+	YY_BREAK
+case 33:
+YY_RULE_SETUP
+#line 410 "scanner.l"
+{
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
+             tokens.push_back(token);
+            }
+	YY_BREAK
+case 34:
+YY_RULE_SETUP
+#line 421 "scanner.l"
+{
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
+             token.type="PUNCTUATION";
+             token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
+             tokens.push_back(token);
+            }
+	YY_BREAK
+case 35:
+YY_RULE_SETUP
+#line 432 "scanner.l"
+{
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
+             token.type="PUNCTUATION";
+             token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 409 "scanner.l"
+#line 443 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1331,12 +1365,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 419 "scanner.l"
+#line 454 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1344,12 +1379,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 429 "scanner.l"
+#line 465 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1357,12 +1393,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 439 "scanner.l"
+#line 476 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1370,12 +1407,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 449 "scanner.l"
+#line 487 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1383,12 +1421,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 459 "scanner.l"
+#line 498 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1396,12 +1435,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 469 "scanner.l"
+#line 509 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1409,12 +1449,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 479 "scanner.l"
+#line 520 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1422,12 +1463,13 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 489 "scanner.l"
+#line 531 "scanner.l"
 {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -1435,15 +1477,16 @@ YY_RULE_SETUP
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 499 "scanner.l"
+#line 542 "scanner.l"
 ECHO;
 	YY_BREAK
-#line 1447 "scanner.cpp"
+#line 1490 "scanner.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENTS):
 case YY_STATE_EOF(STRINGS):
@@ -2462,7 +2505,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 499 "scanner.l"
+#line 542 "scanner.l"
 
 
 string operator2str(string s){
@@ -2515,7 +2558,7 @@ int main(int argc, char *argv[]){
  
     cout << tokens.size()<<"\n";
     for(int i = 0; i<tokens.size();i++){
-        cout << tokens.at(i).lineno << ": #" << tokens.at(i).tokenno << " \"" << tokens.at(i).tokenval << "\" " << tokens.at(i).type << " " << tokens.at(i).value << endl;
+        cout << tokens.at(i).lineno << ": #" << tokens.at(i).tokenno << " \"" << tokens.at(i).tokenval << "\" " << tokens.at(i).type << " " << tokens.at(i).value << " <--" << tokens.at(i).cpptype << endl;
     }
     return 0;
 }
