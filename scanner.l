@@ -70,7 +70,7 @@ comment2    "/*".*"*/"
              list.push_back(token);
             }*/
 
-if          {
+"if"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -80,7 +80,7 @@ if          {
              list.push_back(token);
             }
 
-else        {
+"else"        {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -90,7 +90,7 @@ else        {
              list.push_back(token);
             }
 
-while       {
+"while"       {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -100,7 +100,7 @@ while       {
              list.push_back(token);
             }
 
-for         {
+"for"         {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -110,7 +110,7 @@ for         {
              list.push_back(token);
             }
 
-function    {
+"function"    {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -120,7 +120,7 @@ function    {
              list.push_back(token);
             }
 
-return      {
+"return"      {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -130,7 +130,7 @@ return      {
              list.push_back(token);
             }
 
-break       {
+"break"       {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -140,7 +140,7 @@ break       {
              list.push_back(token);
             }
 
-continue    {
+"continue"    {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -150,7 +150,7 @@ continue    {
              list.push_back(token);
             }
             
-and         {
+"and"         {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -160,7 +160,7 @@ and         {
              list.push_back(token);
             }       
 
-not         {
+"not"         {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -170,7 +170,7 @@ not         {
              list.push_back(token);
             }
 
-or          {
+"or"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -180,7 +180,7 @@ or          {
              list.push_back(token);
             }
             
-local       {
+"local"       {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -190,7 +190,7 @@ local       {
              list.push_back(token);
             }
 
-true        {
+"true"        {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -200,7 +200,7 @@ true        {
              list.push_back(token);
             }
 
-false       {
+"false"       {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -210,7 +210,7 @@ false       {
              list.push_back(token);
             }
 
-nil         {
+"nil"         {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -231,7 +231,7 @@ nil         {
              list.push_back(token);
             }*/
         
-\=          {
+"="          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -241,7 +241,7 @@ nil         {
              list.push_back(token);
             }
 
-\+          {
+"+"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -251,7 +251,7 @@ nil         {
              list.push_back(token);
             }
 
-\-          {
+"-"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -261,7 +261,7 @@ nil         {
              list.push_back(token);
             }
 
-\*          {
+"*"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -271,7 +271,7 @@ nil         {
              list.push_back(token);
             }
 
-\/          {
+"/"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -282,7 +282,7 @@ nil         {
             }
 
 
-\%          {
+"%"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -292,7 +292,7 @@ nil         {
              list.push_back(token);
             }
 
-\==          {
+"=="          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -302,7 +302,7 @@ nil         {
              list.push_back(token);
             }                                    
 
-\!=          {
+"!="          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -312,7 +312,7 @@ nil         {
              list.push_back(token);
             }
 
-\++          {
+"++"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -322,7 +322,7 @@ nil         {
              list.push_back(token);
             }
 
-\--          {
+"--"         {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -332,7 +332,7 @@ nil         {
              list.push_back(token);
             }
 
-\>          {
+">"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -342,7 +342,7 @@ nil         {
              list.push_back(token);
             }
 
-\<          {
+"<"          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -353,7 +353,7 @@ nil         {
             }
 
 
-\>=          {
+">="          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
@@ -363,7 +363,7 @@ nil         {
              list.push_back(token);
             }
 
-\<=          {
+"<="          {
              alpha_token_t token;
              token.lineno= yylineno;
              token.tokenno= yytokenno++
