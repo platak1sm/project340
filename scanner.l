@@ -11,6 +11,7 @@ static int isatty(void *i){ return 0; }
 #include <iostream>
 #include <list>
 #include <string>
+#include <iterator>
 using namespace std;
 
 #define YY_DECL int alpha_yylex(void* yyval)
@@ -29,6 +30,7 @@ typedef struct node{
 } alpha_token_t; /*mporei na thelei prosthikes*/
 
 list<alpha_token_t> tokens;
+list<alpha_token_t>::iterator it;
 
 int yytokenno = 1; /*kratame to token number gia na to auskanoume kai na to vazoume sto kathe node*/
 
@@ -40,7 +42,11 @@ string punctuation2str(string s);
 
 %option noyywrap
 %option yylineno
+<<<<<<< HEAD
 
+=======
+ // %option nounistd
+>>>>>>> main
 
 id          [a-zA-Z][a-zA-Z_0-9]*
 integer     (0[xX][0-9A-Fa-f]+)|([0-9]+)
@@ -64,9 +70,9 @@ comment2    "/*".*"*/"
 "if"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "IF";
              tokens.push_back(token);
             }
@@ -74,9 +80,9 @@ comment2    "/*".*"*/"
 "else"      {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "ELSE";
              tokens.push_back(token);
             }
@@ -84,9 +90,9 @@ comment2    "/*".*"*/"
 "while"     {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "WHILE";
              tokens.push_back(token);
             }
@@ -94,9 +100,9 @@ comment2    "/*".*"*/"
 "for"       {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "FOR";
              tokens.push_back(token);
             }
@@ -104,9 +110,9 @@ comment2    "/*".*"*/"
 "function"  {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "FUNCTION";
              tokens.push_back(token);
             }
@@ -114,9 +120,9 @@ comment2    "/*".*"*/"
 "return"    {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "RETURN";
              tokens.push_back(token);
             }
@@ -124,9 +130,9 @@ comment2    "/*".*"*/"
 "break"     {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "BREAK";
              tokens.push_back(token);
             }
@@ -134,9 +140,9 @@ comment2    "/*".*"*/"
 "continue"  {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "CONTINUE";
              tokens.push_back(token);
             }
@@ -144,9 +150,9 @@ comment2    "/*".*"*/"
 "and"       {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "AND";
              tokens.push_back(token);
             }       
@@ -154,9 +160,9 @@ comment2    "/*".*"*/"
 "not"       {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "NOT";
              tokens.push_back(token);
             }
@@ -164,9 +170,9 @@ comment2    "/*".*"*/"
 "or"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "OR";
              tokens.push_back(token);
             }
@@ -174,9 +180,9 @@ comment2    "/*".*"*/"
 "local"     {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "LOCAL";
              tokens.push_back(token);
             }
@@ -184,9 +190,9 @@ comment2    "/*".*"*/"
 "true"      {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "TRUE";
              tokens.push_back(token);
             }
@@ -194,9 +200,9 @@ comment2    "/*".*"*/"
 "false"     {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "FALSE";
              tokens.push_back(token);
             }
@@ -204,9 +210,9 @@ comment2    "/*".*"*/"
 "nil"       {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="KEYWORD"
+             token.type="KEYWORD";
              token.value= "NIL";
              tokens.push_back(token);
             }
@@ -215,9 +221,9 @@ comment2    "/*".*"*/"
 "="         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -225,9 +231,9 @@ comment2    "/*".*"*/"
 "+"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -235,9 +241,9 @@ comment2    "/*".*"*/"
 "-"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -245,9 +251,9 @@ comment2    "/*".*"*/"
 "*"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -255,9 +261,9 @@ comment2    "/*".*"*/"
 "/"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -266,9 +272,9 @@ comment2    "/*".*"*/"
 "%"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -276,9 +282,9 @@ comment2    "/*".*"*/"
 "=="        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }                                    
@@ -286,9 +292,9 @@ comment2    "/*".*"*/"
 "!="        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -296,9 +302,9 @@ comment2    "/*".*"*/"
 "++"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -306,9 +312,9 @@ comment2    "/*".*"*/"
 "--"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -316,9 +322,9 @@ comment2    "/*".*"*/"
 ">"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -326,9 +332,9 @@ comment2    "/*".*"*/"
 "<"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -337,9 +343,9 @@ comment2    "/*".*"*/"
 ">="        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }
@@ -347,9 +353,9 @@ comment2    "/*".*"*/"
 "<="        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="OPERATOR"
+             token.type="OPERATOR";
              token.value= operator2str(yytext);
              tokens.push_back(token);
             }  
@@ -357,9 +363,9 @@ comment2    "/*".*"*/"
 "{"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -367,9 +373,9 @@ comment2    "/*".*"*/"
 "}"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -377,9 +383,9 @@ comment2    "/*".*"*/"
 "["         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -387,9 +393,9 @@ comment2    "/*".*"*/"
 "]"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -397,9 +403,9 @@ comment2    "/*".*"*/"
 "("         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -407,9 +413,9 @@ comment2    "/*".*"*/"
 ")"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -417,9 +423,9 @@ comment2    "/*".*"*/"
 ";"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -427,9 +433,9 @@ comment2    "/*".*"*/"
 ","         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -437,9 +443,9 @@ comment2    "/*".*"*/"
 ":"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -447,9 +453,9 @@ comment2    "/*".*"*/"
 "::"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -457,9 +463,9 @@ comment2    "/*".*"*/"
 "."         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -467,9 +473,9 @@ comment2    "/*".*"*/"
 ".."        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;;
              token.tokenval= yytext;
-             token.type="PUNCTUATION"
+             token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
              tokens.push_back(token);
             }
@@ -515,15 +521,19 @@ int main(int argc, char *argv[]){
     }else if(argc > 1){
         if(!(yyin=fopen(argv[1],"r"))){
             fprintf(stderr,"Cannot read file: %s\n",argv[1]);
-            return 1;
+            return -1;
         }
     }
-    alpha_token_t* token1=tokens.begin();
-    alpha_yylex(token1);
-    while (token1){
-        printf("%d: #%d \"%s\" %s  %s", token1->lineno, token1->tokenno, token1->tokenval, token1->type, token1->value);
-        ++token1;
+    it = tokens.begin();
+    alpha_token_t* it1 = &*it;
+    alpha_yylex(it1);
+    while (it!=tokens.end()){
+        it1 = &*it;
+        cout << it1->lineno << ": #" << it1->tokenno << " \"" << it1->tokenval << "\" " << it1->type << " " << it1->value << endl;
+        it++;
     }
-    
+    it1 = &*it;
+    cout << it1->lineno << ": #" << it1->tokenno << " \"" << it1->tokenval << "\" " << it1->type << " " << it1->value;
+
     return 0;
 }
