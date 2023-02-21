@@ -42,7 +42,7 @@ string punctuation2str(string s);
 
 %option noyywrap
 %option yylineno
-%option nounistd
+ // %option nounistd
 
 id          [a-zA-Z][a-zA-Z_0-9]*
 integer     (0[xX][0-9A-Fa-f]+)|([0-9]+)
@@ -525,11 +525,11 @@ int main(int argc, char *argv[]){
     alpha_yylex(it1);
     while (it!=tokens.end()){
         it1 = &*it;
-        printf("%d: #%d \"%s\" %s  %s\n", *it1->lineno, *it1->tokenno, *it1->tokenval, *it1->type, *it1->value);
+        printf("%d: #%d \"%s\" %s  %s\n", *it1.lineno, *it1.tokenno, *it1.tokenval, *it1.type, *it1.value);
         it++;
     }
     it1 = &*it;
-    printf("%d: #%d \"%s\" %s  %s\n", *it1->lineno, *it1->tokenno, *it1->tokenval, *it1->type, *it1->value);
+    printf("%d: #%d \"%s\" %s  %s\n", *it1.lineno, *it1.tokenno, *it1.tokenval, *it1.type, *it1.value);
 
     return 0;
 }
