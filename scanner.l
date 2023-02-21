@@ -522,10 +522,11 @@ int main(int argc, char *argv[]){
     }
     it = tokens.begin();
     alpha_yylex(it);
-    while (it){
-        printf("%d: #%d \"%s\" %s  %s", it->lineno, it->tokenno, it->tokenval, it->type, it->value);
+    while (it!=tokens.end()){
+        printf("%d: #%d \"%s\" %s  %s\n", it->lineno, it->tokenno, it->tokenval, it->type, it->value);
         it++;
     }
-    
+    printf("%d: #%d \"%s\" %s  %s\n", it->lineno, it->tokenno, it->tokenval, it->type, it->value);
+
     return 0;
 }
