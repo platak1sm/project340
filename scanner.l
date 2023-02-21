@@ -521,7 +521,7 @@ int main(int argc, char *argv[]){
         }
     }
     it = tokens.begin();
-    void* it1 = &*it;
+    alpha_token_t* it1 = &*it;
     alpha_yylex(it1);
     while (it!=tokens.end()){
         it1 = &*it;
