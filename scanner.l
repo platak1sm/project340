@@ -522,7 +522,8 @@ int main(int argc, char *argv[]){
         }
     }
     it = tokens.begin();
-    alpha_token_t* it1 = &*it; //metatropi apo iterator se alpha_token_t* (de kserw an einai swsto)
+    alpha_token_t* it1 = (alpha_token_t*) malloc(sizeof(alpha_token_t));
+    it1 = &*it; //metatropi apo iterator se alpha_token_t* (de kserw an einai swsto)
     alpha_yylex(it1);
     while (it!=tokens.end()){
         it1 = &*it;
