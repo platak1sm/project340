@@ -493,6 +493,7 @@ string operator2str(string s){
     else if(s=="<") return "LESS_THAN";
     else if(s==">=") return "GREATER_EQUAL";
     else if(s=="<=") return "LESS_EQUAL";
+    else return "";
 }
 
 string punctuation2str(string s){
@@ -508,6 +509,7 @@ string punctuation2str(string s){
     else if(s=="::") return "DOUBLE_COLON";
     else if(s==".") return "PERIOD";
     else if(s=="..") return "DOUBLE_PERIOD";
+    else return "";
 }
 
 
