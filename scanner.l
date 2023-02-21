@@ -525,11 +525,11 @@ int main(int argc, char *argv[]){
     alpha_yylex(it1);
     while (it!=tokens.end()){
         it1 = &*it;
-        printf("%d: #%d \"%s\" %s  %s\n", it1->lineno, it1->tokenno, it1->tokenval, it1->type, it1->value);
+        cout << it1->lineno << ": #" << it1->tokenno << " \"" << it1->tokenval << "\" " << it1->type << " " << it1->value << endl;
         it++;
     }
     it1 = &*it;
-    printf("%d: #%d \"%s\" %s  %s\n", it1->lineno, it1->tokenno, it1->tokenval, it1->type, it1->value);
+    cout << it1->lineno << ": #" << it1->tokenno << " \"" << it1->tokenval << "\" " << it1->type << " " << it1->value;
 
     return 0;
 }
