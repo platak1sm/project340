@@ -10,6 +10,7 @@ static int isatty(void *i){ return 0; }
 
 #include <iostream>
 #include <list>
+#include <vector>
 #include <string>
 #include <iterator>
 using namespace std;
@@ -29,8 +30,8 @@ typedef struct node{
     string cpptype; /* px <-enumerated  den exei ylopoihthei akoma*/
 } alpha_token_t; /*mporei na thelei prosthikes*/
 
-list<alpha_token_t> tokens;
-list<alpha_token_t>::iterator it;
+vector<alpha_token_t> tokens;
+vector<alpha_token_t>::iterator it;
 
 int yytokenno = 1; /*kratame to token number gia na to auskanoume kai na to vazoume sto kathe node*/
 
@@ -58,6 +59,26 @@ comment2    "/*".*"*/"
 %x STRINGS
 
 %%
+{integer}   {
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
+             token.type="INTEGER";
+             token.value= strdup(yytext);
+             tokens.push_back(token);
+            }
+
+{real}      {
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
+             token.type="REAL";
+             token.value= strdup(yytext);
+             tokens.push_back(token);
+            }
+
 
 {space} { }
 
@@ -522,16 +543,12 @@ int main(int argc, char *argv[]){
         }
     }
     it = tokens.begin();
-    alpha_token_t* it1 = (alpha_token_t*) malloc(sizeof(alpha_token_t));
-    it1 = &*it; //metatropi apo iterator se alpha_token_t* (de kserw an einai swsto)
-    alpha_yylex(it1);
-    while (it!=tokens.end()){
-        it1 = &*it;
-        cout << it1->lineno << ": #" << it1->tokenno << " \"" << it1->tokenval << "\" " << it1->type << " " << it1->value << endl;
-        it++;
+
+    alpha_yylex(&it);
+ 
+    cout << tokens.size()<<"\n";
+    for(int i = 0; i<tokens.size();i++){
+        cout << tokens.at(i).lineno << ": #" << tokens.at(i).tokenno << " \"" << tokens.at(i).tokenval << "\" " << tokens.at(i).type << " " << tokens.at(i).value << endl;
     }
-    it1 = &*it;
-    cout << it1->lineno << ": #" << it1->tokenno << " \"" << it1->tokenval << "\" " << it1->type << " " << it1->value;
-    free(it1);
     return 0;
 }
