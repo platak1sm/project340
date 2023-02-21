@@ -68,7 +68,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "IF";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "else"      {
@@ -78,7 +78,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "ELSE";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "while"     {
@@ -88,7 +88,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "WHILE";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "for"       {
@@ -98,7 +98,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "FOR";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "function"  {
@@ -108,7 +108,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "FUNCTION";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "return"    {
@@ -118,7 +118,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "RETURN";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "break"     {
@@ -128,7 +128,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "BREAK";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "continue"  {
@@ -138,7 +138,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "CONTINUE";
-             list.push_back(token);
+             tokens.push_back(token);
             }
             
 "and"       {
@@ -148,7 +148,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "AND";
-             list.push_back(token);
+             tokens.push_back(token);
             }       
 
 "not"       {
@@ -158,7 +158,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "NOT";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "or"        {
@@ -168,7 +168,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "OR";
-             list.push_back(token);
+             tokens.push_back(token);
             }
             
 "local"     {
@@ -178,7 +178,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "LOCAL";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "true"      {
@@ -188,7 +188,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "TRUE";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "false"     {
@@ -198,7 +198,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "FALSE";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "nil"       {
@@ -208,7 +208,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD"
              token.value= "NIL";
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
         
@@ -219,7 +219,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "+"         {
@@ -229,7 +229,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "-"         {
@@ -239,7 +239,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "*"         {
@@ -249,7 +249,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "/"         {
@@ -259,7 +259,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 
@@ -270,7 +270,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "=="        {
@@ -280,7 +280,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }                                    
 
 "!="        {
@@ -290,7 +290,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "++"        {
@@ -300,7 +300,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "--"        {
@@ -310,7 +310,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 ">"         {
@@ -320,7 +320,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "<"         {
@@ -330,7 +330,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 
@@ -341,7 +341,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "<="        {
@@ -351,7 +351,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR"
              token.value= operator2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }  
 
 "{"         {
@@ -361,7 +361,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "}"         {
@@ -371,7 +371,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "["         {
@@ -381,7 +381,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "]"         {
@@ -391,7 +391,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "("         {
@@ -401,7 +401,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 ")"         {
@@ -411,7 +411,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 ";"         {
@@ -421,7 +421,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 ","         {
@@ -431,7 +431,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 ":"         {
@@ -441,7 +441,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "::"        {
@@ -451,7 +451,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 "."         {
@@ -461,7 +461,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 ".."        {
@@ -471,7 +471,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION"
              token.value= punctuation2str(yytext);
-             list.push_back(token);
+             tokens.push_back(token);
             }
 
 %%
