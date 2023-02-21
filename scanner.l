@@ -42,7 +42,11 @@ string punctuation2str(string s);
 
 %option noyywrap
 %option yylineno
+<<<<<<< HEAD
  // %option nounistd
+=======
+
+>>>>>>> 10789ff935e4085943be068ed7842f2781f8a75f
 
 id          [a-zA-Z][a-zA-Z_0-9]*
 integer     (0[xX][0-9A-Fa-f]+)|([0-9]+)
