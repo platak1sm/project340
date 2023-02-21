@@ -43,10 +43,17 @@ string punctuation2str(string s);
 %option noyywrap
 %option yylineno
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
  // %option nounistd
 >>>>>>> main
+=======
+ // %option nounistd
+=======
+
+>>>>>>> 10789ff935e4085943be068ed7842f2781f8a75f
+>>>>>>> d844b2bcf4da09a702fe4f3dbb77c693fc2c0191
 
 id          [a-zA-Z][a-zA-Z_0-9]*
 integer     (0[xX][0-9A-Fa-f]+)|([0-9]+)
@@ -497,6 +504,7 @@ string operator2str(string s){
     else if(s=="<") return "LESS_THAN";
     else if(s==">=") return "GREATER_EQUAL";
     else if(s=="<=") return "LESS_EQUAL";
+    else return "";
 }
 
 string punctuation2str(string s){
@@ -512,6 +520,7 @@ string punctuation2str(string s){
     else if(s=="::") return "DOUBLE_COLON";
     else if(s==".") return "PERIOD";
     else if(s=="..") return "DOUBLE_PERIOD";
+    else return "";
 }
 
 
@@ -525,7 +534,7 @@ int main(int argc, char *argv[]){
         }
     }
     it = tokens.begin();
-    alpha_token_t* it1 = &*it;
+    alpha_token_t* it1 = &*it; //metatropi apo iterator se alpha_token_t* (de kserw an einai swsto)
     alpha_yylex(it1);
     while (it!=tokens.end()){
         it1 = &*it;
