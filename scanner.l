@@ -66,7 +66,7 @@ comment2    "/*".*"*/"
 "if"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "IF";
@@ -76,7 +76,7 @@ comment2    "/*".*"*/"
 "else"      {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "ELSE";
@@ -86,7 +86,7 @@ comment2    "/*".*"*/"
 "while"     {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "WHILE";
@@ -96,7 +96,7 @@ comment2    "/*".*"*/"
 "for"       {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "FOR";
@@ -106,7 +106,7 @@ comment2    "/*".*"*/"
 "function"  {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "FUNCTION";
@@ -116,7 +116,7 @@ comment2    "/*".*"*/"
 "return"    {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "RETURN";
@@ -126,7 +126,7 @@ comment2    "/*".*"*/"
 "break"     {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "BREAK";
@@ -136,7 +136,7 @@ comment2    "/*".*"*/"
 "continue"  {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "CONTINUE";
@@ -146,7 +146,7 @@ comment2    "/*".*"*/"
 "and"       {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "AND";
@@ -156,7 +156,7 @@ comment2    "/*".*"*/"
 "not"       {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "NOT";
@@ -166,7 +166,7 @@ comment2    "/*".*"*/"
 "or"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "OR";
@@ -176,7 +176,7 @@ comment2    "/*".*"*/"
 "local"     {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "LOCAL";
@@ -186,7 +186,7 @@ comment2    "/*".*"*/"
 "true"      {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "TRUE";
@@ -196,7 +196,7 @@ comment2    "/*".*"*/"
 "false"     {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "FALSE";
@@ -206,7 +206,7 @@ comment2    "/*".*"*/"
 "nil"       {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "NIL";
@@ -217,7 +217,7 @@ comment2    "/*".*"*/"
 "="         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -227,7 +227,7 @@ comment2    "/*".*"*/"
 "+"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -237,7 +237,7 @@ comment2    "/*".*"*/"
 "-"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -247,7 +247,7 @@ comment2    "/*".*"*/"
 "*"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -257,7 +257,7 @@ comment2    "/*".*"*/"
 "/"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -268,7 +268,7 @@ comment2    "/*".*"*/"
 "%"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -278,7 +278,7 @@ comment2    "/*".*"*/"
 "=="        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -288,7 +288,7 @@ comment2    "/*".*"*/"
 "!="        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -298,7 +298,7 @@ comment2    "/*".*"*/"
 "++"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -308,7 +308,7 @@ comment2    "/*".*"*/"
 "--"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -318,7 +318,7 @@ comment2    "/*".*"*/"
 ">"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -328,7 +328,7 @@ comment2    "/*".*"*/"
 "<"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -339,7 +339,7 @@ comment2    "/*".*"*/"
 ">="        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -349,7 +349,7 @@ comment2    "/*".*"*/"
 "<="        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
@@ -359,7 +359,7 @@ comment2    "/*".*"*/"
 "{"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -369,7 +369,7 @@ comment2    "/*".*"*/"
 "}"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -379,7 +379,7 @@ comment2    "/*".*"*/"
 "["         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -389,7 +389,7 @@ comment2    "/*".*"*/"
 "]"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -399,7 +399,7 @@ comment2    "/*".*"*/"
 "("         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -409,7 +409,7 @@ comment2    "/*".*"*/"
 ")"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -419,7 +419,7 @@ comment2    "/*".*"*/"
 ";"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -429,7 +429,7 @@ comment2    "/*".*"*/"
 ","         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -439,7 +439,7 @@ comment2    "/*".*"*/"
 ":"         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -449,7 +449,7 @@ comment2    "/*".*"*/"
 "::"        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -459,7 +459,7 @@ comment2    "/*".*"*/"
 "."         {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -469,7 +469,7 @@ comment2    "/*".*"*/"
 ".."        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++
+             token.tokenno= yytokenno++;;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
