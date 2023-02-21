@@ -507,3 +507,23 @@ string punctuation2str(string s){
     else if(s==".") return "PERIOD";
     else if(s=="..") return "DOUBLE_PERIOD";
 }
+
+
+int main(int argc, char *argv[]){
+    if(argc == 1) {
+		yyin = stdin;
+    }else if(argc > 1){
+        if(!(yyin=fopen(argv[1],"r"))){
+            fprintf(stderr,"Cannot read file: %s\n",argv[1]);
+            return 1;
+        }
+    }
+    alpha_token_t* token1=tokens.begin();
+    alpha_yylex(token1);
+    while (token1){
+        printf("%d: #%d \"%s\" %s  %s", token1->lineno, token1->tokenno, token1->tokenval, token1->type, token1->value);
+        ++token1;
+    }
+    
+    return 0;
+}
