@@ -1,11 +1,11 @@
 %{
-#if defined(WIN32)
+/*#if defined(WIN32)
 #define YY_NO_UNISTD_H
 static int isatty(int i){ return 0; }
 #elif defined(_WIN32_WCE)
 #define YY_NO_UNISTD_H
 static int isatty(void *i){ return 0; }
-#endif
+#endif*/
 
 
 #include <iostream>
@@ -521,12 +521,15 @@ int main(int argc, char *argv[]){
         }
     }
     it = tokens.begin();
-    alpha_yylex(it);
+    void* it1 = &*it;
+    alpha_yylex(it1);
     while (it!=tokens.end()){
-        printf("%d: #%d \"%s\" %s  %s\n", it->lineno, it->tokenno, it->tokenval, it->type, it->value);
+        it1 = &*it;
+        printf("%d: #%d \"%s\" %s  %s\n", it1->lineno, it1->tokenno, it1->tokenval, it1->type, it1->value);
         it++;
     }
-    printf("%d: #%d \"%s\" %s  %s\n", it->lineno, it->tokenno, it->tokenval, it->type, it->value);
+    it1 = &*it;
+    printf("%d: #%d \"%s\" %s  %s\n", it1->lineno, it1->tokenno, it1->tokenval, it1->type, it1->value);
 
     return 0;
 }
