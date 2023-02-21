@@ -27,7 +27,7 @@ typedef struct node{
     string tokenval;
     string type;
     string value;
-    string cpptype; /* px <-enumerated  den exei ylopoihthei akoma*/
+    string cpptype; 
 } alpha_token_t; /*mporei na thelei prosthikes*/
 
 vector<alpha_token_t> tokens;
@@ -66,6 +66,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="INTEGER";
              token.value= strdup(yytext);
+             token.cpptype= "int";
              tokens.push_back(token);
             }
 
@@ -76,6 +77,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="REAL";
              token.value= strdup(yytext);
+             token.cpptype= "double";
              tokens.push_back(token);
             }
 
@@ -90,6 +92,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "IF";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -100,6 +103,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "ELSE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -110,6 +114,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "WHILE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -120,6 +125,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "FOR";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -130,6 +136,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "FUNCTION";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -140,6 +147,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "RETURN";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -150,6 +158,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "BREAK";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -160,6 +169,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "CONTINUE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
             
@@ -170,6 +180,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "AND";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }       
 
@@ -180,6 +191,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "NOT";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -190,6 +202,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "OR";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
             
@@ -200,6 +213,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "LOCAL";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -210,6 +224,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "TRUE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -220,6 +235,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "FALSE";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -230,6 +246,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="KEYWORD";
              token.value= "NIL";
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -241,6 +258,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -251,6 +269,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -261,6 +280,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -271,6 +291,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -281,6 +302,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -292,6 +314,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -302,6 +325,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }                                    
 
@@ -312,6 +336,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -322,6 +347,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -332,6 +358,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -342,6 +369,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -352,6 +380,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -363,6 +392,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -373,6 +403,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="OPERATOR";
              token.value= operator2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }  
 
@@ -383,6 +414,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -393,6 +425,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -403,6 +436,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -413,6 +447,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -423,6 +458,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -433,6 +469,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -443,6 +480,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -453,6 +491,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -463,6 +502,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -473,6 +513,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -483,6 +524,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -493,6 +535,7 @@ comment2    "/*".*"*/"
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
+             token.cpptype= "enumerated";
              tokens.push_back(token);
             }
 
@@ -548,7 +591,7 @@ int main(int argc, char *argv[]){
  
     cout << tokens.size()<<"\n";
     for(int i = 0; i<tokens.size();i++){
-        cout << tokens.at(i).lineno << ": #" << tokens.at(i).tokenno << " \"" << tokens.at(i).tokenval << "\" " << tokens.at(i).type << " " << tokens.at(i).value << endl;
+        cout << tokens.at(i).lineno << ": #" << tokens.at(i).tokenno << " \"" << tokens.at(i).tokenval << "\" " << tokens.at(i).type << " " << tokens.at(i).value << " <--" << tokens.at(i).cpptype << endl;
     }
     return 0;
 }
