@@ -28,7 +28,7 @@ typedef struct node{
     string type;
     string value;
     string cpptype; 
-} alpha_token_t; /
+} alpha_token_t; 
 
 vector<alpha_token_t> tokens;
 vector<alpha_token_t>::iterator it;
@@ -77,7 +77,28 @@ multilinescomment    "/*".*
              token.cpptype= "double";
              tokens.push_back(token);
             }
+{onelinecomment} {
+                  alpha_token_t token;
+                  token.lineno= yylineno;
+                  token.tokenno= yytokenno++;
+                  token.tokenval= "";
+                  token.type="COMMENT";
+                  token.value= "LINE_COMMENT";
+                  token.cpptype= "enumerated";
+                  tokens.push_back(token);
+                 }
 
+{multilinescomment}  {
+                alpha_token_t token;
+                token.lineno= yylineno;
+                token.tokenno= yytokenno++;
+                token.tokenval= bcomment(0);
+                token.type="COMMENT";
+                token.value= "BLOCK_COMMENT";
+                token.cpptype= "enumerated";
+                tokens.push_back(token);
+            }		
+            
 {space} { }
 
 
@@ -535,27 +556,7 @@ multilinescomment    "/*".*
              tokens.push_back(token);
             }
 
-{onelinecomment} {
-                  alpha_token_t token;
-                  token.lineno= yylineno;
-                  token.tokenno= yytokenno++;
-                  token.tokenval= "";
-                  token.type="COMMENT";
-                  token.value= "LINE_COMMENT";
-                  token.cpptype= "enumerated";
-                  tokens.push_back(token);
-                 }
 
-{multilinescomment}  {
-                alpha_token_t token;
-                token.lineno= yylineno;
-                token.tokenno= yytokenno++;
-                token.tokenval= bcomment(0);
-                token.type="COMMENT";
-                token.value= "BLOCK_COMMENT";
-                token.cpptype= "enumerated";
-                tokens.push_back(token);
-            }		
 
 {id}        {
              alpha_token_t token;
@@ -607,7 +608,12 @@ string punctuation2str(string s){
 
 string bcomment(int isNestedc){
 	int lineStart = yylineno ,lineEnd;
+<<<<<<< HEAD
     char next=input();
+=======
+    char next;
+    next = input();
+>>>>>>> 21e5fd734c55dcf5ba8d3f3d64f4ccd945d5c5e8
     while(next != EOF){
         if(next == '*'){
 			next = input();
