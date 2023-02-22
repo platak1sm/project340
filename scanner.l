@@ -81,9 +81,6 @@ comment2    "/*".*"*/"
              tokens.push_back(token);
             }
 
-
-{space} { }
-
 {id}        {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -94,6 +91,10 @@ comment2    "/*".*"*/"
              token.cpptype= "string";
              tokens.push_back(token);
             }
+
+
+{space} { }
+
 
 "if"        {
              alpha_token_t token;
