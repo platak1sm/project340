@@ -607,7 +607,7 @@ string punctuation2str(string s){
 
 string bcomment(int isNestedc){
 	int lineStart = yylineno ,lineEnd;
-    string next=input();
+    char next=input();
     while(next != EOF){
         if(next == '*'){
 			next = input();
