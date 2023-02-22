@@ -15,7 +15,7 @@ static int isatty(void *i){ return 0; }
 #include <iterator>
 using namespace std;
 
-#define YY_DEcL int alpha_yylex(void* yyval)
+#define YY_DECL int alpha_yylex(void* yyval)
 
 typedef enum kword {IF,ELSE,WHILE,FOR,FUNCTION,RETURN,BREAK,CONTINUE,AND,NOT,OR,LOCAL,TRUE,FALSE,NIL} kwords;
 typedef enum op {ASGN,ADD,SUB,MUL,DIV,PC,EQ,NE,INC,DEC,GT,LT,GE,LE} ops; 
@@ -28,7 +28,7 @@ typedef struct node{
     string type;
     string value;
     string cpptype; 
-} alpha_token_t; /
+} alpha_token_t; 
 
 vector<alpha_token_t> tokens;
 vector<alpha_token_t>::iterator it;
@@ -608,7 +608,8 @@ string punctuation2str(string s){
 
 string bcomment(int isNestedc){
 	int lineStart = yylineno ,lineEnd;
-    string next=input();
+    char next;
+    next = input();
     while(next != EOF){
         if(next == '*'){
 			next = input();
