@@ -77,7 +77,28 @@ multilinescomment    "/*".*
              token.cpptype= "double";
              tokens.push_back(token);
             }
+{onelinecomment} {
+                  alpha_token_t token;
+                  token.lineno= yylineno;
+                  token.tokenno= yytokenno++;
+                  token.tokenval= "";
+                  token.type="COMMENT";
+                  token.value= "LINE_COMMENT";
+                  token.cpptype= "enumerated";
+                  tokens.push_back(token);
+                 }
 
+{multilinescomment}  {
+                alpha_token_t token;
+                token.lineno= yylineno;
+                token.tokenno= yytokenno++;
+                token.tokenval= bcomment(0);
+                token.type="COMMENT";
+                token.value= "BLOCK_COMMENT";
+                token.cpptype= "enumerated";
+                tokens.push_back(token);
+            }		
+            
 {space} { }
 
 
@@ -535,27 +556,7 @@ multilinescomment    "/*".*
              tokens.push_back(token);
             }
 
-{onelinecomment} {
-                  alpha_token_t token;
-                  token.lineno= yylineno;
-                  token.tokenno= yytokenno++;
-                  token.tokenval= "";
-                  token.type="COMMENT";
-                  token.value= "LINE_COMMENT";
-                  token.cpptype= "enumerated";
-                  tokens.push_back(token);
-                 }
 
-{multilinescomment}  {
-                alpha_token_t token;
-                token.lineno= yylineno;
-                token.tokenno= yytokenno++;
-                token.tokenval= bcomment(0);
-                token.type="COMMENT";
-                token.value= "BLOCK_COMMENT";
-                token.cpptype= "enumerated";
-                tokens.push_back(token);
-            }		
 
 {id}        {
              alpha_token_t token;
