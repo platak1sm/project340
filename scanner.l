@@ -81,7 +81,6 @@ multilinescomment    "/*".*
              tokens.push_back(token);
             }
 
-
 {space} { }
 
 
@@ -539,6 +538,7 @@ multilinescomment    "/*".*
              tokens.push_back(token);
             }
 
+<<<<<<< HEAD
 {onelinecomment}        {
                 alpha_token_t token;
                 token.lineno= yylineno;
@@ -563,6 +563,19 @@ multilinescomment    "/*".*
 
             }			
 
+=======
+{id}        {
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
+             token.type="ID";
+             token.value= strdup(yytext);
+             token.cpptype= "string";
+             tokens.push_back(token);
+            }
+
+>>>>>>> main
 
 %%
 
@@ -646,7 +659,7 @@ int main(int argc, char *argv[]){
  
     cout << tokens.size()<<"\n";
     for(int i = 0; i<tokens.size();i++){
-        cout << tokens.at(i).lineno << ": #" << tokens.at(i).tokenno << " \"" << tokens.at(i).tokenval << "\" " << tokens.at(i).type << " " << tokens.at(i).value << " <--" << tokens.at(i).cpptype << endl;
+        cout << tokens.at(i).lineno << ": #" << tokens.at(i).tokenno << " \"" << tokens.at(i).tokenval << "\" " << tokens.at(i).type << " " << tokens.at(i).value << " <-" << tokens.at(i).cpptype << endl;
     }
     return 0;
 }
