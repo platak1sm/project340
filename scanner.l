@@ -2,7 +2,7 @@
 #if defined(WIN32)
 #define YY_NO_UNISTD_H
 static int isatty(int i){ return 0; }
-#elif defined(_WIN32_WCE)
+#elif defined(_WIN32_WcE)
 #define YY_NO_UNISTD_H
 static int isatty(void *i){ return 0; }
 #endif
@@ -15,7 +15,7 @@ static int isatty(void *i){ return 0; }
 #include <iterator>
 using namespace std;
 
-#define YY_DECL int alpha_yylex(void* yyval)
+#define YY_DEcL int alpha_yylex(void* yyval)
 
 typedef enum kword {IF,ELSE,WHILE,FOR,FUNCTION,RETURN,BREAK,CONTINUE,AND,NOT,OR,LOCAL,TRUE,FALSE,NIL} kwords;
 typedef enum op {ASGN,ADD,SUB,MUL,DIV,PC,EQ,NE,INC,DEC,GT,LT,GE,LE} ops; 
@@ -52,8 +52,8 @@ string      \"[^\n"]*\"
 operators   (\=)|(\+)|(\-)|(\*)|(\/)|(\%)|(\==)|(\++)|(\--)|(\>)|(\<)|(\>=)|(<=)
 keywords    if|else|while|for|function|return|break|continue|and|not|or|local|true|false|nil
 pmarks      (\{)|(\})|(\[)|(\])|(\()|(\))|(\;)|(\,)|(\:)|(\::)|(\.)|(\..)
-comment1    "//".*
-comment2    "/*".*"*/"
+onelinecomment    "//".*
+multilinescomment    "/*".*
 
 %x COMMENTS
 %x STRINGS
@@ -212,7 +212,7 @@ comment2    "/*".*"*/"
              token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
-             token.value= "LOCAL";
+             token.value= "LOcAL";
              token.cpptype= "enumerated";
              tokens.push_back(token);
             }
@@ -539,6 +539,31 @@ comment2    "/*".*"*/"
              tokens.push_back(token);
             }
 
+{onelinecomment}        {
+                alpha_token_t token;
+                token.lineno= yylineno;
+                token.tokenno= yytokenno++;;
+                token.tokenval= yytext;
+                token.type="COMMENT";
+                token.value= operator2str(yytext);
+                token.cpptype= "enumerated";
+                tokens.push_back(token);
+
+            }
+
+{multilinescomment}  			{
+                alpha_token_t token;
+                token.lineno= yylineno;
+                token.tokenno= yytokenno++;;
+                token.tokenval= yytext;
+                token.type="COMMENT";
+                token.value= multilinescomment(yylineno, 0);;
+                token.cpptype= "enumerated";
+                tokens.push_back(token);
+
+            }			
+
+
 %%
 
 string operator2str(string s){
@@ -556,6 +581,7 @@ string operator2str(string s){
     else if(s=="<") return "LESS_THAN";
     else if(s==">=") return "GREATER_EQUAL";
     else if(s=="<=") return "LESS_EQUAL";
+    else if(s=="//") return "LINE_COMMENT";
     else return "";
 }
 
@@ -575,13 +601,42 @@ string punctuation2str(string s){
     else return "";
 }
 
+string multilinescomment(int lineNo, int isNestedc){
+	int lineStart = lineNo;
+    string next=input();
+    while(next!=EOF){
+
+        if(next == '*'){
+			next = input();
+
+			if(next == '/'){
+				return "BLOCK_COMMENT";
+			}
+		}
+		else if(next == '/'){
+			next = input();
+
+			if(next == '*'){
+				multilinescomment(yylineno, 1);
+			}
+		}
+		else{
+			next = input();
+		}
+	}
+	if(isNested){
+		cout << "Line %d: error nested block comment reached EOF\n"<< lineStart;
+		return "ERROR";
+	}
+}
+
 
 int main(int argc, char *argv[]){
     if(argc == 1) {
 		yyin = stdin;
     }else if(argc > 1){
         if(!(yyin=fopen(argv[1],"r"))){
-            fprintf(stderr,"Cannot read file: %s\n",argv[1]);
+            fprintf(stderr,"cannot read file: %s\n",argv[1]);
             return -1;
         }
     }
