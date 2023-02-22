@@ -81,18 +81,6 @@ comment2    "/*".*"*/"
              tokens.push_back(token);
             }
 
-{id}        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="ID";
-             token.value= strdup(yytext);
-             token.cpptype= "string";
-             tokens.push_back(token);
-            }
-
-
 {space} { }
 
 
@@ -549,6 +537,18 @@ comment2    "/*".*"*/"
              token.cpptype= "enumerated";
              tokens.push_back(token);
             }
+
+{id}        {
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= yytext;
+             token.type="ID";
+             token.value= strdup(yytext);
+             token.cpptype= "string";
+             tokens.push_back(token);
+            }
+
 
 %%
 
