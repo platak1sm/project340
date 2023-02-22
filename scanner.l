@@ -49,6 +49,8 @@ string punctuation2str(string s);
 
 string bcomment(int isNestedc);
 
+string findstr();
+
 %}
 
 %option noyywrap
@@ -58,7 +60,7 @@ id          [a-zA-Z][a-zA-Z_0-9]*
 integer     (0[xX][0-9A-Fa-f]+)|([0-9]+)
 real        [0-9]*\.[0-9](e|E)?[0-9]*
 space       [\r\n \t\v]
-string      \"[^\n"]*\"
+string      \"
 onelinecomment    "//".*
 multilinescomment    "/*".*
 
@@ -74,6 +76,19 @@ multilinescomment    "/*".*
              token.type="INTEGER";
              token.value= strdup(yytext);
              token.cpptype= "int";
+             tokens.push_back(token);
+            }
+
+{string}   {
+             string ss = findstr();
+             const char * ss2 = ss.c_str();
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= ss2;
+             token.type="STRING";
+             token.value= strdup(ss2);
+             token.cpptype= "string";
              tokens.push_back(token);
             }
 
@@ -645,6 +660,25 @@ string bcomment(int isNestedc){
 	}
 	cout << "%d: error block comment reached EOF without getting closed\n" << lineStart;
 	return "ERROR";
+}
+
+string findstr() {
+    int lineStart = yylineno ,lineEnd;
+    char next;
+    string buf = "";
+    next = yyinput();
+
+    while(next != EOF){
+        cout << next << "\n";
+        if(next == '"'){
+            lineEnd=yylineno;
+		    return buf;
+		}
+        
+        buf += next;
+        next = yyinput();
+    }
+    return buf;
 }
 
 

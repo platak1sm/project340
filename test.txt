@@ -7,4 +7,6 @@ x6
 g
 6v
 // lol
+"this is
+ a string"
 
