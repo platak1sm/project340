@@ -28,7 +28,7 @@ typedef struct node{
     string type;
     string value;
     string cpptype; 
-} alpha_token_t; /*mporei na thelei prosthikes*/
+} alpha_token_t; /
 
 vector<alpha_token_t> tokens;
 vector<alpha_token_t>::iterator it;
@@ -49,9 +49,6 @@ integer     (0[xX][0-9A-Fa-f]+)|([0-9]+)
 real        [0-9]*\.[0-9](e|E)?[0-9]*
 space       [\r\n \t\v]
 string      \"[^\n"]*\"
-operators   (\=)|(\+)|(\-)|(\*)|(\/)|(\%)|(\==)|(\++)|(\--)|(\>)|(\<)|(\>=)|(<=)
-keywords    if|else|while|for|function|return|break|continue|and|not|or|local|true|false|nil
-pmarks      (\{)|(\})|(\[)|(\])|(\()|(\))|(\;)|(\,)|(\:)|(\::)|(\.)|(\..)
 onelinecomment    "//".*
 multilinescomment    "/*".*
 
@@ -530,7 +527,7 @@ multilinescomment    "/*".*
 ".."        {
              alpha_token_t token;
              token.lineno= yylineno;
-             token.tokenno= yytokenno++;;
+             token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="PUNCTUATION";
              token.value= punctuation2str(yytext);
@@ -538,29 +535,27 @@ multilinescomment    "/*".*
              tokens.push_back(token);
             }
 
-{onelinecomment}        {
+{onelinecomment} {
+                  alpha_token_t token;
+                  token.lineno= yylineno;
+                  token.tokenno= yytokenno++;
+                  token.tokenval= "";
+                  token.type="COMMENT";
+                  token.value= "LINE_COMMENT";
+                  token.cpptype= "enumerated";
+                  tokens.push_back(token);
+                 }
+
+{multilinescomment}  {
                 alpha_token_t token;
                 token.lineno= yylineno;
-                token.tokenno= yytokenno++;;
-                token.tokenval= yytext;
+                token.tokenno= yytokenno++;
+                token.tokenval= bcomment(0);
                 token.type="COMMENT";
-                token.value= operator2str(yytext);
+                token.value= "BLOCK_COMMENT";
                 token.cpptype= "enumerated";
                 tokens.push_back(token);
-
-            }
-
-{multilinescomment}  			{
-                alpha_token_t token;
-                token.lineno= yylineno;
-                token.tokenno= yytokenno++;;
-                token.tokenval= yytext;
-                token.type="COMMENT";
-                token.value= multilinescomment(yylineno, 0);;
-                token.cpptype= "enumerated";
-                tokens.push_back(token);
-
-            }			
+            }		
 
 {id}        {
              alpha_token_t token;
@@ -591,7 +586,6 @@ string operator2str(string s){
     else if(s=="<") return "LESS_THAN";
     else if(s==">=") return "GREATER_EQUAL";
     else if(s=="<=") return "LESS_EQUAL";
-    else if(s=="//") return "LINE_COMMENT";
     else return "";
 }
 
@@ -611,33 +605,34 @@ string punctuation2str(string s){
     else return "";
 }
 
-string multilinescomment(int lineNo, int isNestedc){
-	int lineStart = lineNo;
+string bcomment(int isNestedc){
+	int lineStart = yylineno ,lineEnd;
     string next=input();
-    while(next!=EOF){
-
+    while(next != EOF){
         if(next == '*'){
 			next = input();
-
 			if(next == '/'){
-				return "BLOCK_COMMENT";
-			}
+                lineEnd=yylineno;
+				return to_string(lineStart) + "-" + to_string(lineEnd);
+			}else{
+                unput(next);
+            }
 		}
 		else if(next == '/'){
 			next = input();
 
 			if(next == '*'){
-				multilinescomment(yylineno, 1);
-			}
+				bcomment(1);
+			}else{
+                unput(next);
+            }
 		}
 		else{
 			next = input();
 		}
 	}
-	if(isNested){
-		cout << "Line %d: error nested block comment reached EOF\n"<< lineStart;
-		return "ERROR";
-	}
+	cout << "%d: error block comment reached EOF without getting closed\n" << lineStart;
+	return "ERROR";
 }
 
 
