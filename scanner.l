@@ -13,9 +13,17 @@ static int isatty(void *i){ return 0; }
 #include <vector>
 #include <string>
 #include <iterator>
+#include <stdlib.h>
+#include <stdio.h>
 using namespace std;
 
 #define YY_DECL int alpha_yylex(void* yyval)
+#ifdef __cplusplus
+static int yyinput(void);
+#else 
+static int input(void);
+#endif
+
 
 typedef enum kword {IF,ELSE,WHILE,FOR,FUNCTION,RETURN,BREAK,CONTINUE,AND,NOT,OR,LOCAL,TRUE,FALSE,NIL} kwords;
 typedef enum op {ASGN,ADD,SUB,MUL,DIV,PC,EQ,NE,INC,DEC,GT,LT,GE,LE} ops; 
@@ -38,6 +46,8 @@ int yytokenno = 1; /*kratame to token number gia na to auskanoume kai na to vazo
 string operator2str(string s);
 
 string punctuation2str(string s);
+
+string bcomment(int isNestedc);
 
 %}
 
@@ -609,10 +619,10 @@ string punctuation2str(string s){
 string bcomment(int isNestedc){
 	int lineStart = yylineno ,lineEnd;
     char next;
-    next = input();
+    next = yyinput();
     while(next != EOF){
         if(next == '*'){
-			next = input();
+			next = yyinput();
 			if(next == '/'){
                 lineEnd=yylineno;
 				return to_string(lineStart) + "-" + to_string(lineEnd);
@@ -621,7 +631,7 @@ string bcomment(int isNestedc){
             }
 		}
 		else if(next == '/'){
-			next = input();
+			next = yyinput();
 
 			if(next == '*'){
 				bcomment(1);
@@ -630,7 +640,7 @@ string bcomment(int isNestedc){
             }
 		}
 		else{
-			next = input();
+			next = yyinput();
 		}
 	}
 	cout << "%d: error block comment reached EOF without getting closed\n" << lineStart;
