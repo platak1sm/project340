@@ -608,12 +608,8 @@ string punctuation2str(string s){
 
 string bcomment(int isNestedc){
 	int lineStart = yylineno ,lineEnd;
-<<<<<<< HEAD
-    char next=input();
-=======
     char next;
     next = input();
->>>>>>> 21e5fd734c55dcf5ba8d3f3d64f4ccd945d5c5e8
     while(next != EOF){
         if(next == '*'){
 			next = input();
