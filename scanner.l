@@ -538,7 +538,6 @@ multilinescomment    "/*".*
              tokens.push_back(token);
             }
 
-<<<<<<< HEAD
 {onelinecomment}        {
                 alpha_token_t token;
                 token.lineno= yylineno;
@@ -563,7 +562,6 @@ multilinescomment    "/*".*
 
             }			
 
-=======
 {id}        {
              alpha_token_t token;
              token.lineno= yylineno;
@@ -575,7 +573,6 @@ multilinescomment    "/*".*
              tokens.push_back(token);
             }
 
->>>>>>> main
 
 %%
 
