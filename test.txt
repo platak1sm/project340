@@ -8,5 +8,7 @@ g
 6v
 // lol
 "this is
- a string"
+ a \n string"
+"another \t string \ value"
+" aaaaa \" bbbb \" aaaaaa "
 

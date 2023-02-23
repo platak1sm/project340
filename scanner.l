@@ -669,7 +669,31 @@ string findstr() {
     next = yyinput();
 
     while(next != EOF){
-        cout << next << "\n";
+        cout << next << endl;
+        
+        if( next == '\\') {
+            next = yyinput();
+            if( next == 'n') {
+                buf += "\n";
+                next = yyinput();
+                continue;
+            }
+            else if( next == 't') {
+                buf += "\t";
+                next = yyinput();
+                continue;
+            }
+            else if( next == '"') {
+                buf += '"';
+                next = yyinput();
+                continue;
+            }
+            else{
+                buf += "\\";
+                continue;
+            }
+        }
+
         if(next == '"'){
             lineEnd=yylineno;
 		    return buf;
