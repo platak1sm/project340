@@ -13,9 +13,17 @@ static int isatty(void *i){ return 0; }
 #include <vector>
 #include <string>
 #include <iterator>
+#include <stdlib.h>
+#include <stdio.h>
 using namespace std;
 
 #define YY_DECL int alpha_yylex(void* yyval)
+#ifdef __cplusplus
+static int yyinput(void);
+#else 
+static int input(void);
+#endif
+
 
 typedef enum kword {IF,ELSE,WHILE,FOR,FUNCTION,RETURN,BREAK,CONTINUE,AND,NOT,OR,LOCAL,TRUE,FALSE,NIL} kwords;
 typedef enum op {ASGN,ADD,SUB,MUL,DIV,PC,EQ,NE,INC,DEC,GT,LT,GE,LE} ops; 
@@ -39,6 +47,10 @@ string operator2str(string s);
 
 string punctuation2str(string s);
 
+string bcomment(int isNestedc);
+
+string findstr();
+
 %}
 
 %option noyywrap
@@ -48,7 +60,7 @@ id          [a-zA-Z][a-zA-Z_0-9]*
 integer     (0[xX][0-9A-Fa-f]+)|([0-9]+)
 real        [0-9]*\.[0-9](e|E)?[0-9]*
 space       [\r\n \t\v]
-string      \"[^\n"]*\"
+string      \"
 onelinecomment    "//".*
 multilinescomment    "/*".*
 
@@ -64,6 +76,19 @@ multilinescomment    "/*".*
              token.type="INTEGER";
              token.value= strdup(yytext);
              token.cpptype= "int";
+             tokens.push_back(token);
+            }
+
+{string}   {
+             string ss = findstr();
+             const char * ss2 = ss.c_str();
+             alpha_token_t token;
+             token.lineno= yylineno;
+             token.tokenno= yytokenno++;
+             token.tokenval= ss2;
+             token.type="STRING";
+             token.value= strdup(ss2);
+             token.cpptype= "string";
              tokens.push_back(token);
             }
 
@@ -635,15 +660,11 @@ string punctuation2str(string s){
 
 string bcomment(int isNestedc){
 	int lineStart = yylineno ,lineEnd;
-<<<<<<< HEAD
-    char next=input();
-=======
     char next;
-    next = input();
->>>>>>> 21e5fd734c55dcf5ba8d3f3d64f4ccd945d5c5e8
+    next = yyinput();
     while(next != EOF){
         if(next == '*'){
-			next = input();
+			next = yyinput();
 			if(next == '/'){
                 lineEnd=yylineno;
 				return to_string(lineStart) + "-" + to_string(lineEnd);
@@ -652,7 +673,7 @@ string bcomment(int isNestedc){
             }
 		}
 		else if(next == '/'){
-			next = input();
+			next = yyinput();
 
 			if(next == '*'){
 				bcomment(1);
@@ -661,11 +682,54 @@ string bcomment(int isNestedc){
             }
 		}
 		else{
-			next = input();
+			next = yyinput();
 		}
 	}
 	cout << "%d: error block comment reached EOF without getting closed\n" << lineStart;
 	return "ERROR";
+}
+
+string findstr() {
+    int lineStart = yylineno ,lineEnd;
+    char next;
+    string buf = "";
+    next = yyinput();
+
+    while(next != EOF){
+        cout << next << endl;
+        
+        if( next == '\\') {
+            next = yyinput();
+            if( next == 'n') {
+                buf += "\n";
+                next = yyinput();
+                continue;
+            }
+            else if( next == 't') {
+                buf += "\t";
+                next = yyinput();
+                continue;
+            }
+            else if( next == '"') {
+                buf += '"';
+                next = yyinput();
+                continue;
+            }
+            else{
+                buf += "\\";
+                continue;
+            }
+        }
+
+        if(next == '"'){
+            lineEnd=yylineno;
+		    return buf;
+		}
+        
+        buf += next;
+        next = yyinput();
+    }
+    return buf;
 }
 
 
