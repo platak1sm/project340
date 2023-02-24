@@ -581,8 +581,35 @@ multilinescomment    "/*".*
              tokens.push_back(token);
             }
 
+<<<<<<< HEAD
+{onelinecomment}        {
+                alpha_token_t token;
+                token.lineno= yylineno;
+                token.tokenno= yytokenno++;;
+                token.tokenval= yytext;
+                token.type="COMMENT";
+                token.value= operator2str(yytext);
+                token.cpptype= "enumerated";
+                tokens.push_back(token);
+=======
+>>>>>>> main
 
 
+<<<<<<< HEAD
+{multilinescomment}  			{
+                alpha_token_t token;
+                token.lineno= yylineno;
+                token.tokenno= yytokenno++;;
+                token.tokenval= yytext;
+                token.type="COMMENT";
+                token.value= multilinescomment(yylineno, 0);;
+                token.cpptype= "enumerated";
+                tokens.push_back(token);
+
+            }			
+
+=======
+>>>>>>> main
 {id}        {
              alpha_token_t token;
              token.lineno= yylineno;
