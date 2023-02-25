@@ -51,6 +51,8 @@ string bcomment(int isNestedc);
 
 string findstr();
 
+void undefchar();
+
 %}
 
 %option noyywrap
@@ -620,6 +622,9 @@ multilinescomment    "/*".*
              token.cpptype= "string";
              tokens.push_back(token);
             }
+	    
+	    
+.           undefchar();
 
 
 %%
@@ -736,6 +741,12 @@ string findstr() {
     }
     return buf;
 }
+
+void undefchar(){
+    cout << "<%s.>\n" << yytext;
+    cout << "Error in Line %d:" << yylineno  << "Undefined Char as input";
+}
+
 
 
 int main(int argc, char *argv[]){
