@@ -686,7 +686,7 @@ string bcomment(int isNestedc){
 		}
         continue;
 	}
-    if(isNested){
+    if(isNestedc){
 		cout <<"Line %d: error nested block comment reached EOF\n"<< lineStart;
 		return "ERROR";
 	}
