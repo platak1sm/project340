@@ -670,7 +670,7 @@ string bcomment(int isNestedc){
 				return to_string(lineStart) + "-" + to_string(lineEnd);
                 continue;
 			}else{
-                yyunput(next);
+                unput(next);
                 continue;
             }
 		}
@@ -680,7 +680,7 @@ string bcomment(int isNestedc){
                     bcomment(1);
                     continue;
                 }else{
-                    yyunput(next);
+                    unput(next);
                     continue;
                 }
 		}
