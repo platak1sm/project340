@@ -660,30 +660,31 @@ string punctuation2str(string s){
 
 string bcomment(int isNestedc){
 	int lineStart = yylineno ,lineEnd;
-    char next;
+    char curr,next;
     next = yyinput();
-    while(next != EOF){
-        if(next == '*'){
+    while(curr != EOF){
+        if(curr == '*'){
 			next = yyinput();
 			if(next == '/'){
                 lineEnd=yylineno;
 				return to_string(lineStart) + "-" + to_string(lineEnd);
+                continue;
 			}else{
                 unput(next);
+                continue;
             }
 		}
-		else if(next == '/'){
+		else if(curr == '/'){
 			next = yyinput();
-
-			if(next == '*'){
-				bcomment(1);
-			}else{
-                unput(next);
-            }
+                if(next == '*'){
+                    bcomment(1);
+                    continue;
+                }else{
+                    unput(next);
+                    continue;
+                }
 		}
-		else{
-			next = yyinput();
-		}
+        continue;
 	}
 	cout << "%d: error block comment reached EOF without getting closed\n" << lineStart;
 	return "ERROR";
