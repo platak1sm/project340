@@ -664,14 +664,14 @@ string bcomment(int isNestedc){
     next = yyinput();
     while(curr != EOF){
         if(curr == '*'){
-			next = yyinput();
-			if(next == '/'){
-                lineEnd=yylineno;
-				return to_string(lineStart) + "-" + to_string(lineEnd);
-                continue;
-			}else{
-                unput(next);
-                continue;
+		next = yyinput();
+		if(next == '/'){
+                	lineEnd=yylineno;
+			return to_string(lineStart) + "-" + to_string(lineEnd);
+                	continue;
+		}else{
+                	unput(next);
+                	continue;
             }
 		}
 		else if(curr == '/'){
