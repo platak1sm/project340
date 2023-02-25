@@ -670,7 +670,7 @@ string bcomment(int isNestedc){
 				return to_string(lineStart) + "-" + to_string(lineEnd);
                 continue;
 			}else{
-                unput(next);
+                yyunput(next);
                 continue;
             }
 		}
@@ -680,11 +680,15 @@ string bcomment(int isNestedc){
                     bcomment(1);
                     continue;
                 }else{
-                    unput(next);
+                    yyunput(next);
                     continue;
                 }
 		}
         continue;
+	}
+    if(isNested){
+		cout <<"Line %d: error nested block comment reached EOF\n"<< lineStart;
+		return "ERROR";
 	}
 	cout << "%d: error block comment reached EOF without getting closed\n" << lineStart;
 	return "ERROR";
