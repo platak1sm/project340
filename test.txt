@@ -1,14 +1,14 @@
-<= , ++
-if
-12
-1.1
-x+
-x6
-g
-6v
-// lol
-"this is
- a \n string"
-"another \t string \ value"
-" aaaaa \" bbbb \" aaaaaa "
-
+/*  llll
+llll/*
+kkk*/
+*/
+//this is a comment
+x = 10
+if(x<15){
+    hello = "world"
+    break;
+}
+g = true
+function(c,v){
+    return 0;
+} 

@@ -57,15 +57,12 @@ string findstr();
 %option yylineno
 
 id          [a-zA-Z][a-zA-Z_0-9]*
-integer     (0[xX][0-9A-Fa-f]+)|([0-9]+)
-real        [0-9]*\.[0-9](e|E)?[0-9]*
+integer     ([+-])?((0[xX][0-9A-Fa-f]+)|([0-9]+))
+real        ([+-])?([0-9]*\.[0-9](e|E)?[0-9]*)
 space       [\r\n \t\v]
 string      \"
 onelinecomment    "//".*
-multilinescomment    "/*".*
-
-%x COMMENTS
-%x STRINGS
+multilinescomment    "\/\*"
 
 %%
 {integer}   {
@@ -117,6 +114,7 @@ multilinescomment    "/*".*
                 alpha_token_t token;
                 token.lineno= yylineno;
                 token.tokenno= yytokenno++;
+                
                 token.tokenval= bcomment(0);
                 token.type="COMMENT";
                 token.value= "BLOCK_COMMENT";
@@ -254,7 +252,7 @@ multilinescomment    "/*".*
              token.tokenno= yytokenno++;
              token.tokenval= yytext;
              token.type="KEYWORD";
-             token.value= "LOcAL";
+             token.value= "LOCAL";
              token.cpptype= "enumerated";
              tokens.push_back(token);
             }
@@ -631,31 +629,34 @@ string punctuation2str(string s){
 
 string bcomment(int isNestedc){
 	int lineStart = yylineno ,lineEnd;
-    char curr,next;
-    next = yyinput();
+    char curr;
+    curr = yyinput();
+    string ret = "";
+    
     while(curr != EOF){
+        /* cout << curr << endl; */
         if(curr == '*'){
-		next = yyinput();
-		if(next == '/'){
-                	lineEnd=yylineno;
-			return to_string(lineStart) + "-" + to_string(lineEnd);
-                	continue;
-		}else{
-                	unput(next);
-                	continue;
+		    curr = yyinput();
+            if(curr == '/'){
+                lineEnd=yylineno;
+                ret += to_string(lineStart) + "-" + to_string(lineEnd);
+                return ret;
+                        
+            }else{
+                 unput(curr);
             }
 		}
 		else if(curr == '/'){
-			next = yyinput();
-                if(next == '*'){
-                    bcomment(1);
-                    continue;
-                }else{
-                    unput(next);
-                    continue;
-                }
+			curr = yyinput();
+            if(curr == '*'){
+                ret += bcomment(1)+" NESTED COMMENT\n";
+                
+                
+            }else{
+                unput(curr);
+            }
 		}
-        continue;
+        curr = yyinput(); 
 	}
     if(isNestedc){
 		cout <<"Line %d: error nested block comment reached EOF\n"<< lineStart;
@@ -672,7 +673,6 @@ string findstr() {
     next = yyinput();
 
     while(next != EOF){
-        cout << next << endl;
         
         if( next == '\\') {
             next = yyinput();
@@ -722,7 +722,7 @@ int main(int argc, char *argv[]){
 
     alpha_yylex(&it);
  
-    cout << tokens.size()<<"\n";
+    /* cout << tokens.size()<<"\n"; */
     for(int i = 0; i<tokens.size();i++){
         cout << tokens.at(i).lineno << ": #" << tokens.at(i).tokenno << " \"" << tokens.at(i).tokenval << "\" " << tokens.at(i).type << " " << tokens.at(i).value << " <-" << tokens.at(i).cpptype << endl;
     }
