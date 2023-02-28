@@ -41,8 +41,11 @@ typedef struct node{
 vector<alpha_token_t> tokens;
 vector<alpha_token_t>::iterator it;
 
-int yytokenno = 1; /*kratame to token number gia na to auskanoume kai na to vazoume sto kathe node*/
-
+int yytokenno = 1; 
+int openings = 0;
+int endings = 0;
+int openings_s = 0;
+int endings_s = 0;
 string operator2str(string s);
 
 string punctuation2str(string s);
@@ -77,6 +80,8 @@ multilinescomment    "\/\*"
             }
 
 {string}   {
+             openings_s = 0;
+             endings_s = 0;
              string ss = findstr();
              const char * ss2 = ss.c_str();
              alpha_token_t token;
@@ -111,6 +116,8 @@ multilinescomment    "\/\*"
                  }
 
 {multilinescomment}  {
+                openings = 0;
+                endings = 0;
                 alpha_token_t token;
                 token.lineno= yylineno;
                 token.tokenno= yytokenno++;
@@ -590,7 +597,9 @@ multilinescomment    "\/\*"
              tokens.push_back(token);
             }
 
-
+.    { cout << "UNDEF INPUT: "<<yytext <<" AT LINE: "<<yylineno<<endl; 
+       exit(0);
+     }
 %%
 
 string operator2str(string s){
@@ -632,12 +641,11 @@ string bcomment(int isNestedc){
     char curr;
     curr = yyinput();
     string ret = "";
-    
-    while(curr != EOF){
-        /* cout << curr << endl; */
+    while(curr != EOF && curr != '\0'){
         if(curr == '*'){
 		    curr = yyinput();
             if(curr == '/'){
+                endings++;
                 lineEnd=yylineno;
                 ret += to_string(lineStart) + "-" + to_string(lineEnd);
                 return ret;
@@ -649,6 +657,7 @@ string bcomment(int isNestedc){
 		else if(curr == '/'){
 			curr = yyinput();
             if(curr == '*'){
+                openings++;
                 ret += bcomment(1)+" NESTED COMMENT\n";
                 
                 
@@ -656,23 +665,29 @@ string bcomment(int isNestedc){
                 unput(curr);
             }
 		}
+        
+        
         curr = yyinput(); 
 	}
+    
     if(isNestedc){
-		cout <<"Line %d: error nested block comment reached EOF\n"<< lineStart;
+		cout <<"Line "<<lineStart<<": error nested block comment reached EOF\n";
+        exit(0);
 		return "ERROR";
 	}
-	cout << "%d: error block comment reached EOF without getting closed\n" << lineStart;
+	cout << lineStart<<": error block comment reached EOF without getting closed\n";
+    exit(0);
 	return "ERROR";
 }
 
 string findstr() {
+    openings_s++;
     int lineStart = yylineno ,lineEnd;
     char next;
     string buf = "";
     next = yyinput();
 
-    while(next != EOF){
+    while(next != EOF && next!='\0'){
         
         if( next == '\\') {
             next = yyinput();
@@ -698,6 +713,7 @@ string findstr() {
         }
 
         if(next == '"'){
+            endings_s++;
             lineEnd=yylineno;
 		    return buf;
 		}
@@ -705,6 +721,8 @@ string findstr() {
         buf += next;
         next = yyinput();
     }
+    cout <<lineStart<<": error string reached EOF without getting closed\n";;
+    exit(0);
     return buf;
 }
 
