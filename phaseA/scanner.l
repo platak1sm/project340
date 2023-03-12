@@ -59,7 +59,7 @@ string findstr();
 %option noyywrap
 %option yylineno
 
-id          [a-zA-Z][a-zA-Z_0-9]*
+id          [a-zA-Z][a-zA-Z_0-9]*   
 integer     ([+-])?((0[xX][0-9A-Fa-f]+)|([0-9]+))
 real        ([+-])?([0-9]*\.[0-9](e|E)?[0-9]*)
 space       [\r\n \t\v]
@@ -640,14 +640,24 @@ string bcomment(int isNestedc){
 	int lineStart = yylineno ,lineEnd;
     char curr;
     curr = yyinput();
-    string ret = "";
+    string ret;
+    if(isNestedc){
+        ret = "";
+    }else{
+        ret = "\n";
+    }
+    
     while(curr != EOF && curr != '\0'){
         if(curr == '*'){
 		    curr = yyinput();
             if(curr == '/'){
                 endings++;
                 lineEnd=yylineno;
-                ret += to_string(lineStart) + "-" + to_string(lineEnd);
+                
+                
+            
+                ret += to_string(yylineno)+": "+to_string(lineStart) + "-" + to_string(lineEnd);
+                
                 return ret;
                         
             }else{
@@ -692,12 +702,12 @@ string findstr() {
         if( next == '\\') {
             next = yyinput();
             if( next == 'n') {
-                buf += "\n";
+                buf += '\n';
                 next = yyinput();
                 continue;
             }
             else if( next == 't') {
-                buf += "\t";
+                buf += '\t';
                 next = yyinput();
                 continue;
             }
@@ -706,9 +716,14 @@ string findstr() {
                 next = yyinput();
                 continue;
             }
-            else{
-                buf += "\\";
+            else if(next == '\\'){
+                buf += '\\';
+                next = yyinput();
                 continue;
+            }else{
+                cout<<("warning invalid escape character in string\n");
+                buf += "\\";
+                continue; 
             }
         }
 
