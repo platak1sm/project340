@@ -401,24 +401,24 @@ multilinescomment    "\/\*"
             }
 
 "--"        {
-            inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
+            inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 ">"         {
-             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
+             inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 "<"         {
-             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
+             inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 
 ">="        {
-            inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
+            inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 "<="        {
-             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
+             inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }  
 
 "{"         {
