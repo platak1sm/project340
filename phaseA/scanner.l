@@ -122,6 +122,7 @@ multilinescomment    "\/\*"
 
 "if"        {
              inserttoken("KEYWORD","IF", "enumerated");
+             return 'IF';
             }
 
 "else"      {
