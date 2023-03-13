@@ -401,147 +401,55 @@ multilinescomment    "\/\*"
             }
 
 "--"        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+            inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
             }
 
 ">"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
             }
 
 "<"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
             }
 
 
 ">="        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+            inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
             }
 
 "<="        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
             }  
 
 "{"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
             }
 
 "}"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+            inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
             }
 
 "["         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
             }
 
 "]"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
             }
 
 "("         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+            inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
             }
 
 ")"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
             }
 
 ";"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
             }
 
 ","         {
-            //  alpha_token_t token;
-            //  token.lineno= yylineno;
-            //  token.tokenno= yytokenno++;
-            //  token.tokenval= yytext;
-            //  token.type="PUNCTUATION";
-            //  token.value= punctuation2str(yytext);
-            //  token.cpptype= "enumerated";
-            //  tokens.push_back(token);
              inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
