@@ -401,52 +401,52 @@ multilinescomment    "\/\*"
             }
 
 "--"        {
-            inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
+            inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
             }
 
 ">"         {
-             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
+             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
             }
 
 "<"         {
-             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
+             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
             }
 
 
 ">="        {
-            inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
+            inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
             }
 
 "<="        {
-             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated")
+             inserttoken("PUNCTUATION",operator2str(yytext), "enumerated");
             }  
 
 "{"         {
-             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 "}"         {
-            inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
+            inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 "["         {
-             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 "]"         {
-             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 "("         {
-            inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
+            inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 ")"         {
-             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 ";"         {
-             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated")
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 ","         {
