@@ -54,6 +54,8 @@ string bcomment(int isNestedc);
 
 string findstr();
 
+void inserttoken(string type, string value, string cpptype);
+
 %}
 
 %option noyywrap
@@ -532,14 +534,15 @@ multilinescomment    "\/\*"
             }
 
 ","         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+            //  alpha_token_t token;
+            //  token.lineno= yylineno;
+            //  token.tokenno= yytokenno++;
+            //  token.tokenval= yytext;
+            //  token.type="PUNCTUATION";
+            //  token.value= punctuation2str(yytext);
+            //  token.cpptype= "enumerated";
+            //  tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 ":"         {
@@ -741,6 +744,16 @@ string findstr() {
     return buf;
 }
 
+void inserttoken(string type, string value, string cpptype){
+    alpha_token_t token;
+    token.lineno= yylineno;
+    token.tokenno= yytokenno++;
+    token.tokenval= yytext;
+    token.type=type;
+    token.value= value;
+    token.cpptype= cpptype;
+    tokens.push_back(token);
+}
 
 int main(int argc, char *argv[]){
     if(argc == 1) {
