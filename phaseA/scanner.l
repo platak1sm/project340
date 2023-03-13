@@ -71,14 +71,7 @@ multilinescomment    "\/\*"
 
 %%
 {integer}   {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="INTEGER";
-             token.value= strdup(yytext);
-             token.cpptype= "int";
-             tokens.push_back(token);
+             inserttoken("INTEGER",strdup(yytext), "int");
             }
 
 {string}   {
@@ -97,14 +90,7 @@ multilinescomment    "\/\*"
             }
 
 {real}      {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="REAL";
-             token.value= strdup(yytext);
-             token.cpptype= "double";
-             tokens.push_back(token);
+             inserttoken("REAL",strdup(yytext), "double");
             }
 {onelinecomment} {
                   alpha_token_t token;
@@ -135,269 +121,101 @@ multilinescomment    "\/\*"
 
 
 "if"        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "IF";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","IF", "enumerated");
             }
 
 "else"      {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "ELSE";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","ELSE", "enumerated");
             }
 
 "while"     {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "WHILE";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","WHILE", "enumerated");
             }
 
 "for"       {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "FOR";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","FOR", "enumerated");
             }
 
 "function"  {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "FUNCTION";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","FUNCTION", "enumerated");
             }
 
 "return"    {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "RETURN";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","RETURN", "enumerated");
             }
 
 "break"     {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "BREAK";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","BREAK", "enumerated");
             }
 
 "continue"  {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "CONTINUE";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","CONTINUE", "enumerated");
             }
             
 "and"       {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "AND";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","OR", "enumerated");
             }       
 
 "not"       {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "NOT";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","AND", "enumerated");
             }
 
 "or"        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "OR";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","OR", "enumerated");
             }
             
 "local"     {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "LOCAL";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","LOCAL", "enumerated");
             }
 
 "true"      {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "TRUE";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","TRUE", "enumerated");
             }
 
 "false"     {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "FALSE";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","FALSE", "enumerated");
             }
 
 "nil"       {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="KEYWORD";
-             token.value= "NIL";
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("KEYWORD","NIL", "enumerated");
             }
 
         
 "="         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+            inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 "+"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 "-"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 "*"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+            inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 "/"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 
 "%"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 "=="        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+            inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }                                    
 
 "!="        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 "++"        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="OPERATOR";
-             token.value= operator2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+            inserttoken("OPERATOR",operator2str(yytext), "enumerated");
             }
 
 "--"        {
@@ -454,58 +272,23 @@ multilinescomment    "\/\*"
             }
 
 ":"         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 "::"        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 "."         {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 ".."        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="PUNCTUATION";
-             token.value= punctuation2str(yytext);
-             token.cpptype= "enumerated";
-             tokens.push_back(token);
+             inserttoken("PUNCTUATION", punctuation2str(yytext), "enumerated");
             }
 
 {id}        {
-             alpha_token_t token;
-             token.lineno= yylineno;
-             token.tokenno= yytokenno++;
-             token.tokenval= yytext;
-             token.type="ID";
-             token.value= strdup(yytext);
-             token.cpptype= "string";
-             tokens.push_back(token);
+             inserttoken("ID", strdup(yytext), "string");
             }
 
 .    { cout << "UNDEF INPUT: "<<yytext <<" AT LINE: "<<yylineno<<endl; 
