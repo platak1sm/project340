@@ -15,7 +15,7 @@ static int isatty(void *i){ return 0; }
 #include <iterator>
 #include <stdlib.h>
 #include <stdio.h>
-#include "../phaseB/parser.h"
+#include "parser.h"
 using namespace std;
 
 #define YY_DECL int alpha_yylex(void* yyval)
