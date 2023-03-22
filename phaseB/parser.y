@@ -6,11 +6,26 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
+
+    int flag_insert=1;
+    
 %}
 
 %start program
 
-%token ID INTEGER 
+%union {
+	int intval;
+    char* stringval;
+	double doubleval;
+}
+
+%token <intval> INTEGER
+%token <doubleval> REAL
+%token <stringval> ID STRING 
+%token IF ELSE WHILE FOR FUNCTION RETURN BREAK CONTINUE AND NOT OR LOCAL TRUE FALSE NIL
+%token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL
+%token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
+
 
 %right      '='
 %left       ','
@@ -20,39 +35,83 @@
 %left       '(' ')'
 
 %%
+program: stmt program
+         |
+         ;
+ 
+stmt: expr SEMICOLON
+      | ifstmt
+      | whilestmt
+      | forstmt
+      | returnstmt
+      | BREAK SEMICOLON
+      | CONTINUE SEMICOLON
+      | block
+      | funcdef
+      | SEMICOLON
+      ;
 
-program:        assignments expressions
-                | /* empty */
-                ;
-expression:     INTEGER
-                | ID
-                | expression '+' expression
-                | expression '-' expression
-                | expression '*' expression
-                | expression '/' expression
-                | '(' expression ')'
-                | '-' expression %prec UMINUS
-                ;
+expr: assignexpr
+      | expr PLUS expr {$$ = $1 + $3;}
+      | expr MINUS expr {$$ = $1 - $3;}
+      | expr MUL expr {$$ = $1 * $3;}
+      | expr DIV expr {$$ = $1 / $3;}
+      | expr MOD expr {$$ = $1 % $3;}
+      | expr EQUAL expr {if ($1 == $3) $$ = 1;
+                         else $$ = 0;}
+      | expr NOT_EQUAL expr {if ($1 != $3) $$ = 1;
+                             else $$ = 0;}
+      | expr GREATER expr {if ($1 > $3) $$ = 1;
+                           else $$ = 0;}
+      | expr LESS expr {if ($1 < $3) $$ = 1;
+                         else $$ = 0;}
+      | expr GREATER_EQUAL expr {if ($1 >= $3) $$ = 1;
+                                 else $$ = 0;}
+      | expr LESS_EQUAL expr {if ($1 <= $3) $$ = 1;
+                              else $$ = 0;}
+      | expr AND expr {if ($1 && $3) $$ = 1;
+                       else $$ = 0;}
+      | expr OR expr {if ($1 || $3) $$ = 1;
+                      else $$ = 0;}
+      | term
+      ;
 
-expr:           expression '\n'
+normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
+          ;
+        
+methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
+            ;
 
-expressions:    expressions expr
-                | expr
-                ;
+elist: expr
+       | elist COMMA expr
+       |
+       ;
 
-assignment:     ID '=' expression '\n'
-                ;
+objectdef: LEFT_BRACKET elist RIGHT_BRACKET
+           | LEFT_BRACKET indexed RIGHT_BRACKET
+           ;
 
-assignments:    assignments assignment
-                | /* empty */
-                ;
+indexed: indexedelem
+       | indexed COMMA indexedelem
+       |
+       ;
 
-%%   
+indexedelem: LEFT_BRACE /*{ flag_insert=0; }*/ expr COLON /*{ flag_insert=1; }*/ expr RIGHT_BRACE
+             ;
+
+block: LEFT_BRACE stmtlist RIGHT_BRACE
+       ;
+
+stmtlist: stmt stmtlist
+          |
+          ;
+          
+%%     
 
 int yyerror (char* yaccProvidedMessage)
 {
     fprintf(stderr, "%s: at line %d, before token: %s\n", yaccProvidedMessage, yylineno, yytext);
-    fprintf(stderr, "INPUT NPT VALID\n");
+    fprintf(stderr, "INPUT NOT VALID\n");
 }
 
 //***********************************************************************************************************

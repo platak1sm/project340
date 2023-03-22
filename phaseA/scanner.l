@@ -26,7 +26,7 @@ static int input(void);
 
 
 typedef enum kword {IF,ELSE,WHILE,FOR,FUNCTION,RETURN,BREAK,CONTINUE,AND,NOT,OR,LOCAL,TRUE,FALSE,NIL} kwords;
-typedef enum op {ASGN,ADD,SUB,MUL,DIV,PC,EQ,NE,INC,DEC,GT,LT,GE,LE} ops; 
+typedef enum op {ASSIGN,PLUS,MINUS,MUL,DIV,MOD,EQUAL,NOT_EQUAL,PLUS_PLUS,MINUS_MINUS,GREATER,LESS,GREATER_EQUAL,LESS_EQUAL} ops; 
 typedef enum punc{LEFT_BRACE,RIGHT_BRACE,LEFT_BRACKET,RIGHT_BRACKET,LEFT_PARENTHESIS,RIGHT_PARENTHESIS,SEMICOLON,COMMA,COLON,DOUBLE_COLON,PERIOD,DOUBLE_PERIOD} puncs;
 
 typedef struct node{
@@ -302,7 +302,7 @@ string operator2str(string s){
 	else if(s=="-") return "MINUS";
     else if(s=="*") return "MULTIPLICATION";
     else if(s=="/") return "DIVISION";
-    else if(s=="%") return "PERCENT";
+    else if(s=="%") return "MODULO";
     else if(s=="==") return "EQUAL";
     else if(s=="!=") return "NOT_EQUAL";
     else if(s=="++") return "PLUS_PLUS";
