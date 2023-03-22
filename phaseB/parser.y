@@ -76,6 +76,12 @@ expr: assignexpr
       | term
       ;
 
+lvalue: ID {}
+        |LOCAL ID {}
+        |DOUBLE_COLON ID {}
+        |member 
+        ;
+
 normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
           ;
         
@@ -105,7 +111,10 @@ block: LEFT_BRACE stmtlist RIGHT_BRACE
 stmtlist: stmt stmtlist
           |
           ;
-          
+
+funcdef: FUNCTION ID {/*code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
+         | FUNCTION ID {/*other code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
+         ;
 %%     
 
 int yyerror (char* yaccProvidedMessage)
