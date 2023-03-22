@@ -15,13 +15,13 @@
 
 %union {
 	int intval;
-    char* stringval;
+    char* strval;
 	double doubleval;
 }
 
 %token <intval> INTEGER
 %token <doubleval> REAL
-%token <stringval> ID STRING 
+%token <strval> ID STRING 
 %token IF ELSE WHILE FOR FUNCTION RETURN BREAK CONTINUE AND NOT OR LOCAL TRUE FALSE NIL
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
@@ -119,7 +119,7 @@ int yyerror (char* yaccProvidedMessage)
 int main (int argc, char** argv) {
     if (argv > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
-           fprintf(stderr, "Cannot reaf file: %s\n", argv[1]);
+           fprintf(stderr, "Cannot read file: %s\n", argv[1]);
            return 1;
         }
            
