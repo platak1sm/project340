@@ -124,8 +124,8 @@ funcdef: FUNCTION ID {/*code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
          | FUNCTION ID {/*other code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
          ;
 
-funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
-funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
+// funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
+// funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 %%     
 
 int yyerror (char* yaccProvidedMessage)
