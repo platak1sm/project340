@@ -1,18 +1,22 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 class Variable {
-    string name;
-    unsigned int scope;
-    unsigned int line;
+    public:
+        string name;
+        unsigned int scope;
+        unsigned int line;
 };
 
 class Function {
-    string name;
-    //List of arguments
-    unsigned int scope;
-    unsigned int line; 
-    vector<Variable> arguments;
+    public:
+        string name;
+        //List of arguments
+        unsigned int scope;
+        unsigned int line; 
+        vector<Variable> arguments;
 };
 
 enum SymbolType {
@@ -20,16 +24,15 @@ enum SymbolType {
 }; 
 
 class SymbolTableEntry { 
-    bool isActive;
-    union {
-    Variable *varVal;
-    Function *funcVal;
-    } value;
-    enum SymbolType type;
+    public:
+        bool isActive;
+        Variable varVal;
+        Function funcVal;
+        enum SymbolType type;
 }; 
 
 vector<SymbolTableEntry> SymbolTable;
 
 void insert(SymbolTableEntry ste);
-SymbolTableEntry lookup();
+SymbolTableEntry lookup(string s);
 void hide();
