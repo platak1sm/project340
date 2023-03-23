@@ -8,6 +8,8 @@
     extern FILE* yyin;
 
     int flag_insert=1;
+
+    int scope=0;
     
 %}
 
@@ -105,7 +107,7 @@ indexed: indexedelem
 indexedelem: LEFT_BRACE /*{ flag_insert=0; }*/ expr COLON /*{ flag_insert=1; }*/ expr RIGHT_BRACE
              ;
 
-block: LEFT_BRACE stmtlist RIGHT_BRACE
+block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{scope--;}
        ;
 
 stmtlist: stmt stmtlist
@@ -115,6 +117,9 @@ stmtlist: stmt stmtlist
 funcdef: FUNCTION ID {/*code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
          | FUNCTION ID {/*other code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
          ;
+
+funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
+funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 %%     
 
 int yyerror (char* yaccProvidedMessage)
