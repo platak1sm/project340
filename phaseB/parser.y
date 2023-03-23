@@ -29,12 +29,18 @@
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
 
-%right      '='
-%left       ','
-%left       '+' '-'
-%left       '*' '/'
-%nonassoc   UMINUS
-%left       '(' ')'
+%right ASSIGN
+%left OR
+%left AND
+%nonassoc EQUAL NOT_EQUAL
+%nonassoc GREATER GREATER_EQUAL LESS LESS_EQUAL
+%left PLUS MINUS
+%left MUL DIV MOD
+%right NOT PLUS_PLUS MINUS_MINUS 
+%left PERIOD DOUBLE_PERIOD
+%left LEFT_BRACKET RIGHT_BRACKET 
+%left LEFT_PARENTHESIS RIGHT_PARENTHESIS
+
 
 %%
 program: stmt program
