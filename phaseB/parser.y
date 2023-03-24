@@ -156,8 +156,8 @@ stmtlist: stmt stmtlist
           |
           ;
 
-funcdef: FUNCTION ID {/*code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
-         | FUNCTION ID {/*other code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
+funcdef: FUNCTION ID {/*code*/} funLEFT_PAR idlist funRIGHT_PAR block
+         | FUNCTION ID {/*other code*/} funLEFT_PAR idlist funRIGHT_PAR block
          ;
 
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
