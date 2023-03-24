@@ -199,7 +199,10 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 		|MINUS_MINUS lvalue 
 		|lvalue MINUS_MINUS 
 		|primary
-			;
+		;
+
+assignexpr: lvalue ASSIGN expr
+            ;
 	
 %%     
 
