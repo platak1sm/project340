@@ -126,8 +126,6 @@ funcdef: FUNCTION ID {/*code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
 
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
 funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
-<<<<<<< HEAD
-=======
 
 primary: lvalue
         |call
@@ -203,7 +201,6 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 		|primary
 			;
 	
->>>>>>> stelios
 %%     
 
 int yyerror (char* yaccProvidedMessage)
