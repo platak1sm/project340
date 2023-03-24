@@ -176,21 +176,6 @@ forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTH
 returnstmt: RETURN expr SEMICOLON
 			| RETURN SEMICOLON;
 
-op: PLUS 
-    | MINUS
-    | MUL 
-    | DIV 
-    | MOD 
-    | GREATER 
-    | GREATER_EQUAL 
-    | LESS 
-    | LESS_EQUAL 
-    | EQUAL 
-    | NOT_EQUAL
-    | AND 
-    | OR
-    ;
-
 term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS 
 	    |MINUS expr
 	    |NOT expr
