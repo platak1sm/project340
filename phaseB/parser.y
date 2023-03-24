@@ -84,11 +84,47 @@ expr: assignexpr
       | term
       ;
 
-lvalue: ID {}
-        |LOCAL ID {}
-        |DOUBLE_COLON ID {}
-        |member 
+term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS 
+	    | MINUS expr
+	    | NOT expr
+		| PLUS_PLUS lvalue 
+		| lvalue PLUS_PLUS 
+		| MINUS_MINUS lvalue 
+		| lvalue MINUS_MINUS 
+		| primary
+		;
+
+assignexpr: lvalue ASSIGN expr
+            ;
+	
+primary: lvalue
+        | call
+        | objectdef
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS
+		| const
         ;
+
+lvalue: ID {}
+        | LOCAL ID {}
+        | DOUBLE_COLON ID {}
+        | member 
+        ;
+
+member: lvalue DOT ID
+		| lvalue LEFT_BRACKET expr RIGHT_BRACKET
+		| call DOT ID 
+		| call LEFT_BRACKET expr RIGHT_BRACKET 
+		;
+
+call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS 
+		| lvalue callsuffix 
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
+		;
+
+callsuffix:	normcall
+			| methodcall
+			;
+
 
 normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
           ;
@@ -127,29 +163,6 @@ funcdef: FUNCTION ID {/*code*/} LEFT_PARENTHESIS idlist RIGHT_PARENTHESIS block
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
 funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 
-primary: lvalue
-        |call
-        |objectdef
-		|LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS
-		|const
-        ;
-
-member: lvalue DOT ID
-		|lvalue LEFT_BRACKET expr RIGHT_BRACKET
-		|call DOT ID 
-		|call LEFT_BRACKET expr RIGHT_BRACKET 
-		;
-
-call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS 
-		|lvalue callsuffix 
-		|LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
-		;
-
-callsuffix:	normcall
-			|methodcall
-			;
-
-
 const:	INTEGER
 		| REAL
 		| STRING
@@ -163,7 +176,7 @@ idlist:ID{/*code*/}
        ;
 
 ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt
-		|IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt ELSE stmt
+		| IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt ELSE stmt
 	    ;	 
 
 whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt
@@ -176,19 +189,7 @@ forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTH
 returnstmt: RETURN expr SEMICOLON
 			| RETURN SEMICOLON;
 
-term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS 
-	    |MINUS expr
-	    |NOT expr
-		|PLUS_PLUS lvalue 
-		|lvalue PLUS_PLUS 
-		|MINUS_MINUS lvalue 
-		|lvalue MINUS_MINUS 
-		|primary
-		;
 
-assignexpr: lvalue ASSIGN expr
-            ;
-	
 %%     
 
 int yyerror (char* yaccProvidedMessage)
