@@ -177,17 +177,37 @@ stmtlist: stmt stmtlist
           ;
 
 funcdef: FUNCTION ID {
-            funcid++;
             string name= $2;
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
-            if(ste.isActive) printf("Error: %s is declared in this scope already.\n",name);
-            /*else if(isSysFunc) printf("Error: %s is a system function, it cannot be overriden.\n",name);*/
-            else {
+            if(ste.isActive){ printf("Error: %s is declared in this scope already.\n",name);
+            }else if(is_sysfunc()){ printf("Error: %s is a system function, it cannot be overriden.\n",name);
+            }else {
                   ste.type=USERFUNC;
-                  
-                  insert(ste);}
+                  ste.funcVal.name=name;
+                  ste.funcVal.scope=scope;
+                  ste.funcVal.line=yylineno;
+                  insert(ste);
+            }
          } funLEFT_PAR idlist funRIGHT_PAR block
-         | FUNCTION {/*other code*/} funLEFT_PAR idlist funRIGHT_PAR block
+         | FUNCTION {
+            string fid=to_string(funcid++);
+            string name= "$f" + fid;
+            SymbolTableEntry ste= lookupcurrentscope(name,scope);
+            while(true){
+                if(ste.isActive || is_sysfunc()){ 
+                    fid= to_string(funcid++);
+                    name= "$f" + fid;
+                    ste= lookupcurrentscope(name,scope);
+                }else {
+                    ste.type=USERFUNC;
+                    ste.funcVal.name=name;
+                    ste.funcVal.scope=scope;
+                    ste.funcVal.line=yylineno;
+                    insert(ste);
+                    break;
+                }
+            }
+         } funLEFT_PAR idlist funRIGHT_PAR block
          ;
 
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
