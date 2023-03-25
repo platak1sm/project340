@@ -11,6 +11,26 @@
 
     int scope=0;
     int funcid=0;
+
+    bool is_sysfunc(string name) {
+        if( name == "print" ||
+            name == "input" ||
+            name == "objectmemberkeys" ||
+            name == "objecttotalmembers" ||
+            name == "objectcopy" ||
+            name == "argument" ||
+            name == "typeof" ||
+            name == "strtonum" ||
+            name == "sqrt" ||
+            name == "cos" ||
+            name == "sin") {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
 %}
 
 %start program
