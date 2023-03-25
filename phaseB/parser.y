@@ -10,6 +10,25 @@
     int flag_insert=1;
 
     int scope=0;
+
+    bool is_sysfunc(string name) {
+        if( name == "print" ||
+            name == "input" ||
+            name == "objectmemberkeys" ||
+            name == "objecttotalmembers" ||
+            name == "objectcopy" ||
+            name == "argument" ||
+            name == "typeof" ||
+            name == "strtonum" ||
+            name == "sqrt" ||
+            name == "cos" ||
+            name == "sin") {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     
 %}
 
