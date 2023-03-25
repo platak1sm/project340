@@ -221,8 +221,33 @@ const:	INTEGER
 		| FALSE 
 		;
 
-idlist:ID{/*code*/}
-       | idlist COMMA ID
+idlist: ID{
+            string name = $1; 
+            SymbolTableEntry ste= lookupcurrentscope(name,scope);
+            if(ste.isActive){ printf("Error: %s is declared in this scope already.\n",name);
+            }else if(is_sysfunc()){ printf("Error: %s is a system function, it cannot be a function argument.\n",name);
+            }else {
+                  ste.type=FORMAL;
+                  ste.varVal.name=name;
+                  ste.varVal.scope=scope;
+                  ste.varVal.line=yylineno;
+                  insert(ste);
+            }
+          }
+        | idlist COMMA ID{
+            string name = $3; 
+            SymbolTableEntry ste= lookupcurrentscope(name,scope);
+            if(ste.isActive){ printf("Error: %s is declared in this scope already.\n",name);
+            }else if(is_sysfunc()){ printf("Error: %s is a system function, it cannot be a function argument.\n",name);
+            }else {
+                  ste.type=FORMAL;
+                  ste.varVal.name=name;
+                  ste.varVal.scope=scope;
+                  ste.varVal.line=yylineno;
+                  insert(ste);
+            }
+         }
+        |
        ;
 
 ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt
