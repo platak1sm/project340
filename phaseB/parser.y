@@ -10,7 +10,7 @@
     int flag_insert=1;
 
     int scope=0;
-    
+    int funcid=0;
 %}
 
 %start program
@@ -149,19 +149,29 @@ indexed: indexedelem
 indexedelem: LEFT_BRACE /*{ flag_insert=0; }*/ expr COLON /*{ flag_insert=1; }*/ expr RIGHT_BRACE
              ;
 
-block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{scope--;}
+block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--);}
        ;
 
 stmtlist: stmt stmtlist
           |
           ;
 
-funcdef: FUNCTION ID {/*code*/} funLEFT_PAR idlist funRIGHT_PAR block
-         | FUNCTION ID {/*other code*/} funLEFT_PAR idlist funRIGHT_PAR block
+funcdef: FUNCTION ID {
+            funcid++;
+            string name= $2;
+            SymbolTableEntry ste= lookupcurrentscope(name,scope);
+            if(ste.isActive) printf("Error: %s is declared in this scope already.\n",name);
+            /*else if(isSysFunc) printf("Error: %s is a system function, it cannot be overriden.\n",name);*/
+            else {
+                  ste.type=USERFUNC;
+                  
+                  insert(ste);}
+         } funLEFT_PAR idlist funRIGHT_PAR block
+         | FUNCTION {/*other code*/} funLEFT_PAR idlist funRIGHT_PAR block
          ;
 
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
-funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
+funRIGHT_PAR:   RIGHT_PARENTHESIS{hide(scope--);}
 
 const:	INTEGER
 		| REAL
