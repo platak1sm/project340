@@ -281,6 +281,9 @@ idlist: ID{
                   ste.varVal.name=name;
                   ste.varVal.scope=scope;
                   ste.varVal.line=yylineno;
+                  ste.funcVal.name=name; /*de kserw an xreiazontai kai var kai funcval*/
+                  ste.funcVal.scope=scope;
+                  ste.funcVal.line=yylineno;
                   insert(ste);
             }
          }
