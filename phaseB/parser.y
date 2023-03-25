@@ -105,12 +105,49 @@ expr: assignexpr
       ;
 
 term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS 
-	    | MINUS expr
-	    | NOT expr
-		| PLUS_PLUS lvalue 
-		| lvalue PLUS_PLUS 
-		| MINUS_MINUS lvalue 
-		| lvalue MINUS_MINUS 
+	    | UMINUS expr {$$ = $2 * (-1);}
+	    | NOT expr {if ($2) $$=0;
+                    else $$=1;}
+		| PLUS_PLUS lvalue {
+                             string name=$2;
+                             SymbolTableEntry ste= lookupactivevar(name,scope);
+                             if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for increment.\n",name);
+                             else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
+                             else{ 
+                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
+                                else $$ = ++$2;
+                             }
+                           }
+		| lvalue PLUS_PLUS {
+                             string name=$1;
+                             SymbolTableEntry ste= lookupactivevar(name,scope);
+                             if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for increment.\n",name);
+                             else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
+                             else{ 
+                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
+                                else $$ = $2++;
+                             }
+                           }
+		| MINUS_MINUS lvalue {
+                             string name=$2;
+                             SymbolTableEntry ste= lookupactivevar(name,scope);
+                             if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for decrement.\n",name);
+                             else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
+                             else{ 
+                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
+                                else $$ = --$2;
+                             }
+                           }
+		| lvalue MINUS_MINUS {
+                             string name=$1;
+                             SymbolTableEntry ste= lookupactivevar(name,scope);
+                             if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for decrement.\n",name);
+                             else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
+                             else{ 
+                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
+                                else $$ = $2--;
+                             }
+                           }
 		| primary
 		;
 
@@ -166,7 +203,7 @@ indexed: indexedelem
        |
        ;
 
-indexedelem: LEFT_BRACE /*{ flag_insert=0; }*/ expr COLON /*{ flag_insert=1; }*/ expr RIGHT_BRACE
+indexedelem: LEFT_BRACE { flag_insert=0; } expr COLON { flag_insert=1; } expr RIGHT_BRACE
              ;
 
 block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--);}
