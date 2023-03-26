@@ -49,7 +49,6 @@
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-
 %right ASSIGN
 %left OR
 %left AND
@@ -81,34 +80,34 @@ stmt: expr SEMICOLON
       ;
 
 expr: assignexpr
-      | expr PLUS expr {$$ = $1 + $3;}
-      | expr MINUS expr {$$ = $1 - $3;}
-      | expr MUL expr {$$ = $1 * $3;}
-      | expr DIV expr {$$ = $1 / $3;}
-      | expr MOD expr {$$ = $1 % $3;}
-      | expr EQUAL expr {if ($1 == $3) $$ = 1;
-                         else $$ = 0;}
-      | expr NOT_EQUAL expr {if ($1 != $3) $$ = 1;
-                             else $$ = 0;}
-      | expr GREATER expr {if ($1 > $3) $$ = 1;
-                           else $$ = 0;}
-      | expr LESS expr {if ($1 < $3) $$ = 1;
-                         else $$ = 0;}
-      | expr GREATER_EQUAL expr {if ($1 >= $3) $$ = 1;
-                                 else $$ = 0;}
-      | expr LESS_EQUAL expr {if ($1 <= $3) $$ = 1;
-                              else $$ = 0;}
-      | expr AND expr {if ($1 && $3) $$ = 1;
-                       else $$ = 0;}
-      | expr OR expr {if ($1 || $3) $$ = 1;
-                      else $$ = 0;}
+      | expr PLUS expr //{$$ = $1 + $3;}
+      | expr MINUS expr //{$$ = $1 - $3;}
+      | expr MUL expr //{$$ = $1 * $3;}
+      | expr DIV expr //{$$ = $1 / $3;}
+      | expr MOD expr //{$$ = $1 % $3;}
+      | expr EQUAL expr //{if ($1 == $3) $$ = 1;
+                        //else $$ = 0;}
+      | expr NOT_EQUAL expr //{if ($1 != $3) $$ = 1;
+                             //else $$ = 0;}
+      | expr GREATER expr //{if ($1 > $3) $$ = 1;
+                           //else $$ = 0;}
+      | expr LESS expr //{if ($1 < $3) $$ = 1;
+                         //else $$ = 0;}
+      | expr GREATER_EQUAL expr //{if ($1 >= $3) $$ = 1;
+                                 //else $$ = 0;}
+      | expr LESS_EQUAL expr //{if ($1 <= $3) $$ = 1;
+                              //else $$ = 0;}
+      | expr AND expr //{if ($1 && $3) $$ = 1;
+                       //else $$ = 0;}
+      | expr OR expr //{if ($1 || $3) $$ = 1;
+                      //else $$ = 0;}
       | term
       ;
 
 term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS 
-	    | UMINUS expr {$$ = $2 * (-1);}
-	    | NOT expr {if ($2) $$=0;
-                    else $$=1;}
+	    | UMINUS expr //{$$ = $2 * (-1);}
+	    | NOT expr //{if ($2) $$=0;
+                    //else $$=1;}
 		| PLUS_PLUS lvalue {
                              string name=$2;
                              SymbolTableEntry ste= lookupactivevar(name,scope);
@@ -116,7 +115,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
                                 if (ste.varVal.scope!=0) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
-                                else $$ = ++$2;
+                                //else $$ = ++$2;
                              }
                            }
 		| lvalue PLUS_PLUS {
@@ -126,7 +125,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
                                 if (ste.varVal.scope!=0) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
-                                else $$ = $2++;
+                                //else $$ = $2++;
                              }
                            }
 		| MINUS_MINUS lvalue {
@@ -136,7 +135,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
                                 if (ste.varVal.scope!=0) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
-                                else $$ = --$2;
+                                //else $$ = --$2;
                              }
                            }
 		| lvalue MINUS_MINUS {
@@ -146,7 +145,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
                                 if (ste.varVal.scope!=0) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n";
-                                else $$ = $2--;
+                                //else $$ = $2--;
                              }
                            }
 		| primary
