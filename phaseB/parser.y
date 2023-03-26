@@ -11,6 +11,7 @@
 
     int scope=0;
     int funcid=0;
+    string lastidname;
 
     bool is_sysfunc(string name) {
         if( name == "print" ||
@@ -144,7 +145,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
                              if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
-                                if (/*sinthiki gia not accesible*/) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n";
+                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
                                 else $$ = $2--;
                              }
                            }
