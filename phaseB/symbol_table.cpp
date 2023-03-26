@@ -76,3 +76,13 @@ void hide(int scope) {
         }
     }
 }
+
+void insertLibFuncs(string name){
+    SymbolTableEntry ste;
+    ste.isActive=1;
+    ste.type=LIBFUNC;
+    ste.funcVal.name=name;
+    ste.funcVal.scope=0;
+    ste.funcVal.line=0;
+    insert(ste);
+}
