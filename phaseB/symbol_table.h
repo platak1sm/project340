@@ -36,3 +36,4 @@ vector<SymbolTableEntry> SymbolTable;
 void insert(SymbolTableEntry ste);
 SymbolTableEntry lookup(string s);
 void hide();
+void insertLibFuncs(string name);
