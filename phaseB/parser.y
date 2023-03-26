@@ -11,6 +11,7 @@
 
     int scope=0;
     int funcid=0;
+    string lastidname;
 
     bool is_sysfunc(string name) {
         if( name == "print" ||
@@ -114,7 +115,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
                              if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for increment.\n",name);
                              else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
                              else{ 
-                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
+                                if () printf("Error: Variable %s is not accessible in this scope.\n",name); 
                                 else $$ = ++$2;
                              }
                            }
@@ -124,8 +125,8 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
                              if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for increment.\n",name);
                              else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
                              else{ 
-                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
-                                else $$ = $2++;
+                                 
+                               $$ = $2++;
                              }
                            }
 		| MINUS_MINUS lvalue {
@@ -134,8 +135,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
                              if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for decrement.\n",name);
                              else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
                              else{ 
-                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
-                                else $$ = --$2;
+                                $$ = --$2;
                              }
                            }
 		| lvalue MINUS_MINUS {
@@ -144,8 +144,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
                              if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for decrement.\n",name);
                              else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
                              else{ 
-                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
-                                else $$ = $2--;
+                                $$ = $2--;
                              }
                            }
 		| primary
