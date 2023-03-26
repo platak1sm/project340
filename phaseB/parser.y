@@ -111,40 +111,40 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 		| PLUS_PLUS lvalue {
                              string name=$2;
                              SymbolTableEntry ste= lookupactivevar(name,scope);
-                             if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for increment.\n",name);
-                             else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
+                             if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
+                             else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
-                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
+                                if (/*sinthiki gia not accesible*/) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
                                 else $$ = ++$2;
                              }
                            }
 		| lvalue PLUS_PLUS {
                              string name=$1;
                              SymbolTableEntry ste= lookupactivevar(name,scope);
-                             if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for increment.\n",name);
-                             else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
+                             if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
+                             else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
-                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
+                                if (/*sinthiki gia not accesible*/) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
                                 else $$ = $2++;
                              }
                            }
 		| MINUS_MINUS lvalue {
                              string name=$2;
                              SymbolTableEntry ste= lookupactivevar(name,scope);
-                             if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for decrement.\n",name);
-                             else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
+                             if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
+                             else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
-                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
+                                if (/*sinthiki gia not accesible*/) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
                                 else $$ = --$2;
                              }
                            }
 		| lvalue MINUS_MINUS {
                              string name=$1;
                              SymbolTableEntry ste= lookupactivevar(name,scope);
-                             if(is_sysfunc(name)) printf("Error: %s is a system function, it cannot be used for decrement.\n",name);
-                             else if (!ste.isActive) printf("Error: There is no variable %s.\n",name);
+                             if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
+                             else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
-                                if (/*sinthiki gia not accesible*/) printf("Error: Variable %s is not accessible in this scope.\n",name); 
+                                if (/*sinthiki gia not accesible*/) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n";
                                 else $$ = $2--;
                              }
                            }
@@ -251,8 +251,8 @@ stmtlist: stmt stmtlist
 funcdef: FUNCTION ID {
             string name= $2;
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
-            if(ste.isActive){ printf("Error: %s is declared in this scope already.\n",name);
-            }else if(is_sysfunc()){ printf("Error: %s is a system function, it cannot be overriden.\n",name);
+            if(ste.isActive){ cout << "Error: " << name << " is declared in this scope already.\n";
+            }else if(is_sysfunc()){ cout << "Error: "<< name <<" is a system function, it cannot be overriden.\n";
             }else {
                   ste.type=USERFUNC;
                   ste.funcVal.name=name;
@@ -296,8 +296,8 @@ const:	INTEGER
 idlist: ID{
             string name = $1; 
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
-            if(ste.isActive){ printf("Error: %s is declared in this scope already.\n",name);
-            }else if(is_sysfunc()){ printf("Error: %s is a system function, it cannot be a function argument.\n",name);
+            if(ste.isActive){ cout << "Error: " << name << " is declared in this scope already.\n";
+            }else if(is_sysfunc()){ cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
             }else {
                   ste.type=FORMAL;
                   ste.varVal.name=name;
@@ -309,8 +309,8 @@ idlist: ID{
         | idlist COMMA ID{
             string name = $3; 
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
-            if(ste.isActive){ printf("Error: %s is declared in this scope already.\n",name);
-            }else if(is_sysfunc()){ printf("Error: %s is a system function, it cannot be a function argument.\n",name);
+            if(ste.isActive){ cout << "Error: " << name << " is declared in this scope already.\n";
+            }else if(is_sysfunc()){ cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
             }else {
                   ste.type=FORMAL;
                   ste.varVal.name=name;
@@ -361,6 +361,18 @@ int main (int argc, char** argv) {
     else 
         yyin = stdin;
 
+    insertLibFuncs("print");
+    insertLibFuncs("input");
+    insertLibFuncs("objectmemberkeys");
+    insertLibFuncs("objecttotalmembers");
+    insertLibFuncs("objectcopy");
+    insertLibFuncs("totalarguments");
+    insertLibFuncs("argument");
+    insertLibFuncs("typeof");
+    insertLibFuncs("strtonum");
+    insertLibFuncs("sqrt");
+    insertLibFuncs("cos");
+    insertLibFuncs("sin");
     yyparse();
     return 0;
 }
