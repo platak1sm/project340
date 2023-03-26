@@ -203,9 +203,9 @@ lvalue: ID {
         | member{}
         ;
 
-member: lvalue DOT ID
+member: lvalue PERIOD ID
 		| lvalue LEFT_BRACKET expr RIGHT_BRACKET
-		| call DOT ID 
+		| call PERIOD ID 
 		| call LEFT_BRACKET expr RIGHT_BRACKET 
 		;
 
