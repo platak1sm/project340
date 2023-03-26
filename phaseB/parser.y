@@ -284,7 +284,7 @@ funcdef: FUNCTION ID {
          ;
 
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
-funRIGHT_PAR:   RIGHT_PARENTHESIS{hide(scope--);}
+funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 
 const:	INTEGER
 		| REAL
