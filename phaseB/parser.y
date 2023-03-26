@@ -152,7 +152,12 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 		| primary
 		;
 
-assignexpr: lvalue ASSIGN expr
+assignexpr: lvalue{		
+                        string name=$1;
+                        if(name != NULL && is_sysfunc(name) ){
+							cout << "Error: "<< name <<" is a system function\n";
+                            }
+					} ASSIGN expr
             ;
 	
 primary: lvalue
