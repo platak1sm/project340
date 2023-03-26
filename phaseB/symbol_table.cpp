@@ -29,7 +29,7 @@ SymbolTableEntry lookupcurrentscope(string s, int scope) {
 }
 
 
-SymbolTableEntry lookupactivevar(string s, int scope) {
+SymbolTableEntry lookupactivevar(string s) {
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
         if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCAL  || SymbolTable[i].type == FORMAL) {
             if(SymbolTable[i].varVal.name == s) {
@@ -45,7 +45,7 @@ SymbolTableEntry lookupactivevar(string s, int scope) {
                 
 }
 
-SymbolTableEntry lookupactivefunc(string s, int scope) {
+SymbolTableEntry lookupactivefunc(string s) {
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
         if(SymbolTable[i].type == USERFUNC || SymbolTable[i].type == LIBFUNC) {
             if(SymbolTable[i].funcVal.name == s) {

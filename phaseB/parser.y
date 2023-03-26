@@ -161,10 +161,45 @@ primary: lvalue
 		| const
         ;
 
-lvalue: ID {}
-        | LOCAL ID {}
-        | DOUBLE_COLON ID {}
-        | member 
+lvalue: ID {
+            string name($1);
+            if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false){
+                SymbolTableEntry ent;
+                ent.isActive = true;
+                if(scope == 0)
+                    ent.type = GLOBAL;
+                else
+                    ent.type = LOCAL;
+                ent.varVal.name = name;
+                ent.varVal.scope = scope;
+                ent.varVal.line = yylineno;
+                insert(ent);
+            }
+
+            }
+        | LOCAL ID {
+            string name($1);
+            SymbolTableEntry ret = lookupactivevar(name)
+            if(ret.isActive == false || ret.type == GLOBAL){
+                SymbolTableEntry ent;
+                ent.isActive = true;
+                if(scope == 0)
+                    ent.type = GLOBAL;
+                else
+                    ent.type = LOCAL;
+                ent.varVal.name = name;
+                ent.varVal.scope = scope;
+                ent.varVal.line = yylineno;
+                insert(ent);
+            }
+        }
+        | DOUBLE_COLON ID {
+            string name($1);
+            if(lookupcurrentscope(name, 0).isActive == false){
+                cout << "error\n";
+            }
+        }
+        | member{}
         ;
 
 member: lvalue DOT ID
