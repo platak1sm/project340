@@ -104,7 +104,7 @@ expr: assignexpr
       | term
       ;
 
-term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS 
+term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
 	    | UMINUS expr //{$$ = $2 * (-1);}
 	    | NOT expr //{if ($2) $$=0;
                     //else $$=1;}
