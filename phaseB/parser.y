@@ -415,6 +415,7 @@ returnstmt: RETURN expr SEMICOLON{
                         ent.varVal.scope = scope;
                         ent.varVal.line = yylineno;
                         insert(ent);
+                        //$$=$2;
                     }   
          }
 			| RETURN SEMICOLON;
