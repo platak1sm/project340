@@ -351,7 +351,11 @@ idlist: ID{
 
 ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
                     string name = $3;
-                    SymbolTableEntry ent = lookupactivevar(name)
+                    SymbolTableEntry ent = lookupactivevar(name);
+                    if(ste.isActive)
+                        cout << "Error: " << name << " is declared in this scope already.\n";
+                     else if(is_sysfunc(name)) 
+                        cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
                     if(ent.isActive == false || ent.type == GLOBAL){
                         ent.isActive = true;
                         if(scope == 0)
@@ -383,7 +387,11 @@ ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
 
 whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
                     string name = $3;
-                    SymbolTableEntry ent = lookupactivevar(name)
+                    SymbolTableEntry ent = lookupactivevar(name);
+                    if(ste.isActive)
+                        cout << "Error: " << name << " is declared in this scope already.\n";
+                     else if(is_sysfunc(name)) 
+                        cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
                     if(ent.isActive == false || ent.type == GLOBAL){
                         ent.isActive = true;
                         if(scope == 0)
@@ -401,7 +409,11 @@ whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
 	
 forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS{
                         string name = $3;
-                        SymbolTableEntry ent = lookupactivevar(name)
+                        SymbolTableEntry ent = lookupactivevar(name);
+                        if(ste.isActive)
+                            cout << "Error: " << name << " is declared in this scope already.\n";
+                        else if(is_sysfunc(name)) 
+                            cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
                         if(ent.isActive == false || ent.type == GLOBAL){
                             ent.isActive = true;
                             if(scope == 0)
@@ -418,7 +430,11 @@ forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTH
 
 returnstmt: RETURN expr SEMICOLON{
                     string name = $2;
-                    SymbolTableEntry ent = lookupactivevar(name)
+                    SymbolTableEntry ent = lookupactivevar(name);
+                    if(ste.isActive)
+                        cout << "Error: " << name << " is declared in this scope already.\n";
+                     else if(is_sysfunc(name)) 
+                        cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
                     if(ent.isActive == false || ent.type == GLOBAL){
                         ent.isActive = true;
                         if(scope == 0)
