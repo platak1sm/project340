@@ -96,17 +96,16 @@ expr: assignexpr
       | term
       ;
 
-term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {hide(scope);--scope;}
-	    | UMINUS expr //{$$ = $2 * (-1);}
-	    | NOT expr //{if ($2) $$=0;
-                    //else $$=1;}
+term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */}
+	    | UMINUS expr {/* $$ = $2 * (-1); */}
+	    | NOT expr {/* if ($2) $$=0; else $$=1; */}
 		| PLUS_PLUS lvalue {
                              string name=$2;
                              SymbolTableEntry ste= lookupactivevar(name,scope);
                              if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
+                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
                                 /* else $$ = ++$2; */
                              }
                            }
@@ -116,7 +115,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {hide(scope);--scope;}
                              if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
+                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
                                 /* else $$ = $2++; */
                              }
                            }
@@ -140,7 +139,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {hide(scope);--scope;}
                                 /* else $$ = $2--; */
                              }
                            }
-		| primary //{$$=$1;}
+		| primary {/*$$=$1;*/}
 		;
 
 assignexpr: lvalue ASSIGN expr{		
@@ -150,7 +149,7 @@ assignexpr: lvalue ASSIGN expr{
                             }
             ;
 	
-primary: lvalue{
+primary: lvalue{/* 
                     string name = $1;
                     SymbolTableEntry ent = lookupactivevar(name)
                     if(ent.isActive == false || ent.type == GLOBAL){
@@ -163,12 +162,12 @@ primary: lvalue{
                         ent.varVal.scope = scope;
                         ent.varVal.line = yylineno;
                         insert(ent);
-                    }   
-                 }//{$$=$1;}
-        | call //{$$=$1;}
-        | objectdef //{$$=$1;}
+                    }   */ 
+                 }
+        | call {/* $$=$1; */}
+        | objectdef {/* $$=$1; */}
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{
-                    string name = $2;
+                    /* string name = $2;
                     SymbolTableEntry ent = lookupactivevar(name)
                     if(ent.isActive == false || ent.type == GLOBAL){
                         ent.isActive = true;
@@ -180,9 +179,9 @@ primary: lvalue{
                         ent.varVal.scope = scope;
                         ent.varVal.line = yylineno;
                         insert(ent);
-                    }   
-        }//{$$=$2;}
-		| const //{$$=$1;}
+                    }    */
+        }
+		| const {/* $$=$1; */}
         ;
 
 lvalue: ID {
@@ -199,7 +198,6 @@ lvalue: ID {
                 ent.varVal.line = yylineno;
                 insert(ent);
             }
-
             }
         | LOCAL ID {
             string name($1);
@@ -237,12 +235,12 @@ call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
 		;
 
-callsuffix:	normcall//{$$=$1}
-			| methodcall//{$$=$1}
+callsuffix:	normcall
+			| methodcall
 			;
 
 
-normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS//{$$=$2}
+normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
           ;
         
 methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
@@ -265,7 +263,7 @@ indexed: indexedelem
 indexedelem: LEFT_BRACE { flag_insert=0; } expr COLON { flag_insert=1; } expr RIGHT_BRACE
              ;
 
-block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--);--scope;}
+block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--);}
        ;
 
 stmtlist: stmt stmtlist
@@ -350,7 +348,7 @@ idlist: ID{
        ;
 
 ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
-                    string name = $3;
+                    /* string name = $3;
                     SymbolTableEntry ent = lookupactivevar(name);
                     if(ste.isActive)
                         cout << "Error: " << name << " is declared in this scope already.\n";
@@ -366,10 +364,10 @@ ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
                         ent.varVal.scope = scope;
                         ent.varVal.line = yylineno;
                         insert(ent);
-                    }   
-         } stmt //{$$=$5;}
+                    }    */
+         } stmt 
 		| IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
-                    string name = $3;
+                   /*  string name = $3;
                     SymbolTableEntry ent = lookupactivevar(name)
                     if(ent.isActive == false || ent.type == GLOBAL){
                         ent.isActive = true;
@@ -381,12 +379,12 @@ ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
                         ent.varVal.scope = scope;
                         ent.varVal.line = yylineno;
                         insert(ent);
-                    }   
-         } stmt ELSE stmt //{$$=$7}
+                    }  */  
+         } stmt ELSE stmt 
 	    ;	 
 
 whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
-                    string name = $3;
+                    /* string name = $3;
                     SymbolTableEntry ent = lookupactivevar(name);
                     if(ste.isActive)
                         cout << "Error: " << name << " is declared in this scope already.\n";
@@ -402,13 +400,13 @@ whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
                         ent.varVal.scope = scope;
                         ent.varVal.line = yylineno;
                         insert(ent);
-                    }   
+                    }    */
          } stmt
 		 ;  	
 
 	
 forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS{
-                        string name = $3;
+                        /* string name = $3;
                         SymbolTableEntry ent = lookupactivevar(name);
                         if(ste.isActive)
                             cout << "Error: " << name << " is declared in this scope already.\n";
@@ -424,12 +422,12 @@ forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTH
                             ent.varVal.scope = scope;
                             ent.varVal.line = yylineno;
                             insert(ent);
-                        } 
+                        }  */
                     }stmt
 		;	
 
 returnstmt: RETURN expr SEMICOLON{
-                    string name = $2;
+                    /* string name = $2;
                     SymbolTableEntry ent = lookupactivevar(name);
                     if(ste.isActive)
                         cout << "Error: " << name << " is declared in this scope already.\n";
@@ -446,7 +444,7 @@ returnstmt: RETURN expr SEMICOLON{
                         ent.varVal.line = yylineno;
                         insert(ent);
                         //$$=$2;
-                    }   
+                    }    */
          }
 			| RETURN SEMICOLON;
 
