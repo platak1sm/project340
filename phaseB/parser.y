@@ -110,7 +110,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
                     //else $$=1;}
 		| PLUS_PLUS lvalue {
                              string name=$2;
-                             SymbolTableEntry ste= lookupactivevar(name,scope);
+                             SymbolTableEntry ste= lookupactivevar(name);
                              if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
@@ -120,7 +120,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
                            }
 		| lvalue PLUS_PLUS {
                              string name=$1;
-                             SymbolTableEntry ste= lookupactivevar(name,scope);
+                             SymbolTableEntry ste= lookupactivevar(name);
                              if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
@@ -130,7 +130,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
                            }
 		| MINUS_MINUS lvalue {
                              string name=$2;
-                             SymbolTableEntry ste= lookupactivevar(name,scope);
+                             SymbolTableEntry ste= lookupactivevar(name);
                              if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
@@ -140,7 +140,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
                            }
 		| lvalue MINUS_MINUS {
                              string name=$1;
-                             SymbolTableEntry ste= lookupactivevar(name,scope);
+                             SymbolTableEntry ste= lookupactivevar(name);
                              if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
