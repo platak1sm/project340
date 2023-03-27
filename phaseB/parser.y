@@ -8,6 +8,7 @@
     extern FILE* yyin;
 
     /* int flag_insert=1; */
+    int inloop=0;
     int infunction=0;
     int scope=0;
     int funcid=0;
@@ -72,11 +73,11 @@ program: stmt program
  
 stmt: expr SEMICOLON
       | ifstmt
-      | whilestmt
-      | forstmt
+      | {inloop++;}whilestmt{inloop--;}
+      | {inloop++;}forstmt{inloop--;}
       | returnstmt
-      | BREAK SEMICOLON
-      | CONTINUE SEMICOLON
+      | BREAK SEMICOLON{if(inloop==0) cout << "Error: Cannot use BREAK when not in loop, in line " << yylineno << endl;}
+      | CONTINUE SEMICOLON{if(inloop==0) cout << "Error: Cannot use CONTINUE when not in loop, in line " << yylineno << endl;}
       | block
       | funcdef
       | SEMICOLON
@@ -448,8 +449,9 @@ returnstmt: RETURN expr SEMICOLON{
                         insert(ent);
                         //$$=$2;
                     }    */
+                    if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl;
          }
-			| RETURN SEMICOLON;
+			| RETURN SEMICOLON;{if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl;}
 
 
 %%     
