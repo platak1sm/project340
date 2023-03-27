@@ -1,5 +1,7 @@
 %{
     #include <iostream>
+    #include <string>
+    #include "symbol_table.h"
     int yyerror (char* yaccProvidedMessage);
     int yylex (void);
 
@@ -33,6 +35,7 @@
         }
     }
     
+    void insertLibFuncs(string name);
 %}
 
 %start program
@@ -277,7 +280,7 @@ funcdef: FUNCTION ID {
             string name= $2;
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
             if(ste.isActive){ cout << "Error: " << name << " is declared in this scope already.\n";
-            }else if(is_sysfunc()){ cout << "Error: "<< name <<" is a system function, it cannot be overriden.\n";
+            }else if(is_sysfunc(name)){ cout << "Error: "<< name <<" is a system function, it cannot be overriden.\n";
             }else {
                   ste.type=USERFUNC;
                   ste.funcVal.name=name;
@@ -291,7 +294,7 @@ funcdef: FUNCTION ID {
             string name= "$f" + fid;
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
             while(true){
-                if(ste.isActive || is_sysfunc()){ 
+                if(ste.isActive || is_sysfunc(name)){ 
                     fid= to_string(funcid++);
                     name= "$f" + fid;
                     ste= lookupcurrentscope(name,scope);
@@ -322,7 +325,7 @@ idlist: ID{
             string name = $1; 
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
             if(ste.isActive){ cout << "Error: " << name << " is declared in this scope already.\n";
-            }else if(is_sysfunc()){ cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
+            }else if(is_sysfunc(name)){ cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
             }else {
                   ste.type=FORMAL;
                   ste.varVal.name=name;
@@ -461,10 +464,19 @@ int yyerror (char* yaccProvidedMessage)
     fprintf(stderr, "INPUT NOT VALID\n");
 }
 
+void insertLibFuncs(string name){
+    SymbolTableEntry ste;
+    ste.isActive=true;
+    ste.type=LIBFUNC;
+    ste.funcVal.name=name;
+    ste.funcVal.scope=0;
+    ste.funcVal.line=0;
+    insert(ste);
+}
 //**********************************************************************************************************
 
 int main (int argc, char** argv) {
-    if (argv > 1) {
+    if (argc > 1) {
         if (!(yyin = fopen(argv[1], "r"))) {
            fprintf(stderr, "Cannot read file: %s\n", argv[1]);
            return 1;
