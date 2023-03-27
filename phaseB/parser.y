@@ -290,12 +290,12 @@ funcdef: FUNCTION ID {
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
 funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 
-const:	INTEGER{$$=$1;}
-		| REAL{$$=$1;}
-		| STRING{$$=$1;}
-		| NIL {$$=$1;}
-		| TRUE {$$=$1;}
-		| FALSE {$$=$1;}
+const:	INTEGER //{$$=$1;}
+		| REAL //{$$=$1;}
+		| STRING //{$$=$1;}
+		| NIL //{$$=$1;}
+		| TRUE //{$$=$1;}
+		| FALSE //{$$=$1;}
 		;
 
 idlist: ID{
