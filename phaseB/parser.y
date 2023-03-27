@@ -7,8 +7,8 @@
     extern char* yytext;
     extern FILE* yyin;
 
-    int flag_insert=1;
-
+    /* int flag_insert=1; */
+    int infunction=0;
     int scope=0;
     int funcid=0;
     string lastidname;
@@ -263,7 +263,7 @@ indexed: indexedelem
        |
        ;
 
-indexedelem: LEFT_BRACE { flag_insert=0; } expr COLON { flag_insert=1; } expr RIGHT_BRACE
+indexedelem: LEFT_BRACE { /* flag_insert=0; */ } expr COLON { /* flag_insert=1; */ } expr RIGHT_BRACE
              ;
 
 block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--);}
@@ -304,7 +304,7 @@ funcdef: FUNCTION ID {
                     break;
                 }
             }
-         } funLEFT_PAR idlist funRIGHT_PAR block
+         } funLEFT_PAR idlist funRIGHT_PAR {infunction++;}block{infunction--;}
          ;
 
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
