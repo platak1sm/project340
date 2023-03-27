@@ -80,34 +80,25 @@ stmt: expr SEMICOLON
       ;
 
 expr: assignexpr
-      | expr PLUS expr //{$$ = $1 + $3;}
-      | expr MINUS expr //{$$ = $1 - $3;}
-      | expr MUL expr //{$$ = $1 * $3;}
-      | expr DIV expr //{$$ = $1 / $3;}
-      | expr MOD expr //{$$ = $1 % $3;}
-      | expr EQUAL expr //{if ($1 == $3) $$ = 1;
-                        //else $$ = 0;}
-      | expr NOT_EQUAL expr //{if ($1 != $3) $$ = 1;
-                             //else $$ = 0;}
-      | expr GREATER expr //{if ($1 > $3) $$ = 1;
-                           //else $$ = 0;}
-      | expr LESS expr //{if ($1 < $3) $$ = 1;
-                         //else $$ = 0;}
-      | expr GREATER_EQUAL expr //{if ($1 >= $3) $$ = 1;
-                                 //else $$ = 0;}
-      | expr LESS_EQUAL expr //{if ($1 <= $3) $$ = 1;
-                              //else $$ = 0;}
-      | expr AND expr //{if ($1 && $3) $$ = 1;
-                       //else $$ = 0;}
-      | expr OR expr //{if ($1 || $3) $$ = 1;
-                      //else $$ = 0;}
+      | expr PLUS expr {/*$$ = $1 + $3;*/}
+      | expr MINUS expr {/*$$ = $1 - $3;*/}
+      | expr MUL expr {/*$$ = $1 * $3;*/}
+      | expr DIV expr {/*$$ = $1 / $3;*/}
+      | expr MOD expr {/*$$ = $1 % $3;*/}
+      | expr EQUAL expr {/*if ($1 == $3) $$ = 1; else $$ = 0;*/}
+      | expr NOT_EQUAL expr {/*if ($1 != $3) $$ = 1; else $$ = 0;*/}
+      | expr GREATER expr {/*if ($1 > $3) $$ = 1; else $$ = 0;*/}
+      | expr LESS expr {/*if ($1 < $3) $$ = 1; else $$ = 0;*/}
+      | expr GREATER_EQUAL expr {/*if ($1 >= $3) $$ = 1; else $$ = 0;*/}
+      | expr LESS_EQUAL expr {/*if ($1 <= $3) $$ = 1; else $$ = 0;*/}
+      | expr AND expr {/*if ($1 && $3) $$ = 1; else $$ = 0;*/}
+      | expr OR expr {/*if ($1 || $3) $$ = 1; else $$ = 0;*/}
       | term
       ;
 
 term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
-	    | UMINUS expr //{$$ = $2 * (-1);}
-	    | NOT expr //{if ($2) $$=0;
-                    //else $$=1;}
+	    | UMINUS expr {/*$$ = $2 * (-1);*/}
+	    | NOT expr {/*if ($2) $$=0; else $$=1;*/}
 		| PLUS_PLUS lvalue {
                              string name=$2;
                              SymbolTableEntry ste= lookupactivevar(name,scope);
@@ -290,12 +281,12 @@ funcdef: FUNCTION ID {
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
 funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 
-const:	INTEGER //{$$=$1;}
-		| REAL //{$$=$1;}
-		| STRING //{$$=$1;}
-		| NIL //{$$=$1;}
-		| TRUE //{$$=$1;}
-		| FALSE //{$$=$1;}
+const:	INTEGER {/*$$=$1;*/}
+		| REAL {/*$$=$1;*/}
+		| STRING {/*$$=$1;*/}
+		| NIL {/*$$=$1;*/}
+		| TRUE {/*$$=$1;*/}
+		| FALSE {/*$$=$1;*/}
 		;
 
 idlist: ID{
