@@ -104,7 +104,7 @@ expr: assignexpr
       | term
       ;
 
-term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
+term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {hide(scope);--scope;}
 	    | UMINUS expr //{$$ = $2 * (-1);}
 	    | NOT expr //{if ($2) $$=0;
                     //else $$=1;}
@@ -148,22 +148,49 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
                                 //else $$ = $2--;
                              }
                            }
-		| primary
+		| primary //{$$=$1;}
 		;
 
-assignexpr: lvalue{		
-                        string name=$1;
-                        if(is_sysfunc(name)){
-							cout << "Error: "<< name <<" is a system function\n";
+assignexpr: lvalue ASSIGN expr{		
+                                string name = $1;
+                                if(lookupactivefunc(name).isActive==true)
+                                        cout <<"Error: " <<name << "is defined as function \n";           
                             }
-					} ASSIGN expr
             ;
 	
-primary: lvalue
-        | call
-        | objectdef
-		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS
-		| const
+primary: lvalue{
+                    string name = $1;
+                    SymbolTableEntry ent = lookupactivevar(name)
+                    if(ent.isActive == false || ent.type == GLOBAL){
+                        ent.isActive = true;
+                        if(scope == 0)
+                            ent.type = GLOBAL;
+                        else
+                            ent.type = LOCAL;
+                        ent.varVal.name = name;
+                        ent.varVal.scope = scope;
+                        ent.varVal.line = yylineno;
+                        insert(ent);
+                    }   
+                 }//{$$=$1;}
+        | call //{$$=$1;}
+        | objectdef //{$$=$1;}
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{
+                    string name = $2;
+                    SymbolTableEntry ent = lookupactivevar(name)
+                    if(ent.isActive == false || ent.type == GLOBAL){
+                        ent.isActive = true;
+                        if(scope == 0)
+                            ent.type = GLOBAL;
+                        else
+                            ent.type = LOCAL;
+                        ent.varVal.name = name;
+                        ent.varVal.scope = scope;
+                        ent.varVal.line = yylineno;
+                        insert(ent);
+                    }   
+        }//{$$=$2;}
+		| const //{$$=$1;}
         ;
 
 lvalue: ID {
@@ -218,12 +245,12 @@ call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
 		;
 
-callsuffix:	normcall
-			| methodcall
+callsuffix:	normcall//{$$=$1}
+			| methodcall//{$$=$1}
 			;
 
 
-normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
+normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS//{$$=$2}
           ;
         
 methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
@@ -246,7 +273,7 @@ indexed: indexedelem
 indexedelem: LEFT_BRACE { flag_insert=0; } expr COLON { flag_insert=1; } expr RIGHT_BRACE
              ;
 
-block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--);}
+block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--);--scope;}
        ;
 
 stmtlist: stmt stmtlist
@@ -315,7 +342,7 @@ idlist: ID{
             string name = $3; 
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
             if(ste.isActive){ cout << "Error: " << name << " is declared in this scope already.\n";
-            }else if(is_sysfunc()){ cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
+            }else if(is_sysfunc(name)){ cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
             }else {
                   ste.type=FORMAL;
                   ste.varVal.name=name;
@@ -330,18 +357,74 @@ idlist: ID{
         |
        ;
 
-ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt
-		| IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt ELSE stmt
+ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
+                    string name = $3;
+                    SymbolTableEntry ent = lookupactivevar(name)
+                    if(ent.isActive == false || ent.type == GLOBAL){
+                        ent.isActive = true;
+                        if(scope == 0)
+                            ent.type = GLOBAL;
+                        else
+                            ent.type = LOCAL;
+                        ent.varVal.name = name;
+                        ent.varVal.scope = scope;
+                        ent.varVal.line = yylineno;
+                        insert(ent);
+                    }   
+         } stmt //{$$=$5;}
+		| IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
+                    string name = $3;
+                    SymbolTableEntry ent = lookupactivevar(name)
+                    if(ent.isActive == false || ent.type == GLOBAL){
+                        ent.isActive = true;
+                        if(scope == 0)
+                            ent.type = GLOBAL;
+                        else
+                            ent.type = LOCAL;
+                        ent.varVal.name = name;
+                        ent.varVal.scope = scope;
+                        ent.varVal.line = yylineno;
+                        insert(ent);
+                    }   
+         } stmt ELSE stmt //{$$=$7}
 	    ;	 
 
-whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt
+whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
+                    string name = $3;
+                    SymbolTableEntry ent = lookupactivevar(name)
+                    if(ent.isActive == false || ent.type == GLOBAL){
+                        ent.isActive = true;
+                        if(scope == 0)
+                            ent.type = GLOBAL;
+                        else
+                            ent.type = LOCAL;
+                        ent.varVal.name = name;
+                        ent.varVal.scope = scope;
+                        ent.varVal.line = yylineno;
+                        insert(ent);
+                    }   
+         } stmt
 		 ;  	
 
 	
 forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS stmt
 		;	
 
-returnstmt: RETURN expr SEMICOLON
+returnstmt: RETURN expr SEMICOLON{
+                    string name = $2;
+                    SymbolTableEntry ent = lookupactivevar(name)
+                    if(ent.isActive == false || ent.type == GLOBAL){
+                        ent.isActive = true;
+                        if(scope == 0)
+                            ent.type = GLOBAL;
+                        else
+                            ent.type = LOCAL;
+                        ent.varVal.name = name;
+                        ent.varVal.scope = scope;
+                        ent.varVal.line = yylineno;
+                        insert(ent);
+                    }   
+         }
 			| RETURN SEMICOLON;
 
 
