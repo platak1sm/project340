@@ -238,7 +238,7 @@ multilinescomment    "\/\*"
 
 "!="        {
              inserttoken("OPERATOR",operator2str(yytext), "enumerated");
-             return NOT_EQUAL
+             return NOT_EQUAL;
             }
 
 "++"        {
