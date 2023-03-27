@@ -38,7 +38,7 @@
 
 %union {
 	int intval;
-    char* strval;
+    char *strval;
 	double doubleval;
     SymbolTableEntry node;
 }
