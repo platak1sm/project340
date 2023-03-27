@@ -106,7 +106,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
                                 if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
-                                //else $$ = ++$2;
+                                /* else $$ = ++$2; */
                              }
                            }
 		| lvalue PLUS_PLUS {
@@ -116,7 +116,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
                                 if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable "<<name<<" is not accessible in this scope.\n"; 
-                                //else $$ = $2++;
+                                /* else $$ = $2++; */
                              }
                            }
 		| MINUS_MINUS lvalue {
@@ -126,7 +126,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
                                 if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
-                                //else $$ = --$2;
+                                /* else $$ = --$2; */
                              }
                            }
 		| lvalue MINUS_MINUS {
@@ -136,7 +136,7 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
                              else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
                              else{ 
                                 if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n";
-                                //else $$ = $2--;
+                                /* else $$ = $2--; */
                              }
                            }
 		| primary
