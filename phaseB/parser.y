@@ -151,12 +151,14 @@ term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
 		| primary
 		;
 
-assignexpr: lvalue{		
+assignexpr: lvalue  {		
                         string name=$1;
-                        if(name != NULL && is_sysfunc(name) ){
-							cout << "Error: "<< name <<" is a system function\n";
-                            }
-					} ASSIGN expr
+                        SymbolTableEntry ste= lookupactivevar(name);
+                        if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for assignment.\n";
+                        else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
+                        else if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
+                    } ASSIGN expr
+                    
             ;
 	
 primary: lvalue
