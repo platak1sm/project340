@@ -260,8 +260,7 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET
            ;
 
 indexed: indexedelem
-       | indexed COMMA indexedelem
-       |
+       | indexed COMMA indexedelem      
        ;
 
 indexedelem: LEFT_BRACE { /* flag_insert=0; */ } expr COLON { /* flag_insert=1; */ } expr RIGHT_BRACE
