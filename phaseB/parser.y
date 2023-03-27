@@ -76,8 +76,8 @@ stmt: expr SEMICOLON
       | {inloop++;}whilestmt{inloop--;}
       | {inloop++;}forstmt{inloop--;}
       | returnstmt
-      | BREAK SEMICOLON{if(inloop==0) cout << "Error: Cannot use BREAK when not in loop, in line " << yylineno << endl;}
-      | CONTINUE SEMICOLON{if(inloop==0) cout << "Error: Cannot use CONTINUE when not in loop, in line " << yylineno << endl;}
+      | BREAK SEMICOLON{if(inloop==0) cout << "Error: Cannot use BREAK when not in loop -> line " << yylineno << endl;}
+      | CONTINUE SEMICOLON{if(inloop==0) cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;}
       | block
       | funcdef
       | SEMICOLON
