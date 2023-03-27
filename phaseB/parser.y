@@ -151,7 +151,8 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */}
 
 assignexpr: lvalue ASSIGN expr{		
                                 string name = $1;
-                                if(lookupactivefunc(name).isActive==true)
+                                
+                                if(is_sysfunc(name) || lookupactivefunc(name).isActive==true)
                                         cout <<"Error: " <<name << "is defined as function \n";           
                             }
             ;
