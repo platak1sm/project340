@@ -399,7 +399,21 @@ whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
 		 ;  	
 
 	
-forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS stmt
+forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS{
+                        string name = $3;
+                        SymbolTableEntry ent = lookupactivevar(name)
+                        if(ent.isActive == false || ent.type == GLOBAL){
+                            ent.isActive = true;
+                            if(scope == 0)
+                                ent.type = GLOBAL;
+                            else
+                                ent.type = LOCAL;
+                            ent.varVal.name = name;
+                            ent.varVal.scope = scope;
+                            ent.varVal.line = yylineno;
+                            insert(ent);
+                        } 
+                    }stmt
 		;	
 
 returnstmt: RETURN expr SEMICOLON{
