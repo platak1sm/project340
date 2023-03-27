@@ -104,7 +104,7 @@ expr: assignexpr
       | term
       ;
 
-term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS 
+term:   LEFT_PARENTHESIS{scope++;} expr RIGHT_PARENTHESIS {--scope;}
 	    | UMINUS expr //{$$ = $2 * (-1);}
 	    | NOT expr //{if ($2) $$=0;
                     //else $$=1;}
@@ -151,7 +151,12 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 		| primary
 		;
 
-assignexpr: lvalue ASSIGN expr
+assignexpr: lvalue{		
+                        string name=$1;
+                        if(name != NULL && is_sysfunc(name) ){
+							cout << "Error: "<< name <<" is a system function\n";
+                            }
+					} ASSIGN expr
             ;
 	
 primary: lvalue
@@ -285,12 +290,12 @@ funcdef: FUNCTION ID {
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
 funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 
-const:	INTEGER
-		| REAL
-		| STRING
-		| NIL 
-		| TRUE 
-		| FALSE 
+const:	INTEGER{$$=$1;}
+		| REAL{$$=$1;}
+		| STRING{$$=$1;}
+		| NIL {$$=$1;}
+		| TRUE {$$=$1;}
+		| FALSE {$$=$1;}
 		;
 
 idlist: ID{
