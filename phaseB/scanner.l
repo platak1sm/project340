@@ -15,10 +15,10 @@ static int isatty(void *i){ return 0; }
 #include <iterator>
 #include <stdlib.h>
 #include <stdio.h>
-#include "parser.h"
+#include "parser.hpp"
 using namespace std;
 
-#define YY_DECL int alpha_yylex(void* yyval)
+#define YY_DECL int alpha_yylex(void* yylval)
 #ifdef __cplusplus
 static int yyinput(void);
 #else 
@@ -73,6 +73,7 @@ multilinescomment    "\/\*"
 %%
 {integer}   {
              inserttoken("INTEGER",strdup(yytext), "int");
+             yylval.intval=atoi(yytext);
              return INTEGER;
             }
 
@@ -89,11 +90,13 @@ multilinescomment    "\/\*"
              token.value= strdup(ss2);
              token.cpptype= "string";
              tokens.push_back(token);
+             yylval.strval=strdup(yytext);
              return STRING;
             }
 
 {real}      {
              inserttoken("REAL",strdup(yytext), "double");
+             yylval.doubleval=atof(yytext);
              return REAL;
             }
 {onelinecomment} {
@@ -238,7 +241,7 @@ multilinescomment    "\/\*"
 
 "!="        {
              inserttoken("OPERATOR",operator2str(yytext), "enumerated");
-             return NOT_EQUAL
+             return NOT_EQUAL;
             }
 
 "++"        {
@@ -334,6 +337,7 @@ multilinescomment    "\/\*"
 
 {id}        {
              inserttoken("ID", strdup(yytext), "string");
+             yylval.strval=strdup(yytext);
              return ID;
             }
 
