@@ -451,8 +451,8 @@ returnstmt: RETURN expr SEMICOLON{
                     }    */
                     if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl;
          }
-			| RETURN SEMICOLON;{if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl;}
-
+			| RETURN SEMICOLON { if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; }
+            ;
 
 %%     
 
