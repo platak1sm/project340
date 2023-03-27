@@ -204,7 +204,7 @@ lvalue: ID {
             }
             }
         | LOCAL ID {
-            string name($1);
+            string name($2);
             SymbolTableEntry ret = lookupactivevar(name)
             if(ret.isActive == false || ret.type == GLOBAL){
                 SymbolTableEntry ent;
@@ -220,7 +220,7 @@ lvalue: ID {
             }
         }
         | DOUBLE_COLON ID {
-            string name($1);
+            string name($2);
             if(lookupcurrentscope(name, 0).isActive == false){
                 cout << "error\n";
             }
