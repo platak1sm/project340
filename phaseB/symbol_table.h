@@ -39,3 +39,4 @@ SymbolTableEntry lookupactivevar(string s);
 SymbolTableEntry lookupactivefunc(string s);
 void hide(int scope);
 void insertLibFuncs(string name);
+void printsymbols();
