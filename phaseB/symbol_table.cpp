@@ -1,6 +1,8 @@
 #include <iostream>
 #include "symbol_table.h"
 
+vector<SymbolTableEntry> SymbolTable;
+
 void insert(SymbolTableEntry ste){
     SymbolTable.push_back(ste);
     return;
@@ -14,7 +16,7 @@ SymbolTableEntry lookupcurrentscope(string s, int scope) {
                     return SymbolTable[i];
             }
         }
-        else if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCAL  || SymbolTable[i].type == FORMAL) {
+        else if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
             if(SymbolTable[i].varVal.name == s) {
                 if(SymbolTable[i].varVal.scope == scope)
                     return SymbolTable[i];
@@ -31,7 +33,7 @@ SymbolTableEntry lookupcurrentscope(string s, int scope) {
 
 SymbolTableEntry lookupactivevar(string s) {
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
-        if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCAL  || SymbolTable[i].type == FORMAL) {
+        if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
             if(SymbolTable[i].varVal.name == s) {
                 if(SymbolTable[i].isActive)
                     return SymbolTable[i];
@@ -64,12 +66,12 @@ SymbolTableEntry lookupactivefunc(string s) {
 
 void hide(int scope) {
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
-        if(SymbolTable[i].type == USERFUNC || SymbolTable[i].type == LIBFUNC || SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCAL  || SymbolTable[i].type == FORMAL) {
+        if(SymbolTable[i].type == USERFUNC || SymbolTable[i].type == LIBFUNC || SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
             if(SymbolTable[i].funcVal.scope >= scope) {
                 SymbolTable[i].isActive = false;
             }
         }
-        else if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCAL  || SymbolTable[i].type == FORMAL) {
+        else if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
             if(SymbolTable[i].varVal.scope >= scope) {
                 SymbolTable[i].isActive = false;
             }

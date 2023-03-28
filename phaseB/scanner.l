@@ -1,34 +1,18 @@
 %{
-#if defined(WIN32)
-#define YY_NO_UNISTD_H
-static int isatty(int i){ return 0; }
-#elif defined(_WIN32_WcE)
-#define YY_NO_UNISTD_H
-static int isatty(void *i){ return 0; }
-#endif
-
-
 #include <iostream>
-#include <list>
 #include <vector>
 #include <string>
 #include <iterator>
-#include <stdlib.h>
 #include <stdio.h>
 #include "parser.hpp"
 using namespace std;
 
-#define YY_DECL int alpha_yylex(void* yylval)
+
 #ifdef __cplusplus
 static int yyinput(void);
 #else 
 static int input(void);
 #endif
-
-
-typedef enum kword {IF,ELSE,WHILE,FOR,FUNCTION,RETURN,BREAK,CONTINUE,AND,NOT,OR,LOCAL,TRUE,FALSE,NIL} kwords;
-typedef enum op {ASSIGN,PLUS,MINUS,MUL,DIV,MOD,EQUAL,NOT_EQUAL,PLUS_PLUS,MINUS_MINUS,GREATER,LESS,GREATER_EQUAL,LESS_EQUAL} ops; 
-typedef enum punc{LEFT_BRACE,RIGHT_BRACE,LEFT_BRACKET,RIGHT_BRACKET,LEFT_PARENTHESIS,RIGHT_PARENTHESIS,SEMICOLON,COMMA,COLON,DOUBLE_COLON,PERIOD,DOUBLE_PERIOD} puncs;
 
 typedef struct node{
     int lineno;
@@ -73,7 +57,7 @@ multilinescomment    "\/\*"
 %%
 {integer}   {
              inserttoken("INTEGER",strdup(yytext), "int");
-             yylval.intval=atoi(yytext);
+             yylval.intval = atoi(yytext);
              return INTEGER;
             }
 
@@ -496,7 +480,7 @@ void inserttoken(string type, string value, string cpptype){
     tokens.push_back(token);
 }
 
-int main(int argc, char *argv[]){
+/*int main(int argc, char *argv[]){
     if(argc == 1) {
 		yyin = stdin;
     }else if(argc > 1){
@@ -509,9 +493,10 @@ int main(int argc, char *argv[]){
 
     alpha_yylex(&it);
  
-    /* cout << tokens.size()<<"\n"; */
+     cout << tokens.size()<<"\n"; 
     for(int i = 0; i<tokens.size();i++){
         cout << tokens.at(i).lineno << ": #" << tokens.at(i).tokenno << " \"" << tokens.at(i).tokenval << "\" " << tokens.at(i).type << " " << tokens.at(i).value << " <-" << tokens.at(i).cpptype << endl;
     }
     return 0;
 }
+*/

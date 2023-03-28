@@ -2,9 +2,10 @@
     #include <iostream>
     #include <string>
     #include "symbol_table.h"
-    int yyerror (char* yaccProvidedMessage);
-    int yylex (void);
 
+    /* #define YY_DECL int alpha_yylex (void* yylval)*/
+    extern int yylex(void);
+    int yyerror (char* yaccProvidedMessage);
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
@@ -44,7 +45,6 @@
 	int intval;
     char *strval;
 	double doubleval;
-    
 }
 
 %token <intval> INTEGER
@@ -200,7 +200,7 @@ lvalue: ID {
                 if(scope == 0)
                     ent.type = GLOBAL;
                 else
-                    ent.type = LOCAL;
+                    ent.type = LOCALV;
                 ent.varVal.name = name;
                 ent.varVal.scope = scope;
                 ent.varVal.line = yylineno;
@@ -216,7 +216,7 @@ lvalue: ID {
                 if(scope == 0)
                     ent.type = GLOBAL;
                 else
-                    ent.type = LOCAL;
+                    ent.type = LOCALV;
                 ent.varVal.name = name;
                 ent.varVal.scope = scope;
                 ent.varVal.line = yylineno;

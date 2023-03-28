@@ -20,7 +20,7 @@ class Function {
 };
 
 enum SymbolType {
- GLOBAL, LOCAL, FORMAL,  USERFUNC, LIBFUNC
+ GLOBAL, LOCALV, FORMAL,  USERFUNC, LIBFUNC
 }; 
 
 class SymbolTableEntry { 
@@ -31,7 +31,7 @@ class SymbolTableEntry {
         enum SymbolType type;
 }; 
 
-vector<SymbolTableEntry> SymbolTable;
+extern vector<SymbolTableEntry> SymbolTable;
 
 void insert(SymbolTableEntry ste);
 SymbolTableEntry lookupcurrentscope(string s, int scope);
