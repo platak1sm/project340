@@ -500,5 +500,6 @@ int main (int argc, char** argv) {
     insertLibFuncs("cos");
     insertLibFuncs("sin");
     yyparse();
+    printsymbols();
     return 0;
 }

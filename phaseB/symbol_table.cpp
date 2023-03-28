@@ -80,14 +80,18 @@ void hide(int scope) {
 }
 
 void printsymbols(){
-    int maxscope=0;
+    unsigned int maxscope=0;
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
         if(SymbolTable[i].varVal.scope > maxscope)
             maxscope = SymbolTable[i].varVal.scope;
+        if(SymbolTable[i].funcVal.scope > maxscope)
+            maxscope=SymbolTable[i].funcVal.scope;
+        cout << i <<".MaxScope:" << maxscope <<endl;
     }
-    for (unsigned int i = 0; i < maxscope; i++){
+    cout << maxscope;
+    /*for (unsigned int i = 0; i < maxscope; i++){
         cout << "\n----------------------------- Scope   #" << i << "  -----------------------------" << endl;
-         for(unsigned int j = 0; i < SymbolTable.size(); j++){
+          for(unsigned int j = 0; i < SymbolTable.size(); j++){
             if(SymbolTable[j].varVal.scope == i){
                 if(SymbolTable[j].type==LIBFUNC) {
                     cout << "[library function]\t";
@@ -117,5 +121,5 @@ void printsymbols(){
             }
            
          }
-    }
+    } */
 }
