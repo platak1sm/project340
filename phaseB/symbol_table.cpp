@@ -79,3 +79,43 @@ void hide(int scope) {
     }
 }
 
+void printsymbols(){
+    int maxscope=0;
+    for(unsigned int i = 0; i < SymbolTable.size(); i++) {
+        if(SymbolTable[i].varVal.scope > maxscope)
+            maxscope = SymbolTable[i].varVal.scope;
+    }
+    for (unsigned int i = 0; i < maxscope; i++){
+        cout << "\n----------------------------- Scope   #" << i << "  -----------------------------" << endl;
+         for(unsigned int j = 0; i < SymbolTable.size(); j++){
+            if(SymbolTable[j].varVal.scope == i){
+                if(SymbolTable[j].type==LIBFUNC) {
+                    cout << "[library function]\t";
+                    cout << "(line " << SymbolTable[j].funcVal.line << ")\t" ;
+                    cout << "(scope " << SymbolTable[j].funcVal.scope << ")\t"<< endl ;
+                }
+                else if(SymbolTable[j].type==USERFUNC){
+                    cout << "[user function]\t";
+                    cout << "(line " << SymbolTable[j].funcVal.line << ")\t" ;
+                    cout << "(scope " << SymbolTable[j].funcVal.scope << ")\t"<< endl ;
+                }
+                else if(SymbolTable[j].type==GLOBAL){
+                    cout << "[global variable]\t";
+                    cout << "(line " << SymbolTable[j].varVal.line << ")\t" ;
+                    cout << "(line " << SymbolTable[j].varVal.scope << ")\t" ;
+                }
+                else if(SymbolTable[j].type==LOCALV){
+                    cout << "[local variable]\t";
+                    cout << "(line " << SymbolTable[j].varVal.line << ")\t" ;
+                    cout << "(line " << SymbolTable[j].varVal.scope << ")\t" ;
+                }
+                else {
+                    cout << "[formal argument]\t";
+                    cout << "(line " << SymbolTable[j].varVal.line << ")\t" ;
+                    cout << "(line " << SymbolTable[j].varVal.scope << ")\t" ;
+                }
+            }
+           
+         }
+    }
+}
