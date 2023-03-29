@@ -157,39 +157,11 @@ assignexpr: lvalue ASSIGN expr{
                             }
             ;
 	
-primary: lvalue{/* 
-                    string name = $1;
-                    SymbolTableEntry ent = lookupactivevar(name)
-                    if(ent.isActive == false || ent.type == GLOBAL){
-                        ent.isActive = true;
-                        if(scope == 0)
-                            ent.type = GLOBAL;
-                        else
-                            ent.type = LOCAL;
-                        ent.varVal.name = name;
-                        ent.varVal.scope = scope;
-                        ent.varVal.line = yylineno;
-                        insert(ent);
-                    }   */ 
-                 }
-        | call {/* $$=$1; */}
-        | objectdef {/* $$=$1; */}
-		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{
-                    /* string name = $2;
-                    SymbolTableEntry ent = lookupactivevar(name)
-                    if(ent.isActive == false || ent.type == GLOBAL){
-                        ent.isActive = true;
-                        if(scope == 0)
-                            ent.type = GLOBAL;
-                        else
-                            ent.type = LOCAL;
-                        ent.varVal.name = name;
-                        ent.varVal.scope = scope;
-                        ent.varVal.line = yylineno;
-                        insert(ent);
-                    }    */
-        }
-		| const {/* $$=$1; */}
+primary: lvalue
+        | call 
+        | objectdef 
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS
+		| const
         ;
 
 lvalue: ID {
@@ -284,6 +256,7 @@ funcdef: FUNCTION ID {
             }else if(is_sysfunc(name)){ cout << "Error: "<< name <<" is a system function, it cannot be overriden.\n";
             }else {
                   ste.type=USERFUNC;
+                  ste.isActive=TRUE;
                   ste.funcVal.name=name;
                   ste.funcVal.scope=scope;
                   ste.funcVal.line=yylineno;
@@ -300,6 +273,7 @@ funcdef: FUNCTION ID {
                     name= "$f" + fid;
                     ste= lookupcurrentscope(name,scope);
                 }else {
+                    ste.isActive=TRUE;
                     ste.type=USERFUNC;
                     ste.funcVal.name=name;
                     ste.funcVal.scope=scope;
@@ -342,6 +316,7 @@ idlist: ID{
             }else if(is_sysfunc(name)){ cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
             }else {
                   ste.type=FORMAL;
+                  ste.isActive=TRUE;
                   ste.varVal.name=name;
                   ste.varVal.scope=scope;
                   ste.varVal.line=yylineno;
@@ -354,103 +329,17 @@ idlist: ID{
         |
        ;
 
-ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
-                    /* string name = $3;
-                    SymbolTableEntry ent = lookupactivevar(name);
-                    if(ste.isActive)
-                        cout << "Error: " << name << " is declared in this scope already.\n";
-                     else if(is_sysfunc(name)) 
-                        cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
-                    if(ent.isActive == false || ent.type == GLOBAL){
-                        ent.isActive = true;
-                        if(scope == 0)
-                            ent.type = GLOBAL;
-                        else
-                            ent.type = LOCAL;
-                        ent.varVal.name = name;
-                        ent.varVal.scope = scope;
-                        ent.varVal.line = yylineno;
-                        insert(ent);
-                    }    */
-         } stmt 
-		| IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
-                   /*  string name = $3;
-                    SymbolTableEntry ent = lookupactivevar(name)
-                    if(ent.isActive == false || ent.type == GLOBAL){
-                        ent.isActive = true;
-                        if(scope == 0)
-                            ent.type = GLOBAL;
-                        else
-                            ent.type = LOCAL;
-                        ent.varVal.name = name;
-                        ent.varVal.scope = scope;
-                        ent.varVal.line = yylineno;
-                        insert(ent);
-                    }  */  
-         } stmt ELSE stmt 
+ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt 
+		| IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt ELSE stmt 
 	    ;	 
 
-whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
-                    /* string name = $3;
-                    SymbolTableEntry ent = lookupactivevar(name);
-                    if(ste.isActive)
-                        cout << "Error: " << name << " is declared in this scope already.\n";
-                     else if(is_sysfunc(name)) 
-                        cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
-                    if(ent.isActive == false || ent.type == GLOBAL){
-                        ent.isActive = true;
-                        if(scope == 0)
-                            ent.type = GLOBAL;
-                        else
-                            ent.type = LOCAL;
-                        ent.varVal.name = name;
-                        ent.varVal.scope = scope;
-                        ent.varVal.line = yylineno;
-                        insert(ent);
-                    }    */
-         } stmt
+whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt
 		 ;  	
 	
-forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS{
-                        /* string name = $3;
-                        SymbolTableEntry ent = lookupactivevar(name);
-                        if(ste.isActive)
-                            cout << "Error: " << name << " is declared in this scope already.\n";
-                        else if(is_sysfunc(name)) 
-                            cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
-                        if(ent.isActive == false || ent.type == GLOBAL){
-                            ent.isActive = true;
-                            if(scope == 0)
-                                ent.type = GLOBAL;
-                            else
-                                ent.type = LOCAL;
-                            ent.varVal.name = name;
-                            ent.varVal.scope = scope;
-                            ent.varVal.line = yylineno;
-                            insert(ent);
-                        }  */
-                    }stmt
+forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS stmt
 		;	
 
 returnstmt: RETURN expr SEMICOLON{
-                    /* string name = $2;
-                    SymbolTableEntry ent = lookupactivevar(name);
-                    if(ste.isActive)
-                        cout << "Error: " << name << " is declared in this scope already.\n";
-                     else if(is_sysfunc(name)) 
-                        cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
-                    if(ent.isActive == false || ent.type == GLOBAL){
-                        ent.isActive = true;
-                        if(scope == 0)
-                            ent.type = GLOBAL;
-                        else
-                            ent.type = LOCAL;
-                        ent.varVal.name = name;
-                        ent.varVal.scope = scope;
-                        ent.varVal.line = yylineno;
-                        insert(ent);
-                        //$$=$2;
-                    }    */
                     if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl;
          }
 			| RETURN SEMICOLON { if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; }
