@@ -97,19 +97,16 @@ void printsymbols(){
             name = SymbolTable[i].varVal.name;
             scope=SymbolTable[i].varVal.scope;
             cout << " \""<< name << "\"\t" << "[global variable]\t"<< "(line "<< SymbolTable[i].varVal.line<< ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
-
         }
         else if(SymbolTable[i].type == LOCALV){
             name = SymbolTable[i].varVal.name;
             scope=SymbolTable[i].varVal.scope;
             cout << " \""<< name << "\"\t" << "[local variable]\t"<< "(line "<< SymbolTable[i].varVal.line << ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
-
         }
         else if(SymbolTable[i].type == FORMAL){
             name = SymbolTable[i].varVal.name;
             scope=SymbolTable[i].varVal.scope;
             cout << " \""<< name << "\"\t" << "[formal argument]\t"<< "(line "<< SymbolTable[i].varVal.line << ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
-
         }         
     }
     
