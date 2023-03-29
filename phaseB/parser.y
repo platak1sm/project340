@@ -71,7 +71,7 @@
 
 %%
 program: stmt program {cout << "program stmt\n";}
-         | {cout << "program empy\n";}
+         | {cout << "program empty\n";}
          ;
  
 stmt: expr SEMICOLON {cout << "stmt => expr\n";}
