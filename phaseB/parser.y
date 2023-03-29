@@ -42,19 +42,19 @@
 %start program
 
 %union {
-	int intval;
-    char *strval;
-	double doubleval;
+	int intVal;
+    char *stringVal;
+	double doubleVal;
 }
 
-%token <intval> INTEGER
-%token <doubleval> REAL
-%token <strval> ID STRING 
+%token <intVal> INTEGER
+%token <doubleVal> REAL
+%token <stringVal> ID STRING 
 %token IF ELSE WHILE FOR FUNCTION RETURN BREAK CONTINUE AND NOT OR LOCAL TRUE FALSE NIL
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <strval> lvalue
+%type <stringVal> lvalue
 
 %right ASSIGN
 %left OR
@@ -70,42 +70,42 @@
 
 
 %%
-program: stmt program
-         |
+program: stmt program {cout << "program stmt\n";}
+         | {cout << "program empy\n";}
          ;
  
-stmt: expr SEMICOLON
-      | ifstmt
-      | {inloop++;}whilestmt{inloop--;}
-      | {inloop++;}forstmt{inloop--;}
-      | returnstmt
-      | BREAK SEMICOLON{if(inloop==0) cout << "Error: Cannot use BREAK when not in loop -> line " << yylineno << endl;}
-      | CONTINUE SEMICOLON{if(inloop==0) cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;}
-      | block
-      | funcdef
-      | SEMICOLON
+stmt: expr SEMICOLON {cout << "stmt => expr\n";}
+      | ifstmt {cout << "stmt => ifstm\n";}
+      | {inloop++;}whilestmt{cout << "stmt => whilestmt\n";inloop--;}
+      | {inloop++;}forstmt{inloop--; cout << "stmt => forstmt\n";}
+      | returnstmt {cout << "stmt => returnstmt\n";}
+      | BREAK SEMICOLON{if(inloop==0) cout << "Error: Cannot use BREAK when not in loop -> line " << yylineno << endl; cout << "stmt => break;\n";}
+      | CONTINUE SEMICOLON{if(inloop==0) cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;cout << "stmt => continue;\n";}
+      | block {cout << "stmt => block\n";}
+      | funcdef {cout << "stmt => funcdef\n";}
+      | SEMICOLON {cout << "stmt => ;\n";}
       ;
 
-expr: assignexpr
-      | expr PLUS expr {/*$$ = $1 + $3;*/}
-      | expr MINUS expr {/*$$ = $1 - $3;*/}
-      | expr MUL expr {/*$$ = $1 * $3;*/}
-      | expr DIV expr {/*$$ = $1 / $3;*/}
-      | expr MOD expr {/*$$ = $1 % $3;*/}
-      | expr EQUAL expr {/*if ($1 == $3) $$ = 1; else $$ = 0;*/}
-      | expr NOT_EQUAL expr {/*if ($1 != $3) $$ = 1; else $$ = 0;*/}
-      | expr GREATER expr {/*if ($1 > $3) $$ = 1; else $$ = 0;*/}
-      | expr LESS expr {/*if ($1 < $3) $$ = 1; else $$ = 0;*/}
-      | expr GREATER_EQUAL expr {/*if ($1 >= $3) $$ = 1; else $$ = 0;*/}
-      | expr LESS_EQUAL expr {/*if ($1 <= $3) $$ = 1; else $$ = 0;*/}
-      | expr AND expr {/*if ($1 && $3) $$ = 1; else $$ = 0;*/}
-      | expr OR expr {/*if ($1 || $3) $$ = 1; else $$ = 0;*/}
-      | term
+expr: assignexpr {cout << "expr => assignexpr\n";}
+      | expr PLUS expr {/*$$ = $1 + $3;*/cout << "expr => expr+expr\n";}
+      | expr MINUS expr {/*$$ = $1 - $3;*/cout << "expr => expr-expr\n";}
+      | expr MUL expr {/*$$ = $1 * $3;*/cout << "expr => expr*expr\n";}
+      | expr DIV expr {/*$$ = $1 / $3;*/cout << "expr => expr div expr\n";}
+      | expr MOD expr {/*$$ = $1 % $3;*/cout << "expr => expr mod expr\n";}
+      | expr EQUAL expr {/*if ($1 == $3) $$ = 1; else $$ = 0;*/cout << "expr => expr == expr\n";}
+      | expr NOT_EQUAL expr {/*if ($1 != $3) $$ = 1; else $$ = 0;*/cout << "expr => expr!=expr\n";}
+      | expr GREATER expr {/*if ($1 > $3) $$ = 1; else $$ = 0;*/cout << "expr => expr > expr\n";}
+      | expr LESS expr {/*if ($1 < $3) $$ = 1; else $$ = 0;*/cout << "expr => expr < expr\n";}
+      | expr GREATER_EQUAL expr {/*if ($1 >= $3) $$ = 1; else $$ = 0;*/cout << "expr => expr >= expr\n";}
+      | expr LESS_EQUAL expr {/*if ($1 <= $3) $$ = 1; else $$ = 0;*/cout << "expr => expr <= expr\n";}
+      | expr AND expr {/*if ($1 && $3) $$ = 1; else $$ = 0;*/cout << "expr => expr && expr\n";}
+      | expr OR expr {/*if ($1 || $3) $$ = 1; else $$ = 0;*/cout << "expr => expr || expr\n";}
+      | term {cout << "expr => term\n";}
       ;
 
-term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */}
-	    | UMINUS expr {/* $$ = $2 * (-1); */}
-	    | NOT expr {/* if ($2) $$=0; else $$=1; */}
+term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */cout << "term => (expr)\n";}
+	    | UMINUS expr {/* $$ = $2 * (-1); */cout << "term => -expr\n";}
+	    | NOT expr {/* if ($2) $$=0; else $$=1; */cout << "term => !expr\n";}
 		| PLUS_PLUS lvalue {
                              string name=$2;
                              SymbolTableEntry ste= lookupactivevar(name);
@@ -115,6 +115,7 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */}
                                 if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
                                 /* else $$ = ++$2; */
                              }
+                             cout << "term => ++lvalue\n";
                            }
 		| lvalue PLUS_PLUS {
                              string name=$1;
@@ -125,6 +126,7 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */}
                                 if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
                                 /* else $$ = $2++; */
                              }
+                             cout << "term => lvalue++\n";
                            }
 		| MINUS_MINUS lvalue {
                              string name=$2;
@@ -135,6 +137,7 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */}
                                 if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
                                 /* else $$ = --$2; */
                              }
+                             cout << "term => --lvalue\n";
                            }
 		| lvalue MINUS_MINUS {
                              string name=$1;
@@ -145,23 +148,25 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */}
                                 if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n";
                                 /* else $$ = $2--; */
                              }
+                             cout << "term => lvalue--\n";
                            }
-		| primary {/*$$=$1;*/}
+		| primary {/*$$=$1;*/cout << "term => primary\n";}
 		;
 
 assignexpr: lvalue ASSIGN expr{		
                                 string name = $1;
                                 
                                 if(is_sysfunc(name) || lookupactivefunc(name).isActive==true)
-                                        cout <<"Error: " <<name << "is defined as function \n";           
+                                        cout <<"Error: " <<name << "is defined as function \n";     
+                                cout << "assignexpr => lvalue=expr\n";      
                             }
             ;
 	
-primary: lvalue
-        | call 
-        | objectdef 
-		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS
-		| const
+primary: lvalue{cout << "primary => lvalue\n";}
+        | call {cout << "primary => call\n";}
+        | objectdef {cout << "primary => objectdef\n";}
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{cout << "primary => (funcdef)\n";}
+		| const{cout << "primary => const\n";}
         ;
 
 lvalue: ID {
@@ -178,6 +183,7 @@ lvalue: ID {
                 ent.varVal.line = yylineno;
                 insert(ent);
             }
+            cout << "lvalue => id:" << yylval.stringVal<<endl;
             }
         | LOCAL ID {
             string name($2);
@@ -194,58 +200,60 @@ lvalue: ID {
                 ent.varVal.line = yylineno;
                 insert(ent);
             }
+            cout << "lvalue => local id:" << yylval.stringVal<<", "<<scope<<endl;
         }
         | DOUBLE_COLON ID {
             string name($2);
             if(lookupcurrentscope(name, 0).isActive == false){
                 cout << "error\n";
             }
+            cout << "lvalue => ::id:" << yylval.stringVal<<endl;
         }
-        | member{}
+        | member{cout << "lvalue => member" <<endl;}
         ;
 
-member: lvalue PERIOD ID
-		| lvalue LEFT_BRACKET expr RIGHT_BRACKET
-		| call PERIOD ID 
-		| call LEFT_BRACKET expr RIGHT_BRACKET 
+member: lvalue PERIOD ID {cout << "member => lvalue.id\n";}
+		| lvalue LEFT_BRACKET expr RIGHT_BRACKET {cout << "member => lvalue[expr]\n";}
+		| call PERIOD ID {cout << "member => call.id\n";}
+		| call LEFT_BRACKET expr RIGHT_BRACKET {cout << "member => call[expr]\n";}
 		;
 
-call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS 
-		| lvalue callsuffix 
-		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
+call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {cout << "call => (elist)\n";}
+		| lvalue callsuffix  {cout << "call => lvalue callsuffix\n";}
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "call => (funcdef)(elist)\n";}
 		;
 
-callsuffix:	normcall
-			| methodcall
+callsuffix:	normcall {cout << "callsuffix => normcall\n";}
+			| methodcall {cout << "callsuffix => methodcall\n";}
 			;
 
 
-normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
+normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "normcall => (elist)\n";}
           ;
         
-methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
+methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "methodcall => ..id(elist)\n";}
             ;
 
-elist: expr
-       | elist COMMA expr
-       |
+elist: expr  {cout << "elist => expr\n";}
+       | elist COMMA expr {cout << "elist => elist,expr\n";}
+       | {cout << "elist => empty\n";}
        ;
 
-objectdef: LEFT_BRACKET elist RIGHT_BRACKET
-           | LEFT_BRACKET indexed RIGHT_BRACKET
+objectdef: LEFT_BRACKET elist RIGHT_BRACKET {cout << "objectdef => [elist]\n";}
+           | LEFT_BRACKET indexed RIGHT_BRACKET  {cout << "objectdef => [indexed]\n";}
            ;
 
-indexed: indexedelem
-       | indexed COMMA indexedelem      
+indexed: indexedelem  {cout << "indexed => indexedelem\n";}
+       | indexed COMMA indexedelem       {cout << "indexed => indexed, indexelem\n";}
        ;
 
-indexedelem: LEFT_BRACE { /* flag_insert=0; */ } expr COLON { /* flag_insert=1; */ } expr RIGHT_BRACE
+indexedelem: LEFT_BRACE { /* flag_insert=0; */ } expr COLON { /* flag_insert=1; */ } expr RIGHT_BRACE  {cout << "indexedelem => {expr:expr}\n";}
              ;
 
-block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--);}
+block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--); cout << "block => {stmtlist}\n";}
        ;
 
-stmtlist: stmt stmtlist
+stmtlist: stmt stmtlist  {cout << "stmtlist => stmt stmtlist\n";}
           |
           ;
 
@@ -262,7 +270,8 @@ funcdef: FUNCTION ID {
                   ste.funcVal.line=yylineno;
                   insert(ste);
             }
-         } funLEFT_PAR idlist funRIGHT_PAR {infunction++;}block{infunction--;}
+            
+         } funLEFT_PAR idlist funRIGHT_PAR {infunction++;}block{infunction--;cout <<"funcdef => function id(idlist)block\n";}
          | FUNCTION {
             string fid=to_string(funcid++);
             string name= "$f" + fid;
@@ -282,18 +291,18 @@ funcdef: FUNCTION ID {
                     break;
                 }
             }
-         } funLEFT_PAR idlist funRIGHT_PAR {infunction++;}block{infunction--;}
+         } funLEFT_PAR idlist funRIGHT_PAR {infunction++;}block{infunction--;cout <<"funcdef => function(idlist)block\n";}
          ;
 
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
 funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 
-const:	INTEGER {/*$$=$1;*/}
-		| REAL {/*$$=$1;*/}
-		| STRING {/*$$=$1;*/}
-		| NIL {/*$$=$1;*/}
-		| TRUE {/*$$=$1;*/}
-		| FALSE {/*$$=$1;*/}
+const:	INTEGER {/*$$=$1;*/cout <<"const => integer:"<<yylval.intVal<<endl;}
+		| REAL {/*$$=$1;*/cout <<"const => real:"<<yylval.doubleVal<<endl;}
+		| STRING {/*$$=$1;*/cout <<"const => string"<<yylval.stringVal<<endl;}
+		| NIL {/*$$=$1;*/cout <<"const => nil"<<endl;}
+		| TRUE {/*$$=$1;*/cout <<"const => true"<<endl;}
+		| FALSE {/*$$=$1;*/cout <<"const => false"<<endl;}
 		;
 
 idlist: ID{
@@ -308,6 +317,7 @@ idlist: ID{
                   ste.varVal.line=yylineno;
                   insert(ste);
             }
+            cout <<"idlist => id"<<endl;
           }
         | idlist COMMA ID{
             string name = $3; 
@@ -325,24 +335,27 @@ idlist: ID{
                   ste.funcVal.line=yylineno;
                   insert(ste);
             }
+            cout <<"idlist => idlist, id"<<endl;
          }
         |
        ;
 
-ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt 
-		| IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt ELSE stmt 
+ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt {cout <<"ifstmt => if(expr) stmt"<<endl;}
+		| IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt ELSE stmt {cout <<"ifstmt => if(expr) stmt else stmt"<<endl;}
 	    ;	 
 
-whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt
+whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt {cout <<"whilestmt => while(expr) stmt"<<endl;}
 		 ;  	
 	
-forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS stmt
+forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS stmt {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;}
 		;	
 
 returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl;
+                    cout <<"returnstmt => return expr;"<<endl;
          }
-			| RETURN SEMICOLON { if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; }
+			| RETURN SEMICOLON { if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; 
+                                cout <<"returnstmt => return;"<<endl;}
             ;
 
 %%     

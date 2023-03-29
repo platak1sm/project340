@@ -57,7 +57,7 @@ multilinescomment    "\/\*"
 %%
 {integer}   {
              inserttoken("INTEGER",strdup(yytext), "int");
-             yylval.intval = atoi(yytext);
+             yylval.intVal = atoi(yytext);
              return INTEGER;
             }
 
@@ -74,13 +74,13 @@ multilinescomment    "\/\*"
              token.value= strdup(ss2);
              token.cpptype= "string";
              tokens.push_back(token);
-             yylval.strval=strdup(yytext);
+             yylval.stringVal=strdup(yytext);
              return STRING;
             }
 
 {real}      {
              inserttoken("REAL",strdup(yytext), "double");
-             yylval.doubleval=atof(yytext);
+             yylval.doubleVal=atof(yytext);
              return REAL;
             }
 {onelinecomment} {
@@ -321,7 +321,7 @@ multilinescomment    "\/\*"
 
 {id}        {
              inserttoken("ID", strdup(yytext), "string");
-             yylval.strval=strdup(yytext);
+             yylval.stringVal=strdup(yytext);
              return ID;
             }
 
