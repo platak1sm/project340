@@ -289,7 +289,7 @@ funcdef: FUNCTION ID {
                   ste.funcVal.line=yylineno;
                   insert(ste);
             }
-         } funLEFT_PAR idlist funRIGHT_PAR block
+         } funLEFT_PAR idlist funRIGHT_PAR {infunction++;}block{infunction--;}
          | FUNCTION {
             string fid=to_string(funcid++);
             string name= "$f" + fid;

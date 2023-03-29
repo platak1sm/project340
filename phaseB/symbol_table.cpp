@@ -110,12 +110,7 @@ void printsymbols(){
             scope=SymbolTable[i].varVal.scope;
             cout << " \""<< name << "\"\t" << "[formal argument]\t"<< "(line "<< SymbolTable[i].varVal.line << ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
 
-        }
-         else{
-            name = SymbolTable[i].varVal.name;
-            scope=SymbolTable[i].varVal.scope;
-            cout<< " \"" << name<< "\"\t" << SymbolTable[i].type<< "(line "<< SymbolTable[i].varVal.line<< ")\t"<<"scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;}
-         
+        }         
     }
     
     /*for (unsigned int i = 0; i < maxscope; i++){
