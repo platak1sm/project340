@@ -157,7 +157,7 @@ assignexpr: lvalue ASSIGN expr{
                                 string name = $1;
                                 
                                 if(is_sysfunc(name) || lookupactivefunc(name).isActive==true)
-                                        cout <<"Error: " <<name << "is defined as function \n";     
+                                        cout <<"Error: " <<name << " is defined as function \n";     
                                 cout << "assignexpr => lvalue=expr\n";      
                             }
             ;
