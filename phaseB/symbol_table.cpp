@@ -85,7 +85,7 @@ void printsymbols(){
     int currentscope = 0;
     int count = 0;
     while(count < SymbolTable.size()){
-        cout <<"Scope:"<<currentscope<<endl;
+        cout <<"--------- Scope:"<<currentscope<<" ----------"<<endl;
         for(unsigned int i = 0; i < SymbolTable.size(); i++) {
             if(SymbolTable[i].type == USERFUNC && SymbolTable[i].funcVal.scope == currentscope){
                 name = SymbolTable[i].funcVal.name;
