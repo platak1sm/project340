@@ -82,32 +82,44 @@ void hide(int scope) {
 void printsymbols(){
     string name;
     int scope;
-    for(unsigned int i = 0; i < SymbolTable.size(); i++) {
-        if(SymbolTable[i].type == USERFUNC){
-            name = SymbolTable[i].funcVal.name;
-            scope=SymbolTable[i].funcVal.scope;
-            cout<< " \"" << name << "\"\t" << "[user function]\t"<< "(line "<< SymbolTable[i].funcVal.line << ")\t"<<"(scope "<<SymbolTable[i].funcVal.scope<< ")\t" <<endl;
-           }
-        else if(SymbolTable[i].type == LIBFUNC){
-            name = SymbolTable[i].funcVal.name;
-            scope=SymbolTable[i].funcVal.scope;
-            cout << " \""<< name << "\"\t" << "[library function]\t"<< "(line "<< SymbolTable[i].funcVal.line << ")\t"<<"(scope "<<SymbolTable[i].funcVal.scope<< ")\t" <<endl;
+    int currentscope = 0;
+    int count = 0;
+    while(count < SymbolTable.size()){
+        cout <<"Scope:"<<currentscope<<endl;
+        for(unsigned int i = 0; i < SymbolTable.size(); i++) {
+            if(SymbolTable[i].type == USERFUNC && SymbolTable[i].funcVal.scope == currentscope){
+                name = SymbolTable[i].funcVal.name;
+                scope=SymbolTable[i].funcVal.scope;
+                cout<< " \"" << name << "\"\t" << "[user function]\t"<< "(line "<< SymbolTable[i].funcVal.line << ")\t"<<"(scope "<<SymbolTable[i].funcVal.scope<< ")\t" <<endl;
+                count++;
+            }
+            else if(SymbolTable[i].type == LIBFUNC && SymbolTable[i].funcVal.scope == currentscope){
+                name = SymbolTable[i].funcVal.name;
+                scope=SymbolTable[i].funcVal.scope;
+                cout << " \""<< name << "\"\t" << "[library function]\t"<< "(line "<< SymbolTable[i].funcVal.line << ")\t"<<"(scope "<<SymbolTable[i].funcVal.scope<< ")\t" <<endl;
+                count++;
+            }
+            else if(SymbolTable[i].type == GLOBAL && SymbolTable[i].varVal.scope == currentscope){
+                name = SymbolTable[i].varVal.name;
+                scope=SymbolTable[i].varVal.scope;
+                cout << " \""<< name << "\"\t" << "[global variable]\t"<< "(line "<< SymbolTable[i].varVal.line<< ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
+                count++;
+            }
+            else if(SymbolTable[i].type == LOCALV && SymbolTable[i].varVal.scope == currentscope){
+                name = SymbolTable[i].varVal.name;
+                scope=SymbolTable[i].varVal.scope;
+                cout << " \""<< name << "\"\t" << "[local variable]\t"<< "(line "<< SymbolTable[i].varVal.line << ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
+                count++;
+            }
+            else if(SymbolTable[i].type == FORMAL && SymbolTable[i].varVal.scope == currentscope){
+                name = SymbolTable[i].varVal.name;
+                scope=SymbolTable[i].varVal.scope;
+                cout << " \""<< name << "\"\t" << "[formal argument]\t"<< "(line "<< SymbolTable[i].varVal.line << ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
+                count++;
+            }         
+
         }
-        else if(SymbolTable[i].type == GLOBAL){
-            name = SymbolTable[i].varVal.name;
-            scope=SymbolTable[i].varVal.scope;
-            cout << " \""<< name << "\"\t" << "[global variable]\t"<< "(line "<< SymbolTable[i].varVal.line<< ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
-        }
-        else if(SymbolTable[i].type == LOCALV){
-            name = SymbolTable[i].varVal.name;
-            scope=SymbolTable[i].varVal.scope;
-            cout << " \""<< name << "\"\t" << "[local variable]\t"<< "(line "<< SymbolTable[i].varVal.line << ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
-        }
-        else if(SymbolTable[i].type == FORMAL){
-            name = SymbolTable[i].varVal.name;
-            scope=SymbolTable[i].varVal.scope;
-            cout << " \""<< name << "\"\t" << "[formal argument]\t"<< "(line "<< SymbolTable[i].varVal.line << ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
-        }         
+        currentscope++;
     }
     
     /*for (unsigned int i = 0; i < maxscope; i++){
