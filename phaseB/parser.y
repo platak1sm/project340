@@ -37,6 +37,9 @@
     }
     
     void insertLibFuncs(string name);
+    void red();
+    void reset();
+
 %}
 
 %start program
@@ -79,8 +82,8 @@ stmt: expr SEMICOLON {cout << "stmt => expr\n";}
       | {inloop++;}whilestmt{cout << "stmt => whilestmt\n";inloop--;}
       | {inloop++;}forstmt{inloop--; cout << "stmt => forstmt\n";}
       | returnstmt {cout << "stmt => returnstmt\n";}
-      | BREAK SEMICOLON{if(inloop==0) cout << "Error: Cannot use BREAK when not in loop -> line " << yylineno << endl; cout << "stmt => break;\n";}
-      | CONTINUE SEMICOLON{if(inloop==0) cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;cout << "stmt => continue;\n";}
+      | BREAK SEMICOLON{if(inloop==0) { red(); cout << "Error: Cannot use BREAK when not in loop -> line " << yylineno << endl; cout << "stmt => break;\n"; reset();}  }
+      | CONTINUE SEMICOLON{if(inloop==0){ red(); cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;cout << "stmt => continue;\n"; reset();} }
       | block {cout << "stmt => block\n";}
       | funcdef {cout << "stmt => funcdef\n";}
       | SEMICOLON {cout << "stmt => ;\n";}
@@ -109,10 +112,10 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */c
 		| PLUS_PLUS lvalue {
                              string name=$2;
                              SymbolTableEntry ste= lookupactivevar(name);
-                             if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
-                             else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
+                             if(is_sysfunc(name)){ red(); cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n"; reset();}
+                             else if (!ste.isActive){red(); cout << "Error: There is no variable " << name << endl; reset();}
                              else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
+                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) {red(); cout << "Error: Variable " << name << " is not accessible in this scope.\n"; reset();}
                                 /* else $$ = ++$2; */
                              }
                              cout << "term => ++lvalue\n";
@@ -120,10 +123,10 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */c
 		| lvalue PLUS_PLUS {
                              string name=$1;
                              SymbolTableEntry ste= lookupactivevar(name);
-                             if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
-                             else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
+                             if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n"; reset();}
+                             else if (!ste.isActive) {red();cout << "Error: There is no variable " << name << endl; reset();}
                              else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
+                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) {red(); cout << "Error: Variable " << name << " is not accessible in this scope.\n"; reset();}
                                 /* else $$ = $2++; */
                              }
                              cout << "term => lvalue++\n";
@@ -131,10 +134,10 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */c
 		| MINUS_MINUS lvalue {
                              string name=$2;
                              SymbolTableEntry ste= lookupactivevar(name);
-                             if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
-                             else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
+                             if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n"; reset();}
+                             else if (!ste.isActive) {red(); cout << "Error: There is no variable " << name << endl; reset();}
                              else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n"; 
+                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) {red();cout << "Error: Variable " << name << " is not accessible in this scope.\n"; reset();}
                                 /* else $$ = --$2; */
                              }
                              cout << "term => --lvalue\n";
@@ -142,10 +145,10 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */c
 		| lvalue MINUS_MINUS {
                              string name=$1;
                              SymbolTableEntry ste= lookupactivevar(name);
-                             if(is_sysfunc(name)) cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n";
-                             else if (!ste.isActive) cout << "Error: There is no variable " << name << endl;
+                             if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n"; reset();}
+                             else if (!ste.isActive) {red(); cout << "Error: There is no variable " << name << endl; reset();}
                              else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) cout << "Error: Variable " << name << " is not accessible in this scope.\n";
+                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope){red(); cout << "Error: Variable " << name << " is not accessible in this scope.\n"; reset();}
                                 /* else $$ = $2--; */
                              }
                              cout << "term => lvalue--\n";
@@ -156,8 +159,10 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */c
 assignexpr: lvalue ASSIGN expr{		
                                 string name = $1;
                                 
-                                if(is_sysfunc(name) || lookupactivefunc(name).isActive==true)
-                                        cout <<"Error: " <<name << " is defined as function \n";     
+                                if(is_sysfunc(name) || lookupactivefunc(name).isActive==true){
+                                        red();
+                                        cout <<"Error: " <<name << " is defined as function \n";
+                                        reset(); }   
                                 cout << "assignexpr => lvalue=expr\n";      
                             }
             ;
@@ -205,7 +210,9 @@ lvalue: ID {
         | DOUBLE_COLON ID {
             string name($2);
             if(lookupcurrentscope(name, 0).isActive == false){
+                red();
                 cout << "error\n";
+                reset();
             }
             cout << "lvalue => ::id:" << yylval.stringVal<<endl;
         }
@@ -260,8 +267,8 @@ stmtlist: stmt stmtlist  {cout << "stmtlist => stmt stmtlist\n";}
 funcdef: FUNCTION ID {
             string name= $2;
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
-            if(ste.isActive){ cout << "Error: " << name << " is declared in this scope already.\n";
-            }else if(is_sysfunc(name)){ cout << "Error: "<< name <<" is a system function, it cannot be overriden.\n";
+            if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
+            }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be overriden.\n"; reset();
             }else {
                   ste.type=USERFUNC;
                   ste.isActive=TRUE;
@@ -308,8 +315,8 @@ const:	INTEGER {/*$$=$1;*/cout <<"const => integer:"<<yylval.intVal<<endl;}
 idlist: ID{
             string name = $1; 
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
-            if(ste.isActive){ cout << "Error: " << name << " is declared in this scope already.\n";
-            }else if(is_sysfunc(name)){ cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
+            if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
+            }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n"; reset();
             }else {
                   ste.type=FORMAL;
                   ste.varVal.name=name;
@@ -321,9 +328,9 @@ idlist: ID{
           }
         | idlist COMMA ID{
             string name = $3; 
-            SymbolTableEntry ste= lookupcurrentscope(name,scope);
-            if(ste.isActive){ cout << "Error: " << name << " is declared in this scope already.\n";
-            }else if(is_sysfunc(name)){ cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n";
+            SymbolTableEntry ste= lookupcurrentscope(name,scope); 
+            if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
+            }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n"; reset();
             }else {
                   ste.type=FORMAL;
                   ste.isActive=TRUE;
@@ -351,10 +358,10 @@ forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTH
 		;	
 
 returnstmt: RETURN expr SEMICOLON{
-                    if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl;
+                    if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
                     cout <<"returnstmt => return expr;"<<endl;
          }
-			| RETURN SEMICOLON { if(infunction==0) cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; 
+			| RETURN SEMICOLON { if(infunction==0) {red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
                                 cout <<"returnstmt => return;"<<endl;}
             ;
 
@@ -374,6 +381,16 @@ void insertLibFuncs(string name){
     ste.funcVal.scope=0;
     ste.funcVal.line=0;
     insert(ste);
+}
+
+void red()
+{
+    cout<<"\033[1;31m";
+}
+
+void reset()
+{
+    cout<<"\033[0m";
 }
 //**********************************************************************************************************
 
