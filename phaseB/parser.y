@@ -176,7 +176,7 @@ primary: lvalue{cout << "primary => lvalue\n";}
 
 lvalue: ID {
             string name($1);
-            if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false){
+            if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false ){
                 SymbolTableEntry ent;
                 ent.isActive = true;
                 if(scope == 0)
@@ -192,8 +192,10 @@ lvalue: ID {
             }
         | LOCAL ID {
             string name($2);
-            SymbolTableEntry ret = lookupactivevar(name);
-            if(ret.isActive == false || ret.type == GLOBAL){
+            if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as local variable.\n"; reset();
+            }else{
+                SymbolTableEntry ret = lookupactivevar(name);
+                if(ret.isActive == false || ret.type == GLOBAL){
                 SymbolTableEntry ent;
                 ent.isActive = true;
                 if(scope == 0)
@@ -206,6 +208,7 @@ lvalue: ID {
                 insert(ent);
             }
             cout << "lvalue => local id:" << yylval.stringVal<<", "<<scope<<endl;
+            }
         }
         | DOUBLE_COLON ID {
             string name($2);
