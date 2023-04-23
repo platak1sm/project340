@@ -158,13 +158,15 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */c
 
 assignexpr: lvalue ASSIGN expr{		
                                 string name = $1;
-                                
+                                red(); cout << "name = "<<name<<endl; reset();
                                 if(is_sysfunc(name) || lookupactivefunc(name).isActive==true){
-                                        red();
-                                        cout <<"Error: " <<name << " is defined as function \n";
-                                        reset(); }   
+                                    red();
+                                    cout <<"Error: " <<name << " is defined as function \n";
+                                    reset();
+                                }
                                 cout << "assignexpr => lvalue=expr\n";      
                             }
+                        
             ;
 	
 primary: lvalue{cout << "primary => lvalue\n";}
@@ -176,7 +178,8 @@ primary: lvalue{cout << "primary => lvalue\n";}
 
 lvalue: ID {
             string name($1);
-            if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false ){
+            if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as a variable.\n"; reset();
+            }else if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false ){
                 SymbolTableEntry ent;
                 ent.isActive = true;
                 if(scope == 0)
@@ -187,15 +190,17 @@ lvalue: ID {
                 ent.varVal.scope = scope;
                 ent.varVal.line = yylineno;
                 insert(ent);
+            }else{
+                if(lookupactivevar(name).varVal.scope < infunction && scope > 0){
+                    red(); cout << "Error: " <<" There is function between the uses of variable "<< name <<endl; reset();
+                }
             }
             cout << "lvalue => id:" << yylval.stringVal<<endl;
             }
         | LOCAL ID {
             string name($2);
             if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as local variable.\n"; reset();
-            }else{
-                SymbolTableEntry ret = lookupactivevar(name);
-                if(ret.isActive == false || ret.type == GLOBAL){
+            }else if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false){
                 SymbolTableEntry ent;
                 ent.isActive = true;
                 if(scope == 0)
@@ -206,9 +211,12 @@ lvalue: ID {
                 ent.varVal.scope = scope;
                 ent.varVal.line = yylineno;
                 insert(ent);
+            }else{
+                 if(lookupactivevar(name).varVal.scope < infunction && scope > 0){
+                    red(); cout << "Error: " <<" There is function between the uses of variable "<< name <<endl; reset();
+                }
             }
             cout << "lvalue => local id:" << yylval.stringVal<<", "<<scope<<endl;
-            }
         }
         | DOUBLE_COLON ID {
             string name($2);
@@ -340,7 +348,7 @@ idlist: ID{
                   ste.varVal.name=name;
                   ste.varVal.scope=scope;
                   ste.varVal.line=yylineno;
-                  ste.funcVal.name=name; /*de kserw an xreiazontai kai var kai funcval*/
+                  ste.funcVal.name=name; 
                   ste.funcVal.scope=scope;
                   ste.funcVal.line=yylineno;
                   insert(ste);
