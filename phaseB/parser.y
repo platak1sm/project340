@@ -191,7 +191,7 @@ lvalue: ID {
                 ent.varVal.line = yylineno;
                 insert(ent);
             }else{
-                if(lookupactivevar(name).varVal.scope < infunction && scope > 0){
+                if(lookupactivevar(name).varVal.scope < infunction && lookupactivevar(name).varVal.scope > 0){
                     red(); cout << "Error: " <<" There is function between the uses of variable "<< name <<endl; reset();
                 }
             }
