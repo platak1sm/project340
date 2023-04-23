@@ -214,7 +214,7 @@ lvalue: ID {
             string name($2);
             if(lookupcurrentscope(name, 0).isActive == false){
                 red();
-                cout << "error\n";
+                cout << "Error: there is no global variable with name "<<name<<endl;
                 reset();
             }
             cout << "lvalue => ::id:" << yylval.stringVal<<endl;
