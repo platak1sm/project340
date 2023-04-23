@@ -211,10 +211,6 @@ lvalue: ID {
                 ent.varVal.scope = scope;
                 ent.varVal.line = yylineno;
                 insert(ent);
-            }else{
-                 if(lookupactivevar(name).varVal.scope < infunction && scope > 0){
-                    red(); cout << "Error: " <<" There is function between the uses of variable "<< name <<endl; reset();
-                }
             }
             cout << "lvalue => local id:" << yylval.stringVal<<", "<<scope<<endl;
         }
