@@ -377,8 +377,8 @@ returnstmt: RETURN expr SEMICOLON{
 
 int yyerror (char* yaccProvidedMessage)
 {
-    fprintf(stderr, "%s: at line %d, before token: %s\n", yaccProvidedMessage, yylineno, yytext);
-    fprintf(stderr, "INPUT NOT VALID\n");
+    fprintf(stderr, "\033[1;31m %s: at line %d, before token: %s\n", yaccProvidedMessage, yylineno, yytext);
+    fprintf(stderr, "INPUT NOT VALID \033[0m \n");
 }
 
 void insertLibFuncs(string name){
