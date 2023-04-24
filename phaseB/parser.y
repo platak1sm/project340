@@ -326,6 +326,7 @@ idlist: ID{
             }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n"; reset();
             }else {
                   ste.type=FORMAL;
+                  ste.isActive= true;
                   ste.varVal.name=name;
                   ste.varVal.scope=scope;
                   ste.varVal.line=yylineno;
