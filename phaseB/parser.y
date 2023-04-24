@@ -158,7 +158,7 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */c
 
 assignexpr: lvalue ASSIGN expr{		
                                 string name = $1;
-                                red(); cout << "name = "<<name<<endl; reset();
+                                // red(); cout << "name = "<<name<<endl; reset();
                                 if(is_sysfunc(name) || lookupactivefunc(name).isActive==true){
                                     red();
                                     cout <<"Error: " <<name << " is defined as function \n";
@@ -178,8 +178,9 @@ primary: lvalue{cout << "primary => lvalue\n";}
 
 lvalue: ID {
             string name($1);
-            if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as a variable.\n"; reset();
-            }else if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false ){
+            // if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as a variable.\n"; reset();
+            // }else 
+            if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false ){
                 SymbolTableEntry ent;
                 ent.isActive = true;
                 if(scope == 0)
@@ -199,8 +200,9 @@ lvalue: ID {
             }
         | LOCAL ID {
             string name($2);
-            if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as local variable.\n"; reset();
-            }else if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false){
+            //if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as local variable.\n"; reset();
+            //}else 
+            if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false){
                 SymbolTableEntry ent;
                 ent.isActive = true;
                 if(scope == 0)
