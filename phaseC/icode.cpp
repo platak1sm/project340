@@ -17,6 +17,12 @@ int tmpc = 0; // tmp counter
     total += EXPAND_SIZE;
 } */
 
+/*--------------------------------------------MUST READ-----------------------------------------------------------------------------------------------------------
+                    de kserw an to symbol struct einai to idio me to symboltableentry h kapoio upgrade toy h an einai teleios diaforetiko
+                    opote na anavathmisoume to symboltableentry mas an xreiazetai. An einai diaforetiko prepei na to ylopoihsoume ap thn arxh sta idia standards
+                    kai na to kanoume etsi wste na tairiazei me tis dialekseis klp(psakste to kai eseis)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsigned line)
 { /*mallon correct alla check it*/
     currQuad++;
@@ -30,7 +36,7 @@ void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsi
     quads.push_back(q);
 }
 
-expr *emit_iftableitem(expr *e, int yylineno)
+expr *emit_iftableitem(expr *e)
 {
     if (e->type != tableitem_e)
         return e;
@@ -51,19 +57,19 @@ expr *newexpr(expr_t t)
     return e;
 }
 
-SymbolTableEntry *newtmp()
+symbol *newtmp()
 { /*mporei na thelei diorthwsi*/
     string name = "$t" + to_string(tmpc++);
-    SymbolTableEntry ste = lookupactivevar(name);
-    if (lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false)
+    symbol *sym = lookup(name);
+    if (sym == NULL)
     {
-        ste.varVal.name = name;
-        ste.varVal.scope = 0;
-        ste.varVal.line = 0;
-        ste.isActive = true;
-        insert(ste);
+        sym->name = name;
+        sym->scope = 0;
+        sym->line = 0;
+        sym->isActive = true;
+        insertsym(sym);
     }
-    return &ste;
+    return sym;
 }
 
 scopespace_t currscopespace(void)
@@ -116,3 +122,152 @@ void exitscopespace(void)
     assert(scopeSpaceCounter > 1);
     --scopeSpaceCounter;
 }
+
+void patchlabel(unsigned quadNo, unsigned label)
+{
+    assert(quadNo < currQuad && !quads[quadNo].label);
+    quads[quadNo].label = label;
+}
+
+expr *newexpr_constbool(unsigned int b)
+{
+    expr *e = newexpr(constbool_e);
+    e->boolConst = !!b;
+    return e;
+}
+
+unsigned nextquad(void) { return currQuad; }
+
+void make_stmt(stmt_t *s)
+{
+    s->breakList = s->contList = 0;
+}
+
+int newlist(int i) // de kserw an xreiazetai
+{
+    quads[i].label = 0;
+    return i;
+}
+
+int mergelist(int l1, int l2) // de kserw an xreiazetai
+{
+    if (!l1)
+        return l2;
+    else if (!l2)
+        return l1;
+    else
+    {
+        int i = l1;
+        while (quads[i].label)
+            i = quads[i].label;
+        quads[i].label = l2;
+        return l1;
+    }
+}
+
+void patchlist(int list, int label) // de kserw an xreiazetai
+{
+    while (list)
+    {
+        int next = quads[list].label;
+        quads[list].label = label;
+        list = next;
+    }
+}
+
+void resetformalargoffset(void) { formalArgOffset = 0; }
+
+void resetfunctionlocaloffset(void) { functionLocalOffset = 0; }
+
+void restorecurrscopeoffset(unsigned n)
+{
+    switch (currscopespace())
+    {
+    case programvar:
+        programVarOffset = n;
+        break;
+    case functionlocal:
+        functionLocalOffset = n;
+        break;
+    case formalarg:
+        formalArgOffset = n;
+        break;
+    default:
+        assert(0);
+    }
+}
+
+expr *lvalue_exp(symbol *sym) // thelei diorthwsh
+{
+    assert(sym);
+    expr *e;
+    switch (sym->type)
+    {
+    case var_s:
+        e->type = var_e;
+        break;
+    case programfunc_s:
+        e->type = programfunc_e;
+        break;
+    case libraryfunc_s:
+        e->type = libraryfunc_e;
+        break;
+    default:
+        assert(0);
+    }
+    e->sym = sym;
+    return e;
+}
+
+symbol *lookup(string name) // ftiaksimo
+{
+}
+
+void insertsym(symbol *sym) // ftiaksimo
+{
+}
+
+expr *newexpr_conststring(string s)
+{
+    expr *e = newexpr(conststring_e);
+    e->strConst = s;
+    return e;
+}
+
+expr *make_call(expr *lv, expr *reversed_elist)
+{
+    expr *func = emit_iftableitem(lv);
+    while (reversed_elist)
+    {
+        emit(param, reversed_elist, NULL, NULL, 0, yylineno);
+        reversed_elist = reversed_elist->next;
+    }
+    emit(call, func, NULL, NULL, 0, yylineno);
+    expr *result = newexpr(var_e);
+    result->sym = newtmp();
+    emit(getretval, NULL, NULL, result, 0, yylineno);
+    return result;
+}
+
+expr* newexpr_constnum(double i) {
+	expr *e = newexpr(constnum_e);
+	e->numConst = i;
+	return e;
+}
+
+void check_arith(expr* e, string context) {
+	if (e->type == constbool_e ||
+	e->type == conststring_e ||
+	e->type == nil_e ||
+	e->type == newtable_e ||
+	e->type == programfunc_e ||
+	e->type == libraryfunc_e ||
+	e->type == boolexpr_e ){
+		printf("Illegal expr used in %s!", context);
+		//exit(0);
+	}
+}
+
+bool istempname(string s) { return s[0] == '_'; }
+
+bool istempexpr(expr *e) { return e->sym && istempname(e->sym->name); }
