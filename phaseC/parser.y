@@ -80,7 +80,7 @@ program: stmt program {cout << "program stmt\n";}
 stmt: expr SEMICOLON {cout << "stmt => expr\n";}
       | ifstmt {cout << "stmt => ifstm\n";}
       | {inloop++;}whilestmt{cout << "stmt => whilestmt\n";inloop--;}
-      | {inloop++;}forstmt{inloop--; cout << "stmt => forstmt\n";}
+      | {inloop++;}for_stmt{inloop--; cout << "stmt => forstmt\n";}
       | returnstmt {cout << "stmt => returnstmt\n";}
       | BREAK SEMICOLON{if(inloop==0) { red(); cout << "Error: Cannot use BREAK when not in loop -> line " << yylineno << endl; cout << "stmt => break;\n"; reset();}  }
       | CONTINUE SEMICOLON{if(inloop==0){ red(); cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;cout << "stmt => continue;\n"; reset();} }
@@ -405,8 +405,8 @@ funcprefix: FUNCTION funcname{
             }
          } 
 funcname: ID { $$ = $1; }
-funcblockstart:{}
-funcblockend{}
+funcblockstart: {}
+funcblockend: {}
 funcargs:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {}
 funcbody: { scope--; infunction++;}funcblockstart block funcblockend {infunction--;cout <<"funcdef => function(idlist)block\n"; exitscopespace(); } ;
 
@@ -471,7 +471,7 @@ else_prefix: ELSE {$$ = nextQuad();
                    emit(jump,NULL,NULL,NULL,0,yylineno);}
 
 
-whilestmt: whilestart whilecond loopstmt {
+whilestmt: whilestart whilecon loopstmt {
     cout <<"whilestmt => while(expr) stmt"<<endl;
     emit(jump,NULL,NULL,NULL,$1,yylineno); 
     patchlabel($2, nextQuad()+1); } ; 
@@ -487,6 +487,8 @@ N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);}
 Q:{/*nextquad*/ $$ = nextquad(); }
 
 for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{}
+
+M: {}
 
 returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
