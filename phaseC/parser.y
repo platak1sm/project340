@@ -256,25 +256,12 @@ assignexpr: lvalue ASSIGN expr{
                         
             ;
 	
-<<<<<<< HEAD
-primary: lvalue{cout << "primary => lvalue\n";}
-        | call {cout << "primary => call\n";}
-        | objectdef {cout << "primary => objectdef\n";}
-		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{cout << "primary => (funcdef)\n";
-        /*
-            $$=newexpr(programfunc_s);
-            $$->sym=$2;
-        */
-        }
-		| const{cout << "primary => const\n";}
-=======
 primary: lvalue{ $$ = emit_iftableitem($1);}
         | call {$$=$1;}
         | objectdef {$$=$1;;}
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{$$ = newexpr(programfunc_e);
                                                     $$->insertsym($2);}
 		| const{$$=$1;}
->>>>>>> 2d7d104b6f996b80824baca91737863c881f2cb8
         ;
 
 lvalue: ID { /*wait for irene to fix 2nd phase*/
