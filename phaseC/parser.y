@@ -239,8 +239,8 @@ call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {cout << "call => (elist)\n"
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "call => (funcdef)(elist)\n";}
 		;
 
-callsuffix:	normcall {cout << "callsuffix => normcall\n";}
-			| methodcall {cout << "callsuffix => methodcall\n";}
+callsuffix:	normcall {cout << "callsuffix => normcall\n";$$=$1;}
+			| methodcall {cout << "callsuffix => methodcall\n";$$=$1;}
 			;
 
 
@@ -357,22 +357,45 @@ idlist: ID{
         |
        ;
 
-ifstmt:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt {cout <<"ifstmt => if(expr) stmt"<<endl;}
-		| IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt ELSE stmt {cout <<"ifstmt => if(expr) stmt else stmt"<<endl;}
-	    ;	 
+loopstart : {++inloop;};
 
-whilestmt: WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt {cout <<"whilestmt => while(expr) stmt"<<endl;}
-		 ;  	
+loopend : {--inloop;};
+
+loopstmt : loopstart stmt loopend { $$ = $2; } ;
+
+
+
+ifstmt:	if_prefix stmt {cout <<"ifstmt => if(expr) stmt"<<endl;}
+		|if_prefix stmt else_prefix stmt {cout <<"ifstmt => if(expr) stmt else stmt"<<endl;}
+	    ;	 
+if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{}
+
+else_prefix: ELSE {}
+
+
+whilestmt: whilestart whilecond loopstmt {cout <<"whilestmt => while(expr) stmt"<<endl;}
+		 ; 
+
+whilestart: WHILE{}
+
+whilecond: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {}
 	
-forstmt: FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS stmt {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;}
-		;	
+for_stmt: for_prefix N elist RIGHT_PARENTHESIS J loopstmt Q {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;}
+		;
+J: {/*jump*/}
+
+Q:{/*nextquad*/}
+
+for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{}
 
 returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
                     cout <<"returnstmt => return expr;"<<endl;
+                    emit(ret,NULL,NULL,$2,0,yylineno);
          }
 			| RETURN SEMICOLON { if(infunction==0) {red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
-                                cout <<"returnstmt => return;"<<endl;}
+                                cout <<"returnstmt => return;"<<endl;
+                                emit(ret,NULL,NULL,NULL,0,yylineno);}
             ;
 
 %%     
