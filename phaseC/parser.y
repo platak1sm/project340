@@ -465,23 +465,12 @@ loopstmt : loopstart stmt loopend { $$ = $2; } ;
 
 
 
-<<<<<<< HEAD
-ifstmt:	if_prefix stmt {cout <<"ifstmt => if(expr) stmt"<<endl;
-        /*patchlabel($1-2, $1+1);
-        patchlabel($1-1, nextQuad()+1);*/
-        }
-		|if_prefix stmt else_prefix stmt {cout <<"ifstmt => if(expr) stmt else stmt"<<endl;
-        /* patchlabel($1-2,$3-1); //if eq if_prefix
-        patchlabel($1-1,$3+2); //jmp if_prefix
-        patchlabel($3, nextQuad()+1); // jmp to end    */
-=======
 ifstmt:	if_prefix stmt {//patchlabel($1-2, $1+1);
                         //patchlabel($1-1, nextQuad()+1);
                        }
 		|if_prefix stmt else_prefix stmt   {//patchlabel($1-2,$3-1); //if eq if_prefix
                                             //patchlabel($1-1,$3+2); //jmp if_prefix
                                             //patchlabel($3, nextQuad()+1); // jmp to end   
->>>>>>> main
         }
 	    ;	 
 if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{expr *tmp = newexpr(constbool_e);
@@ -491,15 +480,8 @@ if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{expr *tmp = newexpr(constb
                                                       $$ = nextQuad();
                                                       }
 
-<<<<<<< HEAD
-else_prefix: ELSE { {
-    $$ = nextQuad();   
-    emit(jump,NULL,NULL,NULL,0,yylineno);
-} }
-=======
 else_prefix: ELSE {$$ = nextQuad();   
                    emit(jump,NULL,NULL,NULL,0,yylineno);}
->>>>>>> main
 
 
 whilestmt: whilestart whilecond loopstmt {
@@ -513,11 +495,7 @@ whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {/*code..*/}
 	
 for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;}
 		;
-<<<<<<< HEAD
-J: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);}
-=======
-N: {/*jump*/}
->>>>>>> main
+N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);}
 
 Q:{/*nextquad*/ $$ = nextquad(); }
 
