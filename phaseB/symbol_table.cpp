@@ -47,6 +47,35 @@ SymbolTableEntry lookupactivevar(string s) {
                 
 }
 
+SymbolTableEntry LookuplastRef(string s) {
+    int currentscope = -1;
+    SymbolTableEntry ret;
+    ret.isActive = false;
+    for(unsigned int i = 0; i < SymbolTable.size(); i++) {
+        if(SymbolTable[i].type == USERFUNC || SymbolTable[i].type == LIBFUNC) {
+            if(SymbolTable[i].funcVal.name == s) {
+                if(SymbolTable[i].funcVal.scope > currentscope)
+                    currentscope = SymbolTable[i].funcVal.scope;
+                    
+                    ret = SymbolTable[i];
+            }
+        }
+        else if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
+            if(SymbolTable[i].varVal.name == s) {
+                if(SymbolTable[i].varVal.scope > currentscope){
+                    currentscope = SymbolTable[i].varVal.scope;
+                    ret = SymbolTable[i];
+                }
+            }
+        }
+    }
+
+    return ret;
+                
+}
+
+
+
 SymbolTableEntry lookupactivefunc(string s) {
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
         if(SymbolTable[i].type == USERFUNC || SymbolTable[i].type == LIBFUNC) {

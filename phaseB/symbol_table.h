@@ -37,6 +37,7 @@ void insert(SymbolTableEntry ste);
 SymbolTableEntry lookupcurrentscope(string s, int scope);
 SymbolTableEntry lookupactivevar(string s);
 SymbolTableEntry lookupactivefunc(string s);
+SymbolTableEntry LookuplastRef(string s);
 void hide(int scope);
 void insertLibFuncs(string name);
 void printsymbols();

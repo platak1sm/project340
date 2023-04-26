@@ -159,10 +159,24 @@ term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */c
 assignexpr: lvalue ASSIGN expr{		
                                 string name = $1;
                                 // red(); cout << "name = "<<name<<endl; reset();
-                                if(is_sysfunc(name) || lookupactivefunc(name).isActive==true){
+                                if((is_sysfunc(name) || lookupactivefunc(name).isActive==true)){
                                     red();
                                     cout <<"Error: " <<name << " is defined as function \n";
                                     reset();
+                                }else{
+                                    int i = scope;
+                                    SymbolTableEntry lookupent;
+                                    while(i >=0 ){
+                                        lookupent = lookupcurrentscope(name, i);
+                                        if(lookupent.isActive)
+                                            break;
+                                        i--;
+                                    }
+                                    if(lookupent.type == USERFUNC && lookupcurrentscope(name, scope).type != LOCALV){
+                                        red();
+                                        cout <<"Error: " <<name << " is defined as function \n";
+                                        reset();
+                                    }
                                 }
                                 cout << "assignexpr => lvalue=expr\n";      
                             }
@@ -178,9 +192,12 @@ primary: lvalue{cout << "primary => lvalue\n";}
 
 lvalue: ID {
             string name($1);
-            // if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as a variable.\n"; reset();
-            // }else 
-            if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false ){
+            SymbolTableEntry lookupentry = lookupcurrentscope(name, scope);
+            SymbolTableEntry lookupentryGlobal = lookupcurrentscope(name, 0);
+            SymbolTableEntry lookupentryactivevar = lookupactivevar(name);
+            SymbolTableEntry lookupentryfunc = lookupactivefunc(name);
+            SymbolTableEntry lastref = LookuplastRef(name);
+            if(!lookupentry.isActive && !lookupentryGlobal.isActive && !lookupentryactivevar.isActive && !lookupentryfunc.isActive){
                 SymbolTableEntry ent;
                 ent.isActive = true;
                 if(scope == 0)
@@ -191,18 +208,19 @@ lvalue: ID {
                 ent.varVal.scope = scope;
                 ent.varVal.line = yylineno;
                 insert(ent);
-            }else{
-                if(lookupactivevar(name).varVal.scope < infunction && lookupactivevar(name).varVal.scope > 0){
-                    red(); cout << "Error: " <<" There is function between the uses of variable "<< name <<endl; reset();
+            }else if(lastref.isActive){
+                if((lastref.type == FORMAL || lastref.type == LOCALV) && lastref.varVal.scope < scope){
+                    red(); 
+                    cout << "Error: "<< name <<" is not accessible.\n"; 
+                    reset();
                 }
             }
             cout << "lvalue => id:" << yylval.stringVal<<endl;
             }
         | LOCAL ID {
             string name($2);
-            //if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as local variable.\n"; reset();
-            //}else 
-            if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false){
+            if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as local variable.\n"; reset();
+            }else if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false){
                 SymbolTableEntry ent;
                 ent.isActive = true;
                 if(scope == 0)
@@ -276,7 +294,7 @@ stmtlist: stmt stmtlist  {cout << "stmtlist => stmt stmtlist\n";}
 funcdef: FUNCTION ID {
             string name= $2;
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
-            if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
+            if(ste.isActive && ste.type != USERFUNC){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
             }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be overriden.\n"; reset();
             }else {
                   ste.type=USERFUNC;
