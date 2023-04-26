@@ -89,71 +89,160 @@ stmt: expr SEMICOLON {cout << "stmt => expr\n";}
       | SEMICOLON {cout << "stmt => ;\n";}
       ;
 
-expr: assignexpr {cout << "expr => assignexpr\n";}
-      | expr PLUS expr {/*$$ = $1 + $3;*/cout << "expr => expr+expr\n";}
-      | expr MINUS expr {/*$$ = $1 - $3;*/cout << "expr => expr-expr\n";}
-      | expr MUL expr {/*$$ = $1 * $3;*/cout << "expr => expr*expr\n";}
-      | expr DIV expr {/*$$ = $1 / $3;*/cout << "expr => expr div expr\n";}
-      | expr MOD expr {/*$$ = $1 % $3;*/cout << "expr => expr mod expr\n";}
-      | expr EQUAL expr {/*if ($1 == $3) $$ = 1; else $$ = 0;*/cout << "expr => expr == expr\n";}
-      | expr NOT_EQUAL expr {/*if ($1 != $3) $$ = 1; else $$ = 0;*/cout << "expr => expr!=expr\n";}
-      | expr GREATER expr {/*if ($1 > $3) $$ = 1; else $$ = 0;*/cout << "expr => expr > expr\n";}
-      | expr LESS expr {/*if ($1 < $3) $$ = 1; else $$ = 0;*/cout << "expr => expr < expr\n";}
-      | expr GREATER_EQUAL expr {/*if ($1 >= $3) $$ = 1; else $$ = 0;*/cout << "expr => expr >= expr\n";}
-      | expr LESS_EQUAL expr {/*if ($1 <= $3) $$ = 1; else $$ = 0;*/cout << "expr => expr <= expr\n";}
-      | expr AND expr {/*if ($1 && $3) $$ = 1; else $$ = 0;*/cout << "expr => expr && expr\n";}
-      | expr OR expr {/*if ($1 || $3) $$ = 1; else $$ = 0;*/cout << "expr => expr || expr\n";}
-      | term {cout << "expr => term\n";}
+expr: assignexpr {$$=$1;}
+      | expr PLUS expr {$$ =newexpr(arithexp_e);
+                        $$->sym=newtmp();
+                        emit(add,$1,$3,$$,0,yylineno);}
+      | expr MINUS expr {$$ =newexpr(arithexp_e);
+                        $$->sym=newtmp();
+                        emit(sub,$1,$3,$$,0,yylineno);}
+      | expr MUL expr   {$$ =newexpr(arithexp_e);
+                         $$->sym=newtmp();
+                         emit(mul,$1,$3,$$,0,yylineno);}
+      | expr DIV expr  {$$ =newexpr(arithexp_e);
+                        $$->sym=newtmp();
+                        emit(div,$1,$3,$$,0,yylineno);;}
+      | expr MOD expr  {$$ =newexpr(arithexp_e);
+                        $$->sym=newtmp();
+                        emit(mod,$1,$3,$$,0,yylineno);}
+      | expr EQUAL expr {$$ = newexpr(boolexpr_e);
+		                 $$->sym = newtmp();
+                         //emit(if_eq, $1, $3, $$, nextQuad()+3 , yylineno);
+		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                 //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
+                         //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         }
+      | expr NOT_EQUAL expr {$$ = newexpr(boolexpr_e);
+		                     $$->sym = newtmp();
+                             //emit(if_noteq, $1, $3, $$, nextQuad()+3 , yylineno);
+		                     //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                     //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
+                             //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         }
+      | expr GREATER expr   {$$ = newexpr(boolexpr_e);
+		                     $$->sym = newtmp();
+                             //emit(if_greater, $1, $3, $$, nextQuad()+3 , yylineno);
+		                     //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                     //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
+                             //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         }
+      | expr LESS expr      {$$ = newexpr(boolexpr_e);
+		                     $$->sym = newtmp();
+                             //emit(if_less, $1, $3, $$, nextQuad()+3 , yylineno);
+		                     //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                     //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
+                             //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         }
+      | expr GREATER_EQUAL expr {$$ = newexpr(boolexpr_e);
+		                         $$->sym = newtmp();
+                                 //emit(if_greatereq, $1, $3, $$, nextQuad()+3 , yylineno);
+		                         //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                         //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
+                                 //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                                }
+      | expr LESS_EQUAL expr    {$$ = newexpr(boolexpr_e);
+		                         $$->sym = newtmp();
+                                 //emit(if_lesseq, $1, $3, $$, nextQuad()+3 , yylineno);
+		                         //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                         //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
+                                 //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                                 }
+      | expr AND expr {$$ = newexpr(boolexpr_e);
+		                         $$->sym = newtmp();
+                                 //emit(andc, $1, $3, $$, nextQuad()+3 , yylineno);
+		                         //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                         //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
+                                 //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+        
+      }
+      | expr OR expr {$$ = newexpr(boolexpr_e);
+		              $$->sym = newtmp();
+		              //emit(or_c, $1, $3, $$, nextQuad()+3 , yylineno);
+		              //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		              //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
+		              //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                      }
+      | term {$$=$1;}
       ;
 
-term:   LEFT_PARENTHESIS{/* scope++; */} expr RIGHT_PARENTHESIS {/* scope--; */cout << "term => (expr)\n";}
-	    | UMINUS expr {/* $$ = $2 * (-1); */cout << "term => -expr\n";}
-	    | NOT expr {/* if ($2) $$=0; else $$=1; */cout << "term => !expr\n";}
+term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
+	    | UMINUS expr  {$$ =newexpr(arithexp_e);
+                        $$->sym=newtmp();
+                        emit(uminus,$2,NULL,$$,0,yylineno);}
+	    | NOT expr {$$ =newexpr(arithexp_e);
+                        $$->sym=newtmp();
+                        emit(notc,$2,NULL,$$,0,yylineno);}
 		| PLUS_PLUS lvalue {
-                             string name=$2;
-                             SymbolTableEntry ste= lookupactivevar(name);
-                             if(is_sysfunc(name)){ red(); cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n"; reset();}
-                             else if (!ste.isActive){red(); cout << "Error: There is no variable " << name << endl; reset();}
-                             else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) {red(); cout << "Error: Variable " << name << " is not accessible in this scope.\n"; reset();}
-                                /* else $$ = ++$2; */
-                             }
-                             cout << "term => ++lvalue\n";
+                             //lookup
+                             //if programfunc_s || libraryfunc_s
+                             //Error
+                             //if tableitem_e
+                             //$$=emit_iftableitem($2);
+                             //expr *tmp = newexpr(costnum_e);
+                             //tmp->setnumconst(1);
+                             //emit(add,$$,tmp,$$,0,yylineno);
+                             //emit(tablesetelem,$2->getIndex(),$$,$2,0,yylineno);
+                             //else
+                             //expr *tmp = newexpr(costnum_e);
+                             //tmp->setnumconst(1);
+                             //emit(add,$2,tmp,$2,0,yylineno);
+                             //$$ = newexpr(arithexp_e);
+                             //$$->sym=newtmp();
+                             //emit(assign,$2,NULL,$$,0,yylineno);
                            }
 		| lvalue PLUS_PLUS {
-                             string name=$1;
-                             SymbolTableEntry ste= lookupactivevar(name);
-                             if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n"; reset();}
-                             else if (!ste.isActive) {red();cout << "Error: There is no variable " << name << endl; reset();}
-                             else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) {red(); cout << "Error: Variable " << name << " is not accessible in this scope.\n"; reset();}
-                                /* else $$ = $2++; */
-                             }
-                             cout << "term => lvalue++\n";
+                             //lookup
+                             //if programfunc_s || libraryfunc_s
+                             //Error
+                             //if tableitem_e
+                             //expr *value = emit_iftableitem($1);
+                             //expr *tmp = newexpr(costnum_e);
+                             //tmp->setnumconst(1);
+                             //emit(assign,value,NULL,$$,0,yylineno);
+                             //emit(add,value,tmp,value,0,yylineno);
+                             //emit(tablesetelem,$1->getIndex(),value,$1,0,yylineno);
+                             //else
+                             //emit(assign,$1,NULL,$$,0,yylineno);
+                             //expr *tmp = newexpr(costnum_e);
+                             //tmp->setnumconst(1);
+                             //emit(add,$1,tmp,$1,0,yylineno);
                            }
 		| MINUS_MINUS lvalue {
-                             string name=$2;
-                             SymbolTableEntry ste= lookupactivevar(name);
-                             if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n"; reset();}
-                             else if (!ste.isActive) {red(); cout << "Error: There is no variable " << name << endl; reset();}
-                             else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope) {red();cout << "Error: Variable " << name << " is not accessible in this scope.\n"; reset();}
-                                /* else $$ = --$2; */
-                             }
-                             cout << "term => --lvalue\n";
+                             //lookup
+                             //if programfunc_s || libraryfunc_s
+                             //Error
+                             //if tableitem_e
+                             //$$=emit_iftableitem($2);
+                             //expr *tmp = newexpr(costnum_e);
+                             //tmp->setnumconst(-1);
+                             //emit(add,$$,tmp,$$,0,yylineno);
+                             //emit(tablesetelem,$2->getIndex(),$$,$2,0,yylineno);
+                             //else
+                             //expr *tmp = newexpr(costnum_e);
+                             //tmp->setnumconst(-1);
+                             //emit(add,$2,tmp,$2,0,yylineno);
+                             //$$ = newexpr(arithexp_e);
+                             //$$->sym=newtmp();
+                             //emit(assign,$2,NULL,$$,0,yylineno);
                            }
 		| lvalue MINUS_MINUS {
-                             string name=$1;
-                             SymbolTableEntry ste= lookupactivevar(name);
-                             if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used for decrement.\n"; reset();}
-                             else if (!ste.isActive) {red(); cout << "Error: There is no variable " << name << endl; reset();}
-                             else{ 
-                                if (ste.varVal.scope!=0 || ste.varVal.scope!=scope){red(); cout << "Error: Variable " << name << " is not accessible in this scope.\n"; reset();}
-                                /* else $$ = $2--; */
+                             //lookup
+                             //if programfunc_s || libraryfunc_s
+                             //Error
+                             //if tableitem_e
+                             //expr *value = emit_iftableitem($1);
+                             //expr *tmp = newexpr(costnum_e);
+                             //tmp->setnumconst(-1);
+                             //emit(assign,value,NULL,$$,0,yylineno);
+                             //emit(add,value,tmp,value,0,yylineno);
+                             //emit(tablesetelem,$1->getIndex(),value,$1,0,yylineno);
+                             //else
+                             //emit(assign,$1,NULL,$$,0,yylineno);
+                             //expr *tmp = newexpr(costnum_e);
+                             //tmp->setnumconst(-1);
+                             //emit(add,$1,tmp,$1,0,yylineno);
                              }
-                             cout << "term => lvalue--\n";
-                           }
-		| primary {/*$$=$1;*/cout << "term => primary\n";}
+		| primary {$$=$1;}
 		;
 
 assignexpr: lvalue ASSIGN expr{		
