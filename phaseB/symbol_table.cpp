@@ -1,8 +1,19 @@
 #include <iostream>
 #include "symbol_table.h"
-
+#include <string>
 vector<SymbolTableEntry> SymbolTable;
+int hidden_var_count = 0;
 
+
+string create_hiddenvar_name(){
+    string name = "_temp"+to_string(hidden_var_count);
+    hidden_var_count++;
+    return name;
+}
+
+void reset_hidden_count(){
+    hidden_var_count = 0;
+}
 void insert(SymbolTableEntry ste){
     SymbolTable.push_back(ste);
     return;
