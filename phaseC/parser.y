@@ -261,7 +261,12 @@ assignexpr: lvalue ASSIGN expr{
 primary: lvalue{cout << "primary => lvalue\n";}
         | call {cout << "primary => call\n";}
         | objectdef {cout << "primary => objectdef\n";}
-		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{cout << "primary => (funcdef)\n";}
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{cout << "primary => (funcdef)\n";
+        /*
+            $$=newexpr(programfunc_s);
+            $$->sym=$2;
+        */
+        }
 		| const{cout << "primary => const\n";}
         ;
 
