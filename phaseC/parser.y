@@ -193,6 +193,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
 		| lvalue PLUS_PLUS {
                              //lookup
                              //if programfunc_s || libraryfunc_s
+                             //check_arith($$);
                              //Error
                              //if tableitem_e
                              //expr *value = emit_iftableitem($1);
@@ -363,7 +364,10 @@ stmtlist: stmt stmtlist  {cout << "stmtlist => stmt stmtlist\n";}
           |
           ;
 
-funcdef: FUNCTION ID {
+funcdef: funcprefix funcargs funcbody {}
+            
+         ;
+funcprefix: FUNCTION funcname{
             string name= $2;
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
             if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
@@ -377,7 +381,7 @@ funcdef: FUNCTION ID {
                   insert(ste);
             }
             
-         } funLEFT_PAR idlist funRIGHT_PAR {infunction++;}block{infunction--;cout <<"funcdef => function id(idlist)block\n";}
+         } 
          | FUNCTION {
             string fid=to_string(funcid++);
             string name= "$f" + fid;
@@ -397,11 +401,13 @@ funcdef: FUNCTION ID {
                     break;
                 }
             }
-         } funLEFT_PAR idlist funRIGHT_PAR {infunction++;}block{infunction--;cout <<"funcdef => function(idlist)block\n";}
-         ;
+         } 
+funcname: ID { $$ = $1; }
+funcblockstart:{}
+funcblockend{}
+funcargs:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {}
+funcbody: { scope--; infunction++;}funcblockstart block funcblockend {infunction--;cout <<"funcdef => function(idlist)block\n";} exitscopespace(); } ;
 
-funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
-funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 
 const:	INTEGER {/*$$=$1;*/cout <<"const => integer:"<<yylval.intVal<<endl;}
 		| REAL {/*$$=$1;*/cout <<"const => real:"<<yylval.doubleVal<<endl;}
@@ -455,26 +461,38 @@ loopstmt : loopstart stmt loopend { $$ = $2; } ;
 
 
 
-ifstmt:	if_prefix stmt {cout <<"ifstmt => if(expr) stmt"<<endl;}
-		|if_prefix stmt else_prefix stmt {cout <<"ifstmt => if(expr) stmt else stmt"<<endl;}
+ifstmt:	if_prefix stmt {cout <<"ifstmt => if(expr) stmt"<<endl;
+        /*patchlabel($1-2, $1+1);
+        patchlabel($1-1, nextQuad()+1);*/
+        }
+		|if_prefix stmt else_prefix stmt {cout <<"ifstmt => if(expr) stmt else stmt"<<endl;
+        /* patchlabel($1-2,$3-1); //if eq if_prefix
+        patchlabel($1-1,$3+2); //jmp if_prefix
+        patchlabel($3, nextQuad()+1); // jmp to end    */
+        }
 	    ;	 
 if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{}
 
-else_prefix: ELSE {}
+else_prefix: ELSE { {
+    $$ = nextQuad();   
+    emit(jump,NULL,NULL,NULL,0,yylineno);
+} }
 
 
-whilestmt: whilestart whilecond loopstmt {cout <<"whilestmt => while(expr) stmt"<<endl;}
-		 ; 
+whilestmt: whilestart whilecond loopstmt {
+    cout <<"whilestmt => while(expr) stmt"<<endl;
+    emit(jump,NULL,NULL,NULL,$1,yylineno); 
+    patchlabel($2, nextQuad()+1); } ; 
 
-whilestart: WHILE{}
+whilestart: WHILE{$$=nextQuad()+1;}
 
 whilecond: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {}
 	
 for_stmt: for_prefix N elist RIGHT_PARENTHESIS J loopstmt Q {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;}
 		;
-J: {/*jump*/}
+J: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);}
 
-Q:{/*nextquad*/}
+Q:{/*nextquad*/ $$ = nextquad(); }
 
 for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{}
 
