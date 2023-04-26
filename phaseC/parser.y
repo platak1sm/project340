@@ -166,7 +166,8 @@ expr: assignexpr {$$=$1;}
       ;
 
 term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
-	    | UMINUS expr  {$$ =newexpr(arithexp_e);
+	    | UMINUS expr  {check_arith($2);
+                        $$ =newexpr(arithexp_e);
                         $$->sym=newtmp();
                         emit(uminus,$2,NULL,$$,0,yylineno);}
 	    | NOT expr {$$ =newexpr(arithexp_e);
@@ -179,12 +180,12 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                              //if tableitem_e
                              //$$=emit_iftableitem($2);
                              //expr *tmp = newexpr(costnum_e);
-                             //tmp->setnumconst(1);
+                             //tmp->numConst=1;
                              //emit(add,$$,tmp,$$,0,yylineno);
                              //emit(tablesetelem,$2->getIndex(),$$,$2,0,yylineno);
                              //else
                              //expr *tmp = newexpr(costnum_e);
-                             //tmp->setnumconst(1);
+                             //tmp->numConst=1;
                              //emit(add,$2,tmp,$2,0,yylineno);
                              //$$ = newexpr(arithexp_e);
                              //$$->sym=newtmp();
@@ -197,14 +198,14 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                              //if tableitem_e
                              //expr *value = emit_iftableitem($1);
                              //expr *tmp = newexpr(costnum_e);
-                             //tmp->setnumconst(1);
+                             //tmp->numConst=1;
                              //emit(assign,value,NULL,$$,0,yylineno);
                              //emit(add,value,tmp,value,0,yylineno);
                              //emit(tablesetelem,$1->getIndex(),value,$1,0,yylineno);
                              //else
                              //emit(assign,$1,NULL,$$,0,yylineno);
                              //expr *tmp = newexpr(costnum_e);
-                             //tmp->setnumconst(1);
+                             //tmp->numConst=1;
                              //emit(add,$1,tmp,$1,0,yylineno);
                            }
 		| MINUS_MINUS lvalue {
@@ -214,12 +215,12 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                              //if tableitem_e
                              //$$=emit_iftableitem($2);
                              //expr *tmp = newexpr(costnum_e);
-                             //tmp->setnumconst(-1);
+                             //tmp->numConst=-1;
                              //emit(add,$$,tmp,$$,0,yylineno);
                              //emit(tablesetelem,$2->getIndex(),$$,$2,0,yylineno);
                              //else
                              //expr *tmp = newexpr(costnum_e);
-                             //tmp->setnumconst(-1);
+                             //tmp->numConst=-1;
                              //emit(add,$2,tmp,$2,0,yylineno);
                              //$$ = newexpr(arithexp_e);
                              //$$->sym=newtmp();
@@ -232,14 +233,14 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                              //if tableitem_e
                              //expr *value = emit_iftableitem($1);
                              //expr *tmp = newexpr(costnum_e);
-                             //tmp->setnumconst(-1);
+                             //tmp->numConst=-1;
                              //emit(assign,value,NULL,$$,0,yylineno);
                              //emit(add,value,tmp,value,0,yylineno);
                              //emit(tablesetelem,$1->getIndex(),value,$1,0,yylineno);
                              //else
                              //emit(assign,$1,NULL,$$,0,yylineno);
                              //expr *tmp = newexpr(costnum_e);
-                             //tmp->setnumconst(-1);
+                             //tmp->numConst=-1;
                              //emit(add,$1,tmp,$1,0,yylineno);
                              }
 		| primary {$$=$1;}
@@ -254,6 +255,7 @@ assignexpr: lvalue ASSIGN expr{
                         
             ;
 	
+<<<<<<< HEAD
 primary: lvalue{cout << "primary => lvalue\n";}
         | call {cout << "primary => call\n";}
         | objectdef {cout << "primary => objectdef\n";}
@@ -264,12 +266,19 @@ primary: lvalue{cout << "primary => lvalue\n";}
         */
         }
 		| const{cout << "primary => const\n";}
+=======
+primary: lvalue{ $$ = emit_iftableitem($1);}
+        | call {$$=$1;}
+        | objectdef {$$=$1;;}
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{$$ = newexpr(programfunc_e);
+                                                    $$->insertsym($2);}
+		| const{$$=$1;}
+>>>>>>> 2d7d104b6f996b80824baca91737863c881f2cb8
         ;
 
-lvalue: ID {
+lvalue: ID { /*wait for irene to fix 2nd phase*/
             string name($1);
-            // if(is_sysfunc(name)) {red(); cout << "Error: "<< name <<" is a system function, it cannot be used as a variable.\n"; reset();
-            // }else 
+
             if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false ){
                 SymbolTableEntry ent;
                 ent.isActive = true;
@@ -318,19 +327,25 @@ lvalue: ID {
         | member{cout << "lvalue => member" <<endl;}
         ;
 
-member: lvalue PERIOD ID {cout << "member => lvalue.id\n";}
-		| lvalue LEFT_BRACKET expr RIGHT_BRACKET {cout << "member => lvalue[expr]\n";}
-		| call PERIOD ID {cout << "member => call.id\n";}
-		| call LEFT_BRACKET expr RIGHT_BRACKET {cout << "member => call[expr]\n";}
+member: lvalue PERIOD ID {}
+		| lvalue LEFT_BRACKET expr RIGHT_BRACKET {$1 = emit_iftableitem($1);
+                                                  $$ = newexpr(tableitem_e);
+                                                  //$$->insertsym($1->sym);
+                                                  //$$->index=$3;
+                                                  }
+		| call PERIOD ID {}
+		| call LEFT_BRACKET expr RIGHT_BRACKET {}
 		;
 
-call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {cout << "call => (elist)\n";}
-		| lvalue callsuffix  {cout << "call => lvalue callsuffix\n";}
-		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "call => (funcdef)(elist)\n";}
+call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
+		| lvalue callsuffix  {/**/}
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {expr *func = newexpr(programfunc_e);
+                                                                                                func->insertsym($2);
+                                                                                                $$ = make_call(func,$5);}
 		;
 
-callsuffix:	normcall {cout << "callsuffix => normcall\n";$$=$1;}
-			| methodcall {cout << "callsuffix => methodcall\n";$$=$1;}
+callsuffix:	normcall {$$=$1;}
+			| methodcall {$$=$1;}
 			;
 
 
@@ -403,46 +418,35 @@ funcdef: FUNCTION ID {
 funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
 funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 
-const:	INTEGER {/*$$=$1;*/cout <<"const => integer:"<<yylval.intVal<<endl;}
-		| REAL {/*$$=$1;*/cout <<"const => real:"<<yylval.doubleVal<<endl;}
-		| STRING {/*$$=$1;*/cout <<"const => string"<<yylval.stringVal<<endl;}
-		| NIL {/*$$=$1;*/cout <<"const => nil"<<endl;}
-		| TRUE {/*$$=$1;*/cout <<"const => true"<<endl;}
-		| FALSE {/*$$=$1;*/cout <<"const => false"<<endl;}
+const:	INTEGER {$$ = newexpr(costnum_e);
+                 $$->numConst=$1;}
+		| REAL {$$ = newexpr(costnum_e);
+                 $$->numConst=$1;}
+		| STRING {$$ = newexpr(conststring_e);
+                  $$->strConst=$1($1);}
+		| NIL {$$ = newexpr(nil_e)}
+		| TRUE { $$ = newexpr(constbool_e);
+                 $$->boolConst=true;}
+		| FALSE { $$ = new expr(constbool_e);
+                  $$->boolConst=false;}
 		;
 
 idlist: ID{
-            string name = $1; 
-            SymbolTableEntry ste= lookupcurrentscope(name,scope);
-            if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
-            }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n"; reset();
-            }else {
-                  ste.type=FORMAL;
-                  ste.isActive= true;
-                  ste.varVal.name=name;
-                  ste.varVal.scope=scope;
-                  ste.varVal.line=yylineno;
-                  insert(ste);
-            }
-            cout <<"idlist => id"<<endl;
+            //lookup
+            //if exists then throw error for redefinition
+            //if libfunc
+            //error
+            //else
+            //insert in table
+           
           }
         | idlist COMMA ID{
-            string name = $3; 
-            SymbolTableEntry ste= lookupcurrentscope(name,scope); 
-            if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
-            }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n"; reset();
-            }else {
-                  ste.type=FORMAL;
-                  ste.isActive=TRUE;
-                  ste.varVal.name=name;
-                  ste.varVal.scope=scope;
-                  ste.varVal.line=yylineno;
-                  ste.funcVal.name=name; 
-                  ste.funcVal.scope=scope;
-                  ste.funcVal.line=yylineno;
-                  insert(ste);
-            }
-            cout <<"idlist => idlist, id"<<endl;
+            //lookup
+            //if exists then throw error for redefinition
+            //if libfunc
+            //error
+            //else
+            //insert in table
          }
         |
        ;
@@ -455,24 +459,35 @@ loopstmt : loopstart stmt loopend { $$ = $2; } ;
 
 
 
-ifstmt:	if_prefix stmt {cout <<"ifstmt => if(expr) stmt"<<endl;}
-		|if_prefix stmt else_prefix stmt {cout <<"ifstmt => if(expr) stmt else stmt"<<endl;}
+ifstmt:	if_prefix stmt {//patchlabel($1-2, $1+1);
+                        //patchlabel($1-1, nextQuad()+1);
+                       }
+		|if_prefix stmt else_prefix stmt   {//patchlabel($1-2,$3-1); //if eq if_prefix
+                                            //patchlabel($1-1,$3+2); //jmp if_prefix
+                                            //patchlabel($3, nextQuad()+1); // jmp to end   
+        }
 	    ;	 
-if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{}
+if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{expr *tmp = newexpr(constbool_e);
+                                                      tmp->boolConst=true;
+                                                      //code..
+                                                      //backpatching (truelist & falselist)
+                                                      $$ = nextQuad();
+                                                      }
 
-else_prefix: ELSE {}
+else_prefix: ELSE {$$ = nextQuad();   
+                   emit(jump,NULL,NULL,NULL,0,yylineno);}
 
 
 whilestmt: whilestart whilecond loopstmt {cout <<"whilestmt => while(expr) stmt"<<endl;}
 		 ; 
 
-whilestart: WHILE{}
+whilestart: WHILE{$$=nextQuad()+1;}
 
-whilecond: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {}
+whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {/*code..*/}
 	
-for_stmt: for_prefix N elist RIGHT_PARENTHESIS J loopstmt Q {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;}
+for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;}
 		;
-J: {/*jump*/}
+N: {/*jump*/}
 
 Q:{/*nextquad*/}
 
