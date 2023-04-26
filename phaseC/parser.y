@@ -406,7 +406,7 @@ funcname: ID { $$ = $1; }
 funcblockstart:{}
 funcblockend{}
 funcargs:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {}
-funcbody: { scope--; infunction++;}funcblockstart block funcblockend {infunction--;cout <<"funcdef => function(idlist)block\n";} exitscopespace(); } ;
+funcbody: { scope--; infunction++;}funcblockstart block funcblockend {infunction--;cout <<"funcdef => function(idlist)block\n"; exitscopespace(); } ;
 
 
 const:	INTEGER {/*$$=$1;*/cout <<"const => integer:"<<yylval.intVal<<endl;}
