@@ -246,14 +246,10 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
 		;
 
 assignexpr: lvalue ASSIGN expr{		
-                                string name = $1;
-                                // red(); cout << "name = "<<name<<endl; reset();
-                                if(is_sysfunc(name) || lookupactivefunc(name).isActive==true){
-                                    red();
-                                    cout <<"Error: " <<name << " is defined as function \n";
-                                    reset();
-                                }
-                                cout << "assignexpr => lvalue=expr\n";      
+                                //lookup
+                                //if programfunc_s || libraryfunc_s
+                                //Error
+                                //code...
                             }
                         
             ;
