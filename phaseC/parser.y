@@ -255,16 +255,12 @@ assignexpr: lvalue ASSIGN expr{
                         
             ;
 	
-primary: lvalue{cout << "primary => lvalue\n";}
-        | call {cout << "primary => call\n";}
-        | objectdef {cout << "primary => objectdef\n";}
-		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{cout << "primary => (funcdef)\n";
-        /*
-            $$=newexpr(programfunc_s);
-            $$->sym=$2;
-        */
-        }
-		| const{cout << "primary => const\n";}
+primary: lvalue{ $$ = emit_iftableitem($1);}
+        | call {$$=$1;}
+        | objectdef {$$=$1;;}
+		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{$$ = newexpr(programfunc_e);
+                                                    $$->insertsym($2);}
+		| const{$$=$1;}
         ;
 
 lvalue: ID {
@@ -461,22 +457,18 @@ loopstmt : loopstart stmt loopend { $$ = $2; } ;
 
 
 
-ifstmt:	if_prefix stmt {cout <<"ifstmt => if(expr) stmt"<<endl;
-        /*patchlabel($1-2, $1+1);
-        patchlabel($1-1, nextQuad()+1);*/
-        }
-		|if_prefix stmt else_prefix stmt {cout <<"ifstmt => if(expr) stmt else stmt"<<endl;
-        /* patchlabel($1-2,$3-1); //if eq if_prefix
-        patchlabel($1-1,$3+2); //jmp if_prefix
-        patchlabel($3, nextQuad()+1); // jmp to end    */
+ifstmt:	if_prefix stmt {//patchlabel($1-2, $1+1);
+                        //patchlabel($1-1, nextQuad()+1);
+                       }
+		|if_prefix stmt else_prefix stmt   {//patchlabel($1-2,$3-1); //if eq if_prefix
+                                            //patchlabel($1-1,$3+2); //jmp if_prefix
+                                            //patchlabel($3, nextQuad()+1); // jmp to end   
         }
 	    ;	 
 if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{}
 
-else_prefix: ELSE { {
-    $$ = nextQuad();   
-    emit(jump,NULL,NULL,NULL,0,yylineno);
-} }
+else_prefix: ELSE {$$ = nextQuad();   
+                   emit(jump,NULL,NULL,NULL,0,yylineno);}
 
 
 whilestmt: whilestart whilecond loopstmt {
@@ -490,7 +482,7 @@ whilecond: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {}
 	
 for_stmt: for_prefix N elist RIGHT_PARENTHESIS J loopstmt Q {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;}
 		;
-J: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);}
+N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);}
 
 Q:{/*nextquad*/ $$ = nextquad(); }
 
