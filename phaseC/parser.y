@@ -484,11 +484,9 @@ for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {cout <<"forstmt => 
 		;
 N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);}
 
-Q:{/*nextquad*/ $$ = nextquad(); }
-
 for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{}
 
-M: {}
+M: {$$ = nextquad();}
 
 returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
