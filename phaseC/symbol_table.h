@@ -23,8 +23,24 @@ enum SymbolType {
  GLOBAL, LOCALV, FORMAL,  USERFUNC, LIBFUNC
 }; 
 
+typedef enum scopespace_t
+{
+    programvar,
+    functionlocal,
+    formalarg
+} scopespace_t;
+
+typedef enum symbol_t
+{
+    var_s,
+    programfunc_s,
+    libraryfunc_s
+} symbol_t;
+
 class SymbolTableEntry { 
     public:
+        scopespace_t scopespace;
+        symbol_t sym;
         bool isActive;
         Variable varVal;
         Function funcVal;

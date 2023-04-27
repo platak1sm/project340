@@ -55,7 +55,7 @@ typedef enum expr_t
 typedef struct expr
 {
     expr_t type;
-    symbol *sym;
+    SymbolTableEntry sym;
     expr *index;
     double numConst;
     string strConst;

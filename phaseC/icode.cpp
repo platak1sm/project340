@@ -57,10 +57,10 @@ expr *newexpr(expr_t t)
     return e;
 }
 
-symbol *newtmp()
+SymbolTableEntry newtmp()
 { /*mporei na thelei diorthwsi*/
     string name = "$t" + to_string(tmpc++);
-    symbol *sym = lookup(name);
+    SymbolTableEntry sym = lookup(name);
     if (sym == NULL)
     {
         sym->name = name;
@@ -197,11 +197,11 @@ void restorecurrscopeoffset(unsigned n)
     }
 }
 
-expr *lvalue_exp(symbol *sym) // thelei diorthwsh
+expr *lvalue_exp(SymbolTableEntry sym) // thelei diorthwsh
 {
-    assert(sym);
+    
     expr *e;
-    switch (sym->type)
+    switch (sym.sym)
     {
     case var_s:
         e->type = var_e;
@@ -219,13 +219,6 @@ expr *lvalue_exp(symbol *sym) // thelei diorthwsh
     return e;
 }
 
-symbol *lookup(string name) // ftiaksimo
-{
-}
-
-void insertsym(symbol *sym) // ftiaksimo
-{
-}
 
 expr *newexpr_conststring(string s)
 {

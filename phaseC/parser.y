@@ -277,12 +277,15 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                 ent.varVal.name = name;
                 ent.varVal.scope = scope;
                 ent.varVal.line = yylineno;
+                inccurrscopeoffset()
                 insert(ent);
+                $$ = lvalue_exp(ent);
             }else{
                 if(lookupactivevar(name).varVal.scope < infunction && lookupactivevar(name).varVal.scope > 0){
                     red(); cout << "Error: " <<" There is function between the uses of variable "<< name <<endl; reset();
                 }
             }
+
             cout << "lvalue => id:" << yylval.stringVal<<endl;
             }
         | LOCAL ID {
@@ -299,7 +302,10 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                 ent.varVal.name = name;
                 ent.varVal.scope = scope;
                 ent.varVal.line = yylineno;
+                inccurrscopeoffset()
                 insert(ent);
+                
+                $$ = lvalue_exp(ent);
             }
             cout << "lvalue => local id:" << yylval.stringVal<<", "<<scope<<endl;
         }
