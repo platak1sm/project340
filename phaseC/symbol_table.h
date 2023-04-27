@@ -40,7 +40,7 @@ typedef enum symbol_t
 class SymbolTableEntry { 
     public:
         scopespace_t scopespace;
-        symbol_t sym;
+        symbol_t symt;
         bool isActive;
         Variable varVal;
         Function funcVal;

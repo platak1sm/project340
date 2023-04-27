@@ -60,14 +60,14 @@ expr *newexpr(expr_t t)
 SymbolTableEntry newtmp()
 { /*mporei na thelei diorthwsi*/
     string name = "$t" + to_string(tmpc++);
-    SymbolTableEntry sym = lookup(name);
-    if (sym == NULL)
+    SymbolTableEntry sym;
+    if (lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive==false)
     {
-        sym->name = name;
-        sym->scope = 0;
-        sym->line = 0;
-        sym->isActive = true;
-        insertsym(sym);
+        sym.varVal.name = name;
+        sym.varVal.scope = 0;
+        sym.varVal.line = 0;
+        sym.isActive = true;
+        insert(sym);
     }
     return sym;
 }
@@ -201,7 +201,7 @@ expr *lvalue_exp(SymbolTableEntry sym) // thelei diorthwsh
 {
     
     expr *e;
-    switch (sym.sym)
+    switch (sym.symt)
     {
     case var_s:
         e->type = var_e;
@@ -263,4 +263,4 @@ void check_arith(expr* e, string context) {
 
 bool istempname(string s) { return s[0] == '_'; }
 
-bool istempexpr(expr *e) { return e->sym && istempname(e->sym->name); }
+//bool istempexpr(expr *e) { return e->sym && istempname(e->sym.varVal.name); }

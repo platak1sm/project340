@@ -73,19 +73,7 @@ typedef struct quad
     unsigned line;
 } quad;
 
-typedef enum scopespace_t
-{
-    programvar,
-    functionlocal,
-    formalarg
-} scopespace_t;
 
-typedef enum symbol_t
-{
-    var_s,
-    programfunc_s,
-    libraryfunc_s
-} symbol_t;
 
 typedef struct symbol
 {
@@ -111,7 +99,7 @@ expr *emit_iftableitem(expr *e);
 
 expr *newexpr(expr_t t);
 
-symbol *newtmp();
+SymbolTableEntry newtmp();
 
 scopespace_t currscopespace(void);
 
@@ -143,9 +131,9 @@ void resetfunctionlocaloffset(void);
 
 void restorecurrscopeoffset(unsigned n);
 
-symbol *lookup(string name);
+SymbolTableEntry lookup(string name);
 
-void insertsym(symbol *sym);
+void insertsym(SymbolTableEntry sym);
 
 expr *make_call(expr *lv, expr *reversed_elist);
 
