@@ -63,9 +63,9 @@ SymbolTableEntry newtmp()
     SymbolTableEntry sym;
     if (lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive==false)
     {
-        sym.varVal.name = name;
-        sym.varVal.scope = 0;
-        sym.varVal.line = 0;
+        sym.name = name;
+        sym.scope = 0;
+        sym.line = 0;
         sym.isActive = true;
         insert(sym);
     }
@@ -136,7 +136,7 @@ expr *newexpr_constbool(unsigned int b)
     return e;
 }
 
-unsigned nextquad(void) { return currQuad; }
+unsigned nextquad(void) { return currQuad++; }
 
 void make_stmt(stmt_t *s)
 {
@@ -261,6 +261,6 @@ void check_arith(expr* e, string context) {
 	}
 }
 
-bool istempname(string s) { return s[0] == '_'; }
+bool istempname(string s) { return s[0] == '$'; }
 
 //bool istempexpr(expr *e) { return e->sym && istempname(e->sym.varVal.name); }

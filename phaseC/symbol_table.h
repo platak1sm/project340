@@ -3,7 +3,7 @@
 
 using namespace std;
 
-class Variable {
+/* class Variable {
     public:
         string name;
         unsigned int scope;
@@ -17,11 +17,11 @@ class Function {
         unsigned int scope;
         unsigned int line; 
         vector<Variable> arguments;
-};
+}; */
 
-enum SymbolType {
+typedef enum SymbolType {
  GLOBAL, LOCALV, FORMAL,  USERFUNC, LIBFUNC
-}; 
+} stype; 
 
 typedef enum scopespace_t
 {
@@ -39,12 +39,16 @@ typedef enum symbol_t
 
 class SymbolTableEntry { 
     public:
+        string name;
         scopespace_t scopespace;
         symbol_t symt;
         bool isActive;
-        Variable varVal;
-        Function funcVal;
-        enum SymbolType type;
+        //Variable varVal;
+        //Function funcVal;
+        unsigned int scope;
+        unsigned int line;
+        unsigned offset;
+        stype type;
 }; 
 
 extern vector<SymbolTableEntry> SymbolTable;
