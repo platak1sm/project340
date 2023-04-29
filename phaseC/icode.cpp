@@ -6,18 +6,6 @@ unsigned total = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffs
 unsigned int currQuad = 0;
 int tmpc = 0; // tmp counter
 
-/* void expand(){
-    assert(total == currQuad);
-    quad * p = (quad*)malloc(NEW_SIZE);
-    if(quads){
-        memcpy(p, quads, CURR_SIZE);
-        free(quads);
-    }
-    quads = p;
-    total += EXPAND_SIZE;
-} */
-
-
 
 void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsigned line)
 { /*mallon correct alla check it*/

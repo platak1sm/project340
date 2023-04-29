@@ -1,8 +1,8 @@
 #include "symbol_table.h"
 
-#define EXPAND_SIZE 1024
+/* #define EXPAND_SIZE 1024
 #define CURR_SIZE (total * sizeof(quad))
-#define NEW_SIZE (EXPAND_SIZE * sizeof(quad) + CURR_SIZE)
+#define NEW_SIZE (EXPAND_SIZE * sizeof(quad) + CURR_SIZE) */
 
 extern int yylineno, scope;
 
@@ -131,9 +131,9 @@ void resetfunctionlocaloffset(void);
 
 void restorecurrscopeoffset(unsigned n);
 
-SymbolTableEntry lookup(string name);
+//SymbolTableEntry lookup(string name);
 
-void insertsym(SymbolTableEntry sym);
+//void insertsym(SymbolTableEntry sym);
 
 expr *make_call(expr *lv, expr *reversed_elist);
 
