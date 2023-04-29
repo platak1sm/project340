@@ -17,11 +17,7 @@ int tmpc = 0; // tmp counter
     total += EXPAND_SIZE;
 } */
 
-/*--------------------------------------------MUST READ-----------------------------------------------------------------------------------------------------------
-                    de kserw an to symbol struct einai to idio me to symboltableentry h kapoio upgrade toy h an einai teleios diaforetiko
-                    opote na anavathmisoume to symboltableentry mas an xreiazetai. An einai diaforetiko prepei na to ylopoihsoume ap thn arxh sta idia standards
-                    kai na to kanoume etsi wste na tairiazei me tis dialekseis klp(psakste to kai eseis)
-------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 
 void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsigned line)
 { /*mallon correct alla check it*/
