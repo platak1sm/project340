@@ -120,7 +120,7 @@ expr *newexpr_constbool(unsigned int b)
     return e;
 }
 
-unsigned nextquad(void) { return currQuad++; }
+unsigned nextquad(void) { return currQuad; }
 
 void make_stmt(stmt_t *s)
 {
@@ -247,4 +247,4 @@ void check_arith(expr* e, string context) {
 
 bool istempname(string s) { return s[0] == '$'; }
 
-//bool istempexpr(expr *e) { return e->sym && istempname(e->sym.varVal.name); }
+//bool istempexpr(expr *e) { return e->sym && istempname(e->sym.name); }

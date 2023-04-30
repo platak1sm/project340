@@ -248,7 +248,26 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
 		;
 
 assignexpr: lvalue ASSIGN expr{		
-                                //lookup
+                                string name = $1;
+                                if((is_sysfunc(name) || lookupactivefunc(name).isActive==true)){
+                                    red();
+                                    cout <<"Error: " <<name << " is defined as function \n";
+                                    reset();
+                                }else{
+                                    int i = scope;
+                                    SymbolTableEntry lookupent;
+                                    while(i >=0 ){
+                                        lookupent = lookupcurrentscope(name, i);
+                                        if(lookupent.isActive)
+                                            break;
+                                        i--;
+                                    }
+                                    if(lookupent.type == USERFUNC && lookupcurrentscope(name, scope).type != LOCALV){
+                                        red();
+                                        cout <<"Error: " <<name << " is defined as function \n";
+                                        reset();
+                                    }
+                                }
                                 //if programfunc_s || libraryfunc_s
                                 //Error
                                 //code...
@@ -274,10 +293,13 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                     ent.type = GLOBAL;
                 else
                     ent.type = LOCALV;
-                ent.varVal.name = name;
-                ent.varVal.scope = scope;
-                ent.varVal.line = yylineno;
+                ent.name = name;
+                ent.scope = scope;
+                ent.line = yylineno;
                 inccurrscopeoffset()
+                ent.offset = currscopeoffset();
+                ent.scopespace = currscopespace();
+                ent.symt = var_s;
                 insert(ent);
                 $$ = lvalue_exp(ent);
             }else{
@@ -286,7 +308,7 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                 }
             }
 
-            cout << "lvalue => id:" << yylval.stringVal<<endl;
+            
             }
         | LOCAL ID {
             string name($2);
@@ -299,15 +321,19 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                     ent.type = GLOBAL;
                 else
                     ent.type = LOCALV;
-                ent.varVal.name = name;
-                ent.varVal.scope = scope;
-                ent.varVal.line = yylineno;
+                ent.name = name;
+                ent.scope = scope;
+                ent.line = yylineno;
                 inccurrscopeoffset()
+                ent.offset = currscopeoffset();
+                ent.scopespace = currscopespace();
+                ent.symt = var_s;
                 insert(ent);
+                $$ = lvalue_exp(ent);
                 
                 $$ = lvalue_exp(ent);
             }
-            cout << "lvalue => local id:" << yylval.stringVal<<", "<<scope<<endl;
+           
         }
         | DOUBLE_COLON ID {
             string name($2);
@@ -316,9 +342,9 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                 cout << "Error: there is no global variable with name "<<name<<endl;
                 reset();
             }
-            cout << "lvalue => ::id:" << yylval.stringVal<<endl;
+            
         }
-        | member{cout << "lvalue => member" <<endl;}
+        | member{}
         ;
 
 member: lvalue PERIOD ID {}
