@@ -4,6 +4,7 @@
 vector<quad> quads;
 unsigned total = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffset = 0, scopeSpaceCounter = 1;
 unsigned int currQuad = 0;
+bool isMember;
 int tmpc = 0; // tmp counter
 
 
@@ -248,3 +249,13 @@ void check_arith(expr* e, string context) {
 bool istempname(string s) { return s[0] == '$'; }
 
 //bool istempexpr(expr *e) { return e->sym && istempname(e->sym.name); }
+
+expr *member_item(expr *lvalue,string name){
+    lvalue = emit_iftableitem(lvalue);
+    expr *item = newexpr(tableitem_e);
+    item->sym = lvalue->sym;
+    expr *temp = newexpr(conststring_e);
+    temp->strConst=name;
+    item->index = temp;
+    return item;
+}

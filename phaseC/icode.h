@@ -144,3 +144,5 @@ void check_arith(expr *e, string context);
 bool istempname(string s);
 
 bool istempexpr(expr *e);
+
+expr *member_item(expr *lvalue,string name);
