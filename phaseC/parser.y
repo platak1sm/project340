@@ -608,11 +608,12 @@ int yyerror (char* yaccProvidedMessage)
 
 void insertLibFuncs(string name){
     SymbolTableEntry ste;
-    ste.isActive=true;
     ste.type=LIBFUNC;
-    ste.funcVal.name=name;
-    ste.funcVal.scope=0;
-    ste.funcVal.line=0;
+    ste.name = name;
+    ste.scope = 0;
+    ste.line = 0;
+    ste.isActive=true;
+    ste.symt=libraryfunc_s;
     insert(ste);
 }
 
