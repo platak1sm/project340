@@ -2,6 +2,8 @@
     #include <iostream>
     #include <string>
     #include "symbol_table.h"
+    #include <stack>
+    #include <list>
 
     /* #define YY_DECL int alpha_yylex (void* yylval)*/
     extern int yylex(void);
@@ -16,6 +18,7 @@
     int scope=0;
     int funcid=0;
     string lastidname;
+    /* list <expr> *elist; */
 
     bool is_sysfunc(string name) {
         if( name == "print" ||
@@ -378,9 +381,16 @@ normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "normcall => (elist
 methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "methodcall => ..id(elist)\n";}
             ;
 
-elist: expr  {cout << "elist => expr\n";}
-       | elist COMMA expr {cout << "elist => elist,expr\n";}
-       | {cout << "elist => empty\n";}
+elist: expr  {cout << "elist => expr\n";
+             list< expr> temp;
+             temp.push_back($1);
+             $$=temp}
+       | elist COMMA expr {cout << "elist => elist,expr\n";
+                           $$=$1;                           
+                           $$->elist->push_back($3);}
+       | {cout << "elist => empty\n";
+          list< expr> temp;
+          $$=temp}
        ;
 
 objectdef: LEFT_BRACKET elist RIGHT_BRACKET {expr *tmp = newexpr(newtable_e);
@@ -563,29 +573,38 @@ if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{expr *tmp = newexpr(constb
                                                       tmp->boolConst=true;
                                                       //code..
                                                       //backpatching (truelist & falselist)
-                                                      $$ = nextQuad();
+                                                      $$ = nextquad();
                                                       }
 
-else_prefix: ELSE {$$ = nextQuad();   
+else_prefix: ELSE {$$ = nextquad();   
                    emit(jump,NULL,NULL,NULL,0,yylineno);}
 
 
 whilestmt: whilestart whilecon loopstmt {
     cout <<"whilestmt => while(expr) stmt"<<endl;
     emit(jump,NULL,NULL,NULL,$1,yylineno); 
-    patchlabel($2, nextQuad()+1); } ; 
+    patchlabel($2, nextquad()+1);
+    /* patchlist($stmt.breaklist, nextquad());
+    patchlist($stmt.contlist, $1); */
+ } ; 
 
-whilestart: WHILE{$$=nextQuad()+1;};
+whilestart: WHILE{$$=nextquad()+1;};
 
-whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {/*code..*/};
+whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {
+        emit(if_eq, $2, newexpr_constbool(1), NULL, nextquad()+2, yylineno);
+		$$ = nextQuad();
+        emit(jump,NULL,NULL,NULL,0,yylineno);
+};
 	
 for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;};
 		
 N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);};
 
-M:{/*nextquad*/ $$ = nextquad(); };
+for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{
 
-for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{};
+};
+
+M:{/*nextquad*/ $$ = nextquad(); };
 
 returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
