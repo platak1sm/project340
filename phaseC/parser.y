@@ -248,7 +248,26 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
 		;
 
 assignexpr: lvalue ASSIGN expr{		
-                                //lookup
+                                string name = $1;
+                                if((is_sysfunc(name) || lookupactivefunc(name).isActive==true)){
+                                    red();
+                                    cout <<"Error: " <<name << " is defined as function \n";
+                                    reset();
+                                }else{
+                                    int i = scope;
+                                    SymbolTableEntry lookupent;
+                                    while(i >=0 ){
+                                        lookupent = lookupcurrentscope(name, i);
+                                        if(lookupent.isActive)
+                                            break;
+                                        i--;
+                                    }
+                                    if(lookupent.type == USERFUNC && lookupcurrentscope(name, scope).type != LOCALV){
+                                        red();
+                                        cout <<"Error: " <<name << " is defined as function \n";
+                                        reset();
+                                    }
+                                }
                                 //if programfunc_s || libraryfunc_s
                                 //Error
                                 //code...
@@ -258,9 +277,9 @@ assignexpr: lvalue ASSIGN expr{
 	
 primary: lvalue{ $$ = emit_iftableitem($1);}
         | call {$$=$1;}
-        | objectdef {$$=$1;;}
+        | objectdef {$$=$1;}
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{$$ = newexpr(programfunc_e);
-                                                    $$->insertsym($2);}
+                                                     $$->sym = $2;}
 		| const{$$=$1;}
         ;
 
@@ -274,16 +293,22 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                     ent.type = GLOBAL;
                 else
                     ent.type = LOCALV;
-                ent.varVal.name = name;
-                ent.varVal.scope = scope;
-                ent.varVal.line = yylineno;
+                ent.name = name;
+                ent.scope = scope;
+                ent.line = yylineno;
+                inccurrscopeoffset()
+                ent.offset = currscopeoffset();
+                ent.scopespace = currscopespace();
+                ent.symt = var_s;
                 insert(ent);
+                $$ = lvalue_exp(ent);
             }else{
                 if(lookupactivevar(name).varVal.scope < infunction && lookupactivevar(name).varVal.scope > 0){
                     red(); cout << "Error: " <<" There is function between the uses of variable "<< name <<endl; reset();
                 }
             }
-            cout << "lvalue => id:" << yylval.stringVal<<endl;
+
+            
             }
         | LOCAL ID {
             string name($2);
@@ -296,30 +321,40 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                     ent.type = GLOBAL;
                 else
                     ent.type = LOCALV;
-                ent.varVal.name = name;
-                ent.varVal.scope = scope;
-                ent.varVal.line = yylineno;
+                ent.name = name;
+                ent.scope = scope;
+                ent.line = yylineno;
+                inccurrscopeoffset()
+                ent.offset = currscopeoffset();
+                ent.scopespace = currscopespace();
+                ent.symt = var_s;
                 insert(ent);
+                $$ = lvalue_exp(ent);
+                
+                $$ = lvalue_exp(ent);
             }
-            cout << "lvalue => local id:" << yylval.stringVal<<", "<<scope<<endl;
+           
         }
         | DOUBLE_COLON ID {
             string name($2);
-            if(lookupcurrentscope(name, 0).isActive == false){
+            SymbolTableEntry ste = lookupcurrentscope(name,0);
+            if(ste.isActive == false){
                 red();
                 cout << "Error: there is no global variable with name "<<name<<endl;
                 reset();
+            } else{
+                $$=lvalue_exp(ste);
             }
-            cout << "lvalue => ::id:" << yylval.stringVal<<endl;
+            
         }
-        | member{cout << "lvalue => member" <<endl;}
+        | member{isMember=true;}
         ;
 
 member: lvalue PERIOD ID {}
 		| lvalue LEFT_BRACKET expr RIGHT_BRACKET {$1 = emit_iftableitem($1);
                                                   $$ = newexpr(tableitem_e);
-                                                  //$$->insertsym($1->sym);
-                                                  //$$->index=$3;
+                                                  $$->sym = $1->sym;
+                                                  $$->index=$3;
                                                   }
 		| call PERIOD ID {}
 		| call LEFT_BRACKET expr RIGHT_BRACKET {}
@@ -328,7 +363,7 @@ member: lvalue PERIOD ID {}
 call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
 		| lvalue callsuffix  {/**/}
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {expr *func = newexpr(programfunc_e);
-                                                                                                func->insertsym($2);
+                                                                                                func->sym=$2;
                                                                                                 $$ = make_call(func,$5);}
 		;
 
@@ -348,8 +383,27 @@ elist: expr  {cout << "elist => expr\n";}
        | {cout << "elist => empty\n";}
        ;
 
-objectdef: LEFT_BRACKET elist RIGHT_BRACKET {cout << "objectdef => [elist]\n";}
-           | LEFT_BRACKET indexed RIGHT_BRACKET  {cout << "objectdef => [indexed]\n";}
+objectdef: LEFT_BRACKET elist RIGHT_BRACKET {expr *tmp = newexpr(newtable_e);
+                                             tmp->sym=newtmp();
+                                             emit(tablecreate,NULL,NULL,tmp,0,yylineno);
+                                             /* for(list <indexedelements>::iterator i = $2->getIndexedList()->begin() ;  i!=$2->getIndexedList()->end() ; i++){
+                                                emit(tablesetelem,i->getIndexElement(),i->getValueElement(),tmp,0,yylineno);
+                                             } */
+                                             $$ = tmp;
+                                             }
+           | LEFT_BRACKET indexed RIGHT_BRACKET  {
+                                                  int numc=0;
+                                                  expr *tmp = newexpr(newtable_e);
+                                                  tmp->sym=newtmp();
+                                                  emit(tablecreate,NULL,NULL,tmp,0,yylineno);
+                                                  /* for(list <expr>::iterator i = $2->getElist()->begin() ; i!=$2->getElist()->end() ; i++){
+                                                  tmp2 = newexpr(costnum_e);
+                                                  tmp2->numConst=numc;
+                                                  emit(tablesetelem,tmp2,&*i,tmp,0,yylineno);
+                                                  numc++;
+                                                  } */
+                                                  $$ = tmp;
+                                                  }
            ;
 
 indexed: indexedelem  {cout << "indexed => indexedelem\n";}
@@ -366,23 +420,36 @@ stmtlist: stmt stmtlist  {cout << "stmtlist => stmt stmtlist\n";}
           |
           ;
 
-funcdef: funcprefix funcargs funcbody {}
-            
-         ;
-funcprefix: FUNCTION funcname{
+funcdef: func_prefix func_args func_body { exitscopespace(); 
+                                           /* $$->setTotalLocals(getfunctionLocalOffset());
+                                           setfunctionLocalOffset(functionLocalStack.top());
+                                           functionLocalStack.pop(); */
+                                           $$=$1;
+                                           emit(funcend,NULL,NULL,lvalue_exp($1),0,yylineno);
+                                           }
+                                           ;
+func_prefix: FUNCTION ID{
             string name= $2;
             SymbolTableEntry ste= lookupcurrentscope(name,scope);
             if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
             }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be overriden.\n"; reset();
             }else {
                   ste.type=USERFUNC;
-                  ste.isActive=TRUE;
-                  ste.funcVal.name=name;
-                  ste.funcVal.scope=scope;
-                  ste.funcVal.line=yylineno;
+                  ste.name = name;
+                  ste.scope = scope;
+                  ste.line = yylineno;
+                  ste.isActive=true;
+                  inccurrscopeoffset()
+                  ste.offset = currscopeoffset();
+                  ste.scopespace = currscopespace();
+                  ste.symt=programfunc_s;
                   insert(ste);
             }
-            
+            $$ = ste;
+            emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
+            /* functionLocalStack.push(getfunctionLocalOffset()); */
+            enterscopespace();
+            resetformalargoffset();
          } 
          | FUNCTION {
             string fid=to_string(funcid++);
@@ -394,21 +461,34 @@ funcprefix: FUNCTION funcname{
                     name= "$f" + fid;
                     ste= lookupcurrentscope(name,scope);
                 }else {
-                    ste.isActive=TRUE;
                     ste.type=USERFUNC;
-                    ste.funcVal.name=name;
-                    ste.funcVal.scope=scope;
-                    ste.funcVal.line=yylineno;
+                    ste.name = name;
+                    ste.scope = scope;
+                    ste.line = yylineno;
+                    ste.isActive=true;
+                    inccurrscopeoffset()
+                    ste.offset = currscopeoffset();
+                    ste.scopespace = currscopespace();
+                    ste.symt=programfunc_s;
                     insert(ste);
                     break;
                 }
             }
+            $$ = ste;
+            emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
+            /* functionLocalStack.push(getfunctionLocalOffset()); */
+            enterscopespace();
+            resetformalargoffset();
          } 
-funcname: ID { $$ = $1; }
-funcblockstart: {}
-funcblockend: {}
-funcargs:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {}
-funcbody: { scope--; infunction++;}funcblockstart block funcblockend {infunction--;cout <<"funcdef => function(idlist)block\n"; exitscopespace(); } ;
+         ;
+
+func_bstart: {/* LoopCounterStack.push(loopcounter); loopcounter=0; */ };
+
+func_bend:  { /* loopcounter = LoopCounterStack.top(); LoopCounterStack.pop(); */ };
+
+func_args:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {enterscopespace(); resetfunctionlocaloffset();};
+                                                                 
+func_body: { scope--; infunction++;}func_bstart block func_bend {infunction--;cout <<"funcdef => function(idlist)block\n"; exitscopespace(); } ;
 
 
 const:	INTEGER {$$ = newexpr(costnum_e);
@@ -425,21 +505,40 @@ const:	INTEGER {$$ = newexpr(costnum_e);
 		;
 
 idlist: ID{
-            //lookup
-            //if exists then throw error for redefinition
-            //if libfunc
-            //error
-            //else
-            //insert in table
-           
+            string name = $1; 
+            SymbolTableEntry ste= lookupcurrentscope(name,scope);
+            if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
+            }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n"; reset();
+            }else {
+                  ste.type=FORMAL;
+                  ste.name = name;
+                  ste.scope = scope;
+                  ste.line = yylineno;
+                  ste.isActive=true;
+                  inccurrscopeoffset()
+                  ste.offset = currscopeoffset();
+                  ste.scopespace = currscopespace();
+                  ste.symt=var_s;
+                  insert(ste);
+            }
           }
         | idlist COMMA ID{
-            //lookup
-            //if exists then throw error for redefinition
-            //if libfunc
-            //error
-            //else
-            //insert in table
+            string name = $3; 
+            SymbolTableEntry ste= lookupcurrentscope(name,scope);
+            if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
+            }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n"; reset();
+            }else {
+                  ste.type=FORMAL;
+                  ste.name = name;
+                  ste.scope = scope;
+                  ste.line = yylineno;
+                  ste.isActive=true;
+                  inccurrscopeoffset()
+                  ste.offset = currscopeoffset();
+                  ste.scopespace = currscopespace();
+                  ste.symt=var_s;
+                  insert(ste);
+            }
          }
         |
        ;
@@ -476,17 +575,17 @@ whilestmt: whilestart whilecon loopstmt {
     emit(jump,NULL,NULL,NULL,$1,yylineno); 
     patchlabel($2, nextQuad()+1); } ; 
 
-whilestart: WHILE{$$=nextQuad()+1;}
+whilestart: WHILE{$$=nextQuad()+1;};
 
-whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {/*code..*/}
+whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {/*code..*/};
 	
-for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;}
-		;
-N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);}
+for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;};
+		
+N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);};
 
-for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{}
+M:{/*nextquad*/ $$ = nextquad(); };
 
-M: {$$ = nextquad();}
+for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{};
 
 returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
@@ -495,7 +594,8 @@ returnstmt: RETURN expr SEMICOLON{
          }
 			| RETURN SEMICOLON { if(infunction==0) {red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
                                 cout <<"returnstmt => return;"<<endl;
-                                emit(ret,NULL,NULL,NULL,0,yylineno);}
+                                emit(ret,NULL,NULL,NULL,0,yylineno);
+                                }
             ;
 
 %%     
@@ -508,11 +608,12 @@ int yyerror (char* yaccProvidedMessage)
 
 void insertLibFuncs(string name){
     SymbolTableEntry ste;
-    ste.isActive=true;
     ste.type=LIBFUNC;
-    ste.funcVal.name=name;
-    ste.funcVal.scope=0;
-    ste.funcVal.line=0;
+    ste.name = name;
+    ste.scope = 0;
+    ste.line = 0;
+    ste.isActive=true;
+    ste.symt=libraryfunc_s;
     insert(ste);
 }
 

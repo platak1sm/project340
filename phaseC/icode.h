@@ -1,8 +1,8 @@
 #include "symbol_table.h"
 
-#define EXPAND_SIZE 1024
+/* #define EXPAND_SIZE 1024
 #define CURR_SIZE (total * sizeof(quad))
-#define NEW_SIZE (EXPAND_SIZE * sizeof(quad) + CURR_SIZE)
+#define NEW_SIZE (EXPAND_SIZE * sizeof(quad) + CURR_SIZE) */
 
 extern int yylineno, scope;
 
@@ -55,7 +55,7 @@ typedef enum expr_t
 typedef struct expr
 {
     expr_t type;
-    symbol *sym;
+    SymbolTableEntry sym;
     expr *index;
     double numConst;
     string strConst;
@@ -73,19 +73,7 @@ typedef struct quad
     unsigned line;
 } quad;
 
-typedef enum scopespace_t
-{
-    programvar,
-    functionlocal,
-    formalarg
-} scopespace_t;
 
-typedef enum symbol_t
-{
-    var_s,
-    programfunc_s,
-    libraryfunc_s
-} symbol_t;
 
 typedef struct symbol
 {
@@ -111,7 +99,7 @@ expr *emit_iftableitem(expr *e);
 
 expr *newexpr(expr_t t);
 
-symbol *newtmp();
+SymbolTableEntry newtmp();
 
 scopespace_t currscopespace(void);
 
@@ -143,9 +131,9 @@ void resetfunctionlocaloffset(void);
 
 void restorecurrscopeoffset(unsigned n);
 
-symbol *lookup(string name);
+//SymbolTableEntry lookup(string name);
 
-void insertsym(symbol *sym);
+//void insertsym(SymbolTableEntry sym);
 
 expr *make_call(expr *lv, expr *reversed_elist);
 
@@ -156,3 +144,5 @@ void check_arith(expr *e, string context);
 bool istempname(string s);
 
 bool istempexpr(expr *e);
+
+expr *member_item(expr *lvalue,string name);

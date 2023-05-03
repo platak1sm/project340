@@ -4,24 +4,9 @@
 vector<quad> quads;
 unsigned total = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffset = 0, scopeSpaceCounter = 1;
 unsigned int currQuad = 0;
+bool isMember;
 int tmpc = 0; // tmp counter
 
-/* void expand(){
-    assert(total == currQuad);
-    quad * p = (quad*)malloc(NEW_SIZE);
-    if(quads){
-        memcpy(p, quads, CURR_SIZE);
-        free(quads);
-    }
-    quads = p;
-    total += EXPAND_SIZE;
-} */
-
-/*--------------------------------------------MUST READ-----------------------------------------------------------------------------------------------------------
-                    de kserw an to symbol struct einai to idio me to symboltableentry h kapoio upgrade toy h an einai teleios diaforetiko
-                    opote na anavathmisoume to symboltableentry mas an xreiazetai. An einai diaforetiko prepei na to ylopoihsoume ap thn arxh sta idia standards
-                    kai na to kanoume etsi wste na tairiazei me tis dialekseis klp(psakste to kai eseis)
-------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsigned line)
 { /*mallon correct alla check it*/
@@ -57,17 +42,17 @@ expr *newexpr(expr_t t)
     return e;
 }
 
-symbol *newtmp()
+SymbolTableEntry newtmp()
 { /*mporei na thelei diorthwsi*/
     string name = "$t" + to_string(tmpc++);
-    symbol *sym = lookup(name);
-    if (sym == NULL)
+    SymbolTableEntry sym;
+    if (lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive==false)
     {
-        sym->name = name;
-        sym->scope = 0;
-        sym->line = 0;
-        sym->isActive = true;
-        insertsym(sym);
+        sym.name = name;
+        sym.scope = 0;
+        sym.line = 0;
+        sym.isActive = true;
+        insert(sym);
     }
     return sym;
 }
@@ -197,11 +182,11 @@ void restorecurrscopeoffset(unsigned n)
     }
 }
 
-expr *lvalue_exp(symbol *sym) // thelei diorthwsh
+expr *lvalue_exp(SymbolTableEntry sym) // thelei diorthwsh
 {
-    assert(sym);
+    
     expr *e;
-    switch (sym->type)
+    switch (sym.symt)
     {
     case var_s:
         e->type = var_e;
@@ -219,13 +204,6 @@ expr *lvalue_exp(symbol *sym) // thelei diorthwsh
     return e;
 }
 
-symbol *lookup(string name) // ftiaksimo
-{
-}
-
-void insertsym(symbol *sym) // ftiaksimo
-{
-}
 
 expr *newexpr_conststring(string s)
 {
@@ -268,6 +246,16 @@ void check_arith(expr* e, string context) {
 	}
 }
 
-bool istempname(string s) { return s[0] == '_'; }
+bool istempname(string s) { return s[0] == '$'; }
 
-bool istempexpr(expr *e) { return e->sym && istempname(e->sym->name); }
+//bool istempexpr(expr *e) { return e->sym && istempname(e->sym.name); }
+
+expr *member_item(expr *lvalue,string name){
+    lvalue = emit_iftableitem(lvalue);
+    expr *item = newexpr(tableitem_e);
+    item->sym = lvalue->sym;
+    expr *temp = newexpr(conststring_e);
+    temp->strConst=name;
+    item->index = temp;
+    return item;
+}
