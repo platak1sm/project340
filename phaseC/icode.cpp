@@ -114,7 +114,7 @@ void patchlabel(unsigned quadNo, unsigned label)
     quads[quadNo].label = label;
 }
 
-expr *newexpr_constbool(unsigned int b)
+expr *newexpr_constbool(unsigned int b)/*to orisma den prepei na einai bool? (stelios)*/
 {
     expr *e = newexpr(constbool_e);
     e->boolConst = !!b;
