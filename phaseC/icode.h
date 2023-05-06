@@ -91,6 +91,13 @@ typedef struct stmt_t
     int breakList, contList;
 } stmt_t;
 
+typedef struct calls{
+    string name;
+    bool method;
+    expr *elist;
+}calls;
+
+
 /* void expand();*/
 
 void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsigned line);

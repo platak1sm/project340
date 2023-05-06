@@ -48,6 +48,7 @@
 	int intVal;
     char *stringVal;
 	double doubleVal;
+    expr *exp;
 }
 
 %token <intVal> INTEGER
@@ -57,7 +58,8 @@
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <stringVal> lvalue
+%type <exp> lvalue expr term assignexpr const primary member objectdef call
+%type <stringVal> funcname
 
 %right ASSIGN
 %left OR
@@ -350,7 +352,7 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
         | member{isMember=true;}
         ;
 
-member: lvalue PERIOD ID {}
+member: lvalue PERIOD ID {$$ = member_item($1,$3);}
 		| lvalue LEFT_BRACKET expr RIGHT_BRACKET {$1 = emit_iftableitem($1);
                                                   $$ = newexpr(tableitem_e);
                                                   $$->sym = $1->sym;
@@ -361,7 +363,15 @@ member: lvalue PERIOD ID {}
 		;
 
 call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
-		| lvalue callsuffix  {/**/}
+		| lvalue callsuffix  {
+                              if ($2->method){
+                                expr *self = $1;
+                                $1 = emit_iftableitem(member_item(self,$2->name)); 
+                                self->next = $2;
+                                $2 = self; /*pushing self in front*/
+                              }
+                              $$ = make_call($1,$2->elist);
+                            }
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {expr *func = newexpr(programfunc_e);
                                                                                                 func->sym=$2;
                                                                                                 $$ = make_call(func,$5);}
@@ -372,10 +382,20 @@ callsuffix:	normcall {$$=$1;}
 			;
 
 
-normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "normcall => (elist)\n";}
+normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
+                                                     c.name="nil";
+                                                     c.method=false;
+                                                     c.elist=$2;
+                                                     $$=c;
+                                                     }
           ;
         
-methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "methodcall => ..id(elist)\n";}
+methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
+                                                                        c.name=$2;
+                                                                        c.method=true;
+                                                                        c.elist=$4;
+                                                                        $$=c;
+                                                                        }
             ;
 
 elist: expr  {cout << "elist => expr\n";}
@@ -488,20 +508,20 @@ func_bend:  { /* loopcounter = LoopCounterStack.top(); LoopCounterStack.pop(); *
 
 func_args:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {enterscopespace(); resetfunctionlocaloffset();};
                                                                  
-func_body: { scope--; infunction++;}func_bstart block func_bend {infunction--;cout <<"funcdef => function(idlist)block\n"; exitscopespace(); } ;
+func_body: { scope--; infunction++;} func_bstart block func_bend {infunction--;cout <<"funcdef => function(idlist)block\n"; exitscopespace(); } ;
 
 
-const:	INTEGER {$$ = newexpr(costnum_e);
-                 $$->numConst=$1;}
-		| REAL {$$ = newexpr(costnum_e);
-                 $$->numConst=$1;}
-		| STRING {$$ = newexpr(conststring_e);
-                  $$->strConst=$1($1);}
-		| NIL {$$ = newexpr(nil_e)}
-		| TRUE { $$ = newexpr(constbool_e);
-                 $$->boolConst=true;}
-		| FALSE { $$ = new expr(constbool_e);
-                  $$->boolConst=false;}
+const:	INTEGER {$$ = newexpr_constnum($1);
+                 /* $$->numConst=$1; */}
+		| REAL {$$ = newexpr_constnum($1);
+                 /* $$->numConst=$1; */}
+		| STRING {$$ = newexpr_conststring($1);
+                  /* $$->strConst=$1; */}
+		| NIL {$$ = newexpr(nil_e);}
+		| TRUE { $$ = newexpr_constbool($1);
+                 /* $$->boolConst=true; */}
+		| FALSE { $$ = newexpr_constbool($1);
+                  /* $$->boolConst=false; */}
 		;
 
 idlist: ID{
@@ -589,7 +609,7 @@ for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{};
 
 returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
-                    cout <<"returnstmt => return expr;"<<endl;
+                    /* cout <<"returnstmt => return expr;"<<endl; */
                     emit(ret,NULL,NULL,$2,0,yylineno);
          }
 			| RETURN SEMICOLON { if(infunction==0) {red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}

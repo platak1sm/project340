@@ -1,6 +1,7 @@
 #include "icode.h"
 #include <vector>
 #include <assert.h>
+#include <cstring>
 vector<quad> quads;
 unsigned total = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffset = 0, scopeSpaceCounter = 1;
 unsigned int currQuad = 0;
@@ -37,14 +38,14 @@ expr *emit_iftableitem(expr *e)
 expr *newexpr(expr_t t)
 { /* thelei diorthwsi probably*/
     expr *e = new expr;
-    // memset(e, 0, sizeof(expr));
+    memset(e, 0, sizeof(expr));
     e->type = t;
     return e;
 }
 
 SymbolTableEntry newtmp()
 { /*mporei na thelei diorthwsi*/
-    string name = "$t" + to_string(tmpc++);
+    string name = "$tmp" + to_string(tmpc++);
     SymbolTableEntry sym;
     if (lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive==false)
     {
@@ -212,15 +213,15 @@ expr *newexpr_conststring(string s)
     return e;
 }
 
-expr *make_call(expr *lv, expr *reversed_elist)
+expr *make_call(expr *lv, expr *elist)
 {
     expr *func = emit_iftableitem(lv);
-    while (reversed_elist)
+    while (elist)
     {
-        emit(param, reversed_elist, NULL, NULL, 0, yylineno);
-        reversed_elist = reversed_elist->next;
+        emit(param, NULL, NULL, elist, 0, yylineno);
+        elist = elist->next;
     }
-    emit(call, func, NULL, NULL, 0, yylineno);
+    emit(call, NULL, NULL, func, 0, yylineno);
     expr *result = newexpr(var_e);
     result->sym = newtmp();
     emit(getretval, NULL, NULL, result, 0, yylineno);
