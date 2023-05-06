@@ -2,6 +2,7 @@
     #include <iostream>
     #include <string>
     #include "symbol_table.h"
+    #include "icode.h"
 
     /* #define YY_DECL int alpha_yylex (void* yylval)*/
     extern int yylex(void);
@@ -9,6 +10,7 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
+   /*  extern int tmpc; */
 
     /* int flag_insert=1; */
     int inloop=0;
@@ -16,6 +18,7 @@
     int scope=0;
     int funcid=0;
     string lastidname;
+    bool isMember=false;
 
     bool is_sysfunc(string name) {
         if( name == "print" ||

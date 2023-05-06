@@ -4,7 +4,7 @@
 #define CURR_SIZE (total * sizeof(quad))
 #define NEW_SIZE (EXPAND_SIZE * sizeof(quad) + CURR_SIZE) */
 
-extern int yylineno, scope;
+extern int yylineno, scope; /*,tmpc*/
 
 typedef enum iopcode
 {
@@ -73,8 +73,6 @@ typedef struct quad
     unsigned line;
 } quad;
 
-
-
 typedef struct symbol
 {
     symbol_t type;
@@ -91,12 +89,12 @@ typedef struct stmt_t
     int breakList, contList;
 } stmt_t;
 
-typedef struct calls{
+typedef struct calls
+{
     string name;
     bool method;
     expr *elist;
-}calls;
-
+} calls;
 
 /* void expand();*/
 
@@ -138,10 +136,6 @@ void resetfunctionlocaloffset(void);
 
 void restorecurrscopeoffset(unsigned n);
 
-//SymbolTableEntry lookup(string name);
-
-//void insertsym(SymbolTableEntry sym);
-
 expr *make_call(expr *lv, expr *reversed_elist);
 
 expr *newexpr_constnum(double i);
@@ -152,4 +146,9 @@ bool istempname(string s);
 
 bool istempexpr(expr *e);
 
-expr *member_item(expr *lvalue,string name);
+expr *member_item(expr *lvalue, string name);
+
+void resettmpcounter()
+{
+    tmpc = 0;
+}

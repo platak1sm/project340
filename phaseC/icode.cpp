@@ -5,8 +5,7 @@
 vector<quad> quads;
 unsigned total = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffset = 0, scopeSpaceCounter = 1;
 unsigned int currQuad = 0;
-bool isMember;
-int tmpc = 0; // tmp counter
+int tmpc = 0;// tmp counter
 
 
 void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsigned line)
@@ -36,7 +35,7 @@ expr *emit_iftableitem(expr *e)
 }
 
 expr *newexpr(expr_t t)
-{ /* thelei diorthwsi probably*/
+{ /*dont know if its 100% correct*/
     expr *e = new expr;
     memset(e, 0, sizeof(expr));
     e->type = t;
@@ -44,7 +43,7 @@ expr *newexpr(expr_t t)
 }
 
 SymbolTableEntry newtmp()
-{ /*mporei na thelei diorthwsi*/
+{ /*dont know if its 100% correct*/
     string name = "$tmp" + to_string(tmpc++);
     SymbolTableEntry sym;
     if (lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive==false)
@@ -259,4 +258,8 @@ expr *member_item(expr *lvalue,string name){
     temp->strConst=name;
     item->index = temp;
     return item;
+}
+
+void resettmpcounter(){
+    tmpc=0;
 }
