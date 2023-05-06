@@ -72,6 +72,7 @@ multilinescomment    "\/\*"
 %%
 {integer}   {
              inserttoken("INTEGER",strdup(yytext), "int");
+             yylval.intVal = atoi(yytext);
             }
 
 {string}   {
@@ -87,10 +88,12 @@ multilinescomment    "\/\*"
              token.value= strdup(ss2);
              token.cpptype= "string";
              tokens.push_back(token);
+             yylval.stringVal = strdup(ss2);
             }
 
 {real}      {
              inserttoken("REAL",strdup(yytext), "double");
+             yylval.doubleVal = atof(yytext);
             }
 {onelinecomment} {
                   alpha_token_t token;
@@ -289,6 +292,7 @@ multilinescomment    "\/\*"
 
 {id}        {
              inserttoken("ID", strdup(yytext), "string");
+             yylval.stringVal = strdup(yytext);
             }
 
 .    { cout << "UNDEF INPUT: "<<yytext <<" AT LINE: "<<yylineno<<endl; 

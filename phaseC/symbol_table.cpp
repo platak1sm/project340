@@ -22,14 +22,14 @@ void insert(SymbolTableEntry ste){
 SymbolTableEntry lookupcurrentscope(string s, int scope) {
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
         if(SymbolTable[i].type == USERFUNC || SymbolTable[i].type == LIBFUNC) {
-            if(SymbolTable[i].funcVal.name == s) {
-                if(SymbolTable[i].funcVal.scope == scope)
+            if(SymbolTable[i].name == s) {
+                if(SymbolTable[i].scope == scope)
                     return SymbolTable[i];
             }
         }
         else if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
-            if(SymbolTable[i].varVal.name == s) {
-                if(SymbolTable[i].varVal.scope == scope)
+            if(SymbolTable[i].name == s) {
+                if(SymbolTable[i].scope == scope)
                     return SymbolTable[i];
             }
         }
@@ -45,7 +45,7 @@ SymbolTableEntry lookupcurrentscope(string s, int scope) {
 SymbolTableEntry lookupactivevar(string s) {
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
         if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
-            if(SymbolTable[i].varVal.name == s) {
+            if(SymbolTable[i].name == s) {
                 if(SymbolTable[i].isActive)
                     return SymbolTable[i];
             }
@@ -64,17 +64,17 @@ SymbolTableEntry LookuplastRef(string s) {
     ret.isActive = false;
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
         if(SymbolTable[i].type == USERFUNC || SymbolTable[i].type == LIBFUNC) {
-            if(SymbolTable[i].funcVal.name == s) {
-                if(SymbolTable[i].funcVal.scope > currentscope)
-                    currentscope = SymbolTable[i].funcVal.scope;
+            if(SymbolTable[i].name == s) {
+                if(SymbolTable[i].scope > currentscope)
+                    currentscope = SymbolTable[i].scope;
                     
                     ret = SymbolTable[i];
             }
         }
         else if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
-            if(SymbolTable[i].varVal.name == s) {
-                if(SymbolTable[i].varVal.scope > currentscope){
-                    currentscope = SymbolTable[i].varVal.scope;
+            if(SymbolTable[i].name == s) {
+                if(SymbolTable[i].scope > currentscope){
+                    currentscope = SymbolTable[i].scope;
                     ret = SymbolTable[i];
                 }
             }
@@ -90,7 +90,7 @@ SymbolTableEntry LookuplastRef(string s) {
 SymbolTableEntry lookupactivefunc(string s) {
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
         if(SymbolTable[i].type == USERFUNC || SymbolTable[i].type == LIBFUNC) {
-            if(SymbolTable[i].funcVal.name == s) {
+            if(SymbolTable[i].name == s) {
                 if(SymbolTable[i].isActive)
                     return SymbolTable[i];
             }
@@ -107,12 +107,12 @@ SymbolTableEntry lookupactivefunc(string s) {
 void hide(int scope) {
     for(unsigned int i = 0; i < SymbolTable.size(); i++) {
         if(SymbolTable[i].type == USERFUNC || SymbolTable[i].type == LIBFUNC || SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
-            if(SymbolTable[i].funcVal.scope >= scope) {
+            if(SymbolTable[i].scope >= scope) {
                 SymbolTable[i].isActive = false;
             }
         }
         else if(SymbolTable[i].type == GLOBAL || SymbolTable[i].type == LOCALV  || SymbolTable[i].type == FORMAL) {
-            if(SymbolTable[i].varVal.scope >= scope) {
+            if(SymbolTable[i].scope >= scope) {
                 SymbolTable[i].isActive = false;
             }
         }
@@ -127,34 +127,34 @@ void printsymbols(){
     while(count < SymbolTable.size()){
         cout <<"--------- Scope:"<<currentscope<<" ----------"<<endl;
         for(unsigned int i = 0; i < SymbolTable.size(); i++) {
-            if(SymbolTable[i].type == USERFUNC && SymbolTable[i].funcVal.scope == currentscope){
-                name = SymbolTable[i].funcVal.name;
-                scope=SymbolTable[i].funcVal.scope;
-                cout<< " \"" << name << "\"\t" << "[user function]\t"<< "(line "<< SymbolTable[i].funcVal.line << ")\t"<<"(scope "<<SymbolTable[i].funcVal.scope<< ")\t" <<endl;
+            if(SymbolTable[i].type == USERFUNC && SymbolTable[i].scope == currentscope){
+                name = SymbolTable[i].name;
+                scope=SymbolTable[i].scope;
+                cout<< " \"" << name << "\"\t" << "[user function]\t"<< "(line "<< SymbolTable[i].line << ")\t"<<"(scope "<<SymbolTable[i].scope<< ")\t" <<endl;
                 count++;
             }
-            else if(SymbolTable[i].type == LIBFUNC && SymbolTable[i].funcVal.scope == currentscope){
-                name = SymbolTable[i].funcVal.name;
-                scope=SymbolTable[i].funcVal.scope;
-                cout << " \""<< name << "\"\t" << "[library function]\t"<< "(line "<< SymbolTable[i].funcVal.line << ")\t"<<"(scope "<<SymbolTable[i].funcVal.scope<< ")\t" <<endl;
+            else if(SymbolTable[i].type == LIBFUNC && SymbolTable[i].scope == currentscope){
+                name = SymbolTable[i].name;
+                scope=SymbolTable[i].scope;
+                cout << " \""<< name << "\"\t" << "[library function]\t"<< "(line "<< SymbolTable[i].line << ")\t"<<"(scope "<<SymbolTable[i].scope<< ")\t" <<endl;
                 count++;
             }
-            else if(SymbolTable[i].type == GLOBAL && SymbolTable[i].varVal.scope == currentscope){
-                name = SymbolTable[i].varVal.name;
-                scope=SymbolTable[i].varVal.scope;
-                cout << " \""<< name << "\"\t" << "[global variable]\t"<< "(line "<< SymbolTable[i].varVal.line<< ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
+            else if(SymbolTable[i].type == GLOBAL && SymbolTable[i].scope == currentscope){
+                name = SymbolTable[i].name;
+                scope=SymbolTable[i].scope;
+                cout << " \""<< name << "\"\t" << "[global variable]\t"<< "(line "<< SymbolTable[i].line<< ")\t"<<"(scope "<<SymbolTable[i].scope<< ")\t" <<endl;
                 count++;
             }
-            else if(SymbolTable[i].type == LOCALV && SymbolTable[i].varVal.scope == currentscope){
-                name = SymbolTable[i].varVal.name;
-                scope=SymbolTable[i].varVal.scope;
-                cout << " \""<< name << "\"\t" << "[local variable]\t"<< "(line "<< SymbolTable[i].varVal.line << ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
+            else if(SymbolTable[i].type == LOCALV && SymbolTable[i].scope == currentscope){
+                name = SymbolTable[i].name;
+                scope=SymbolTable[i].scope;
+                cout << " \""<< name << "\"\t" << "[local variable]\t"<< "(line "<< SymbolTable[i].line << ")\t"<<"(scope "<<SymbolTable[i].scope<< ")\t" <<endl;
                 count++;
             }
-            else if(SymbolTable[i].type == FORMAL && SymbolTable[i].varVal.scope == currentscope){
-                name = SymbolTable[i].varVal.name;
-                scope=SymbolTable[i].varVal.scope;
-                cout << " \""<< name << "\"\t" << "[formal argument]\t"<< "(line "<< SymbolTable[i].varVal.line << ")\t"<<"(scope "<<SymbolTable[i].varVal.scope<< ")\t" <<endl;
+            else if(SymbolTable[i].type == FORMAL && SymbolTable[i].scope == currentscope){
+                name = SymbolTable[i].name;
+                scope=SymbolTable[i].scope;
+                cout << " \""<< name << "\"\t" << "[formal argument]\t"<< "(line "<< SymbolTable[i].line << ")\t"<<"(scope "<<SymbolTable[i].scope<< ")\t" <<endl;
                 count++;
             }         
 
