@@ -60,6 +60,8 @@ typedef struct expr
     double numConst;
     string strConst;
     bool boolConst;
+    int truequad;
+    int falsequad;
     expr *next;
 } expr;
 

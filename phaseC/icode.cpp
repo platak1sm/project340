@@ -1,11 +1,14 @@
 #include "icode.h"
 #include <vector>
 #include <assert.h>
-#include <cstring>
+
+// using namespace std;
+
 vector<quad> quads;
 unsigned total = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffset = 0, scopeSpaceCounter = 1;
 unsigned int currQuad = 0;
-int tmpc = 0;// tmp counter
+bool isMember;
+int tmpc = 0; // tmp counter
 
 
 void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsigned line)
@@ -35,16 +38,16 @@ expr *emit_iftableitem(expr *e)
 }
 
 expr *newexpr(expr_t t)
-{ /*dont know if its 100% correct*/
+{ /* thelei diorthwsi probably*/
     expr *e = new expr;
-    memset(e, 0, sizeof(expr));
+    // memset(e, 0, sizeof(expr));
     e->type = t;
     return e;
 }
 
 SymbolTableEntry newtmp()
-{ /*dont know if its 100% correct*/
-    string name = "$tmp" + to_string(tmpc++);
+{ /*mporei na thelei diorthwsi*/
+    string name = "$t" + to_string(tmpc++);
     SymbolTableEntry sym;
     if (lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive==false)
     {
@@ -212,15 +215,15 @@ expr *newexpr_conststring(string s)
     return e;
 }
 
-expr *make_call(expr *lv, expr *elist)
+expr *make_call(expr *lv, expr *reversed_elist)
 {
     expr *func = emit_iftableitem(lv);
-    while (elist)
+    while (reversed_elist)
     {
-        emit(param, NULL, NULL, elist, 0, yylineno);
-        elist = elist->next;
+        emit(param, reversed_elist, NULL, NULL, 0, yylineno);
+        reversed_elist = reversed_elist->next;
     }
-    emit(call, NULL, NULL, func, 0, yylineno);
+    emit(call, func, NULL, NULL, 0, yylineno);
     expr *result = newexpr(var_e);
     result->sym = newtmp();
     emit(getretval, NULL, NULL, result, 0, yylineno);
@@ -241,9 +244,12 @@ void check_arith(expr* e, string context) {
 	e->type == programfunc_e ||
 	e->type == libraryfunc_e ||
 	e->type == boolexpr_e ){
-		printf("Illegal expr used in %s!", context);
+		cout << "Illegal expr used in" << context << " !" ;
 		//exit(0);
 	}
+}
+void reset_hidden_count(){
+    tmpc = 0;
 }
 
 bool istempname(string s) { return s[0] == '$'; }
@@ -258,8 +264,4 @@ expr *member_item(expr *lvalue,string name){
     temp->strConst=name;
     item->index = temp;
     return item;
-}
-
-void resettmpcounter(){
-    tmpc=0;
 }
