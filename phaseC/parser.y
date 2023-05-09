@@ -761,15 +761,15 @@ idlist: ID{
             if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
             }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n"; reset();
             }else {
-                  ste.type=FORMAL;
+                  ste.type = FORMAL;
                   ste.name = name;
                   ste.scope = scope;
                   ste.line = yylineno;
-                  ste.isActive=true;
+                  ste.isActive = true;
                   inccurrscopeoffset()
                   ste.offset = currscopeoffset();
                   ste.scopespace = currscopespace();
-                  ste.symt=var_s;
+                  ste.symt = var_s;
                   insert(ste);
             }
           }
