@@ -1,6 +1,7 @@
 #include "icode.h"
 #include <vector>
 #include <assert.h>
+#include <iostream>
 
 // using namespace std;
 
