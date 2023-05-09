@@ -150,7 +150,4 @@ bool istempexpr(expr *e);
 
 expr *member_item(expr *lvalue, string name);
 
-void resettmpcounter()
-{
-    tmpc = 0;
-}
+void resettmpcounter();

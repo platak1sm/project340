@@ -1,7 +1,7 @@
 #include "icode.h"
 #include <vector>
 #include <assert.h>
-#include <iostream>
+
 
 // using namespace std;
 
@@ -249,7 +249,7 @@ void check_arith(expr* e, string context) {
 		//exit(0);
 	}
 }
-void reset_hidden_count(){
+void resettmpcounter(){
     tmpc = 0;
 }
 
