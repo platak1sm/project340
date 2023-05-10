@@ -499,9 +499,35 @@ assignexpr: lvalue ASSIGN expr{
                                         reset();
                                     }
                                 }
-                                //if programfunc_s || libraryfunc_s
-                                //Error
-                                //code...
+                                if($3->type == boolexpr_e){
+                                    if(istempname($3)){
+                                        $3->sym = $3->sym;
+                                    }else{
+                                        $3->sym = newtmp();
+                                    }
+                                    patchlist($3->truequad, nextquad());
+                                    emit(assign, newexpr_constbool(1), NULL, $3, nextquad(), yylineno);
+                                    emit(jump, NULL, NULL, NULL, nextquad(), yylineno);
+                                    patchlist($3->falsequad, nextquad());
+                                    emit(assign, newexpr_constbool(0), NULL, $3, nextquad(), yylineno);
+                                }
+
+                                if($1!=NULL){
+                                    if($1->type == tableitem_e){
+                                        emit(tablesetelem, $1, $1->index, $3, -1, yylineno);
+                                        $$ = emit_iftableitem($1);
+                                        $$->type = assignexpr_e;
+                                    }else{
+                                        emit(assign, $3, NULL, $1, -1, yylineno);
+                                        $$ = newexpr(assignexpr_e);
+                                        if(istempname($1)){
+                                            $$->sym = $1->sym;
+                                        }else{
+                                            $$->sym = newtmp();
+                                        }
+                                        emit(assign, $1, NULL,$$,-1,yylineno);
+                                    }
+                                }
                             }
                         
             ;
@@ -803,18 +829,29 @@ loopstmt : loopstart stmt loopend { $$ = $2; } ;
 
 
 ifstmt:	if_prefix stmt {//patchlabel($1-2, $1+1);
-                        //patchlabel($1-1, nextQuad()+1);
+                        patchlabel($1, nextQuad());
                        }
-		|if_prefix stmt else_prefix stmt   {//patchlabel($1-2,$3-1); //if eq if_prefix
-                                            //patchlabel($1-1,$3+2); //jmp if_prefix
-                                            //patchlabel($3, nextQuad()+1); // jmp to end   
+		|if_prefix stmt else_prefix stmt   {patchlabel($1,$3+1); //if eq if_prefix
+                                            patchlabel($3, nextquad()); //jmp if_prefix
+                                            
         }
 	    ;	 
-if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{expr *tmp = newexpr(constbool_e);
-                                                      tmp->boolConst=true;
-                                                      //code..
-                                                      //backpatching (truelist & falselist)
-                                                      $$ = nextQuad();
+if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
+                                                        if($3->type == boolexpr_e){
+                                                            if(istempname($3)){
+                                                                $3->sym = $3->sym;
+                                                            }else{
+                                                                $3->sym = newtmp();
+                                                            }
+                                                            patchlist($3->truequad, nextquad());
+                                                            emit(assign,newexpr_constbool(1), NULL, $3, nextquad(), yylineno);
+                                                            emit(jump, NULL, NULL, NULL, nextquad()+2, yylineno);
+                                                            patchlist($3->falsequad, nextquad());
+                                                            emit(assign,newexpr_constbool(0), NULL, $3, nextquad(), yylineno);
+                                                        }
+                                                        emit(if_eq, $3, newexpr_constbool(1), NULL, nextquad()+2, yylineno);
+                                                        $$ = nextquad();
+                                                        emit(jump, NULL, NULL, NULL,0,yylineno);
                                                       }
 
 else_prefix: ELSE {$$ = nextQuad();   
