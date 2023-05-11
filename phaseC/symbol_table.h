@@ -50,6 +50,7 @@ class SymbolTableEntry {
         unsigned int line;
         unsigned offset;
         unsigned int iaddress;
+        unsigned int totalloc;
         stype type;
 }; 
 

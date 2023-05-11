@@ -1,15 +1,19 @@
 #include "icode.h"
 #include <vector>
 #include <assert.h>
+#include <stack>
 
 
 // using namespace std;
 
 vector<quad> quads;
-unsigned total = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffset = 0, scopeSpaceCounter = 1;
+unsigned totalLocals = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffset = 0, scopeSpaceCounter = 1;
 unsigned int currQuad = 0;
 bool isMember;
 int tmpc = 0; // tmp counter
+stack <unsigned> funcLocalStack;
+stack <unsigned> loopCountStack;
+
 
 
 void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsigned line)

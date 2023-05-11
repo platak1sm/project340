@@ -10,6 +10,8 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
+    extern stack <unsigned> funcLocalStack, loopCountStack;
+    extern unsigned programVarOffset, functionLocalOffset, formalArgOffset;
    /*  extern int tmpc; */
 
     /* int flag_insert=1; */
@@ -19,6 +21,7 @@
     int funcid=0;
     string lastidname;
     bool isMember=false;
+    int loopc=0;
 
     bool is_sysfunc(string name) {
         if( name == "print" ||
@@ -540,7 +543,7 @@ primary: lvalue{ $$ = emit_iftableitem($1);}
 		| const{$$=$1;}
         ;
 
-lvalue: ID { /*wait for irene to fix 2nd phase*/
+lvalue: ID { 
             string name($1);
 
             if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false ){
@@ -698,9 +701,9 @@ stmtlist: stmt stmtlist  {cout << "stmtlist => stmt stmtlist\n";}
           ;
 
 funcdef: func_prefix func_args func_body { exitscopespace(); 
-                                           /* $$->setTotalLocals(getfunctionLocalOffset());
-                                           setfunctionLocalOffset(functionLocalStack.top());
-                                           functionLocalStack.pop(); */
+                                           $$->totalloc(functionLocalOffset);
+                                           functionLocalOffset=funcLocalStack.top();
+                                           funcLocalStack.pop(); 
                                            $$=$1;
                                            emit(funcend,NULL,NULL,lvalue_exp($1),0,yylineno);
                                            }
@@ -715,18 +718,19 @@ func_prefix: FUNCTION ID{
                   ste.name = name;
                   ste.scope = scope;
                   ste.line = yylineno;
-                  ste.isActive=true;
-                  inccurrscopeoffset()
+                  ste.isActive=true;                 
                   ste.offset = currscopeoffset();
+                  inccurrscopeoffset();
                   ste.scopespace = currscopespace();
                   ste.symt=programfunc_s;
                   insert(ste);
+                  $$ = ste;
+                  emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
+                  funcLocalStack.push(functionLocalOffset); 
+                  enterscopespace();
+                  resetformalargoffset(); 
             }
-            $$ = ste;
-            emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
-            /* functionLocalStack.push(getfunctionLocalOffset()); */
-            enterscopespace();
-            resetformalargoffset();
+           
          } 
          | FUNCTION {
             string fid=to_string(funcid++);
@@ -743,29 +747,29 @@ func_prefix: FUNCTION ID{
                     ste.scope = scope;
                     ste.line = yylineno;
                     ste.isActive=true;
-                    inccurrscopeoffset()
                     ste.offset = currscopeoffset();
+                    inccurrscopeoffset();
                     ste.scopespace = currscopespace();
                     ste.symt=programfunc_s;
                     insert(ste);
+                    $$ = ste;
+                    emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
+                    funcLocalStack.push(functionLocalOffset); 
+                    enterscopespace();
+                    resetformalargoffset(); 
                     break;
                 }
             }
-            $$ = ste;
-            emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
-            /* functionLocalStack.push(getfunctionLocalOffset()); */
-            enterscopespace();
-            resetformalargoffset();
          } 
          ;
 
-func_bstart: {/* LoopCounterStack.push(loopcounter); loopcounter=0; */ };
+func_bstart: {loopCountStack.push(loopc); loopc=0;};
 
-func_bend:  { /* loopcounter = LoopCounterStack.top(); LoopCounterStack.pop(); */ };
+func_bend:  {loopc = loopCountStack.top(); loopCountStack.pop();};
 
 func_args:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {enterscopespace(); resetfunctionlocaloffset();};
                                                                  
-func_body: { scope--; infunction++;} func_bstart block func_bend {infunction--;cout <<"funcdef => function(idlist)block\n"; exitscopespace(); } ;
+func_body: { scope--; infunction++;} func_bstart block func_bend {infunction--; exitscopespace(); } ;
 
 
 const:	INTEGER {$$ = newexpr_constnum($1);
