@@ -1,6 +1,10 @@
 #include "icode.h"
 #include <vector>
 #include <assert.h>
+
+
+// using namespace std;
+
 vector<quad> quads;
 unsigned total = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffset = 0, scopeSpaceCounter = 1;
 unsigned int currQuad = 0;
@@ -241,9 +245,12 @@ void check_arith(expr* e, string context) {
 	e->type == programfunc_e ||
 	e->type == libraryfunc_e ||
 	e->type == boolexpr_e ){
-		printf("Illegal expr used in %s!", context);
+		cout << "Illegal expr used in" << context << " !" ;
 		//exit(0);
 	}
+}
+void resettmpcounter(){
+    tmpc = 0;
 }
 
 bool istempname(string s) { return s[0] == '$'; }

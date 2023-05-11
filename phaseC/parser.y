@@ -2,8 +2,7 @@
     #include <iostream>
     #include <string>
     #include "symbol_table.h"
-    #include <stack>
-    #include <list>
+    #include "icode.h"
 
     /* #define YY_DECL int alpha_yylex (void* yylval)*/
     extern int yylex(void);
@@ -11,6 +10,7 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
+   /*  extern int tmpc; */
 
     /* int flag_insert=1; */
     int inloop=0;
@@ -18,7 +18,7 @@
     int scope=0;
     int funcid=0;
     string lastidname;
-    /* list <expr> *elist; */
+    bool isMember=false;
 
     bool is_sysfunc(string name) {
         if( name == "print" ||
@@ -51,16 +51,19 @@
 	int intVal;
     char *stringVal;
 	double doubleVal;
+    expr *exp;
 }
 
 %token <intVal> INTEGER
 %token <doubleVal> REAL
 %token <stringVal> ID STRING 
+
 %token IF ELSE WHILE FOR FUNCTION RETURN BREAK CONTINUE AND NOT OR LOCAL TRUE FALSE NIL
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <stringVal> lvalue
+%type <exp> lvalue expr term assignexpr const primary member objectdef call
+%type <stringVal> funcname
 
 %right ASSIGN
 %left OR
@@ -80,90 +83,241 @@ program: stmt program {cout << "program stmt\n";}
          | {cout << "program empty\n";}
          ;
  
-stmt: expr SEMICOLON {cout << "stmt => expr\n";}
-      | ifstmt {cout << "stmt => ifstm\n";}
-      | {inloop++;}whilestmt{cout << "stmt => whilestmt\n";inloop--;}
-      | {inloop++;}for_stmt{inloop--; cout << "stmt => forstmt\n";}
-      | returnstmt {cout << "stmt => returnstmt\n";}
-      | BREAK SEMICOLON{if(inloop==0) { red(); cout << "Error: Cannot use BREAK when not in loop -> line " << yylineno << endl; cout << "stmt => break;\n"; reset();}  }
-      | CONTINUE SEMICOLON{if(inloop==0){ red(); cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;cout << "stmt => continue;\n"; reset();} }
-      | block {cout << "stmt => block\n";}
-      | funcdef {cout << "stmt => funcdef\n";}
-      | SEMICOLON {cout << "stmt => ;\n";}
+stmt: expr SEMICOLON {
+    make_stmt(&$$);
+    if($1->type == boolexpr_e){
+        if(istempname($1)){
+            $$->sym = newtmp();
+        }else{
+            $$->sym = $1->sym;
+        }
+        patchlist($1->truequad, nextquad());
+        emit(assign, newexpr_constbool(1), NULL, $1, nextquad(), yylineno);
+        emit(jump, NULL, NULL, NULL, nextquad()+2, yylineno);
+        patchlist($1->falsequad, nextquad());
+        emit(assign, newexpr_constbool(0), NULL, $1, nextquad(), yylineno);
+        reset_hidden_count();
+    }
+    cout << "stmt => expr\n";
+    }
+      | ifstmt {
+        make_stmt(&$$);
+        reset_hidden_count();
+        cout << "stmt => ifstm\n";
+        }
+      | {inloop++;}whilestmt{
+        make_stmt(&$$);
+        reset_hidden_count();
+        cout << "stmt => whilestmt\n";inloop--;}
+      | {inloop++;}for_stmt{
+        make_stmt(&$$);
+        reset_hidden_count();
+        inloop--; cout << "stmt => forstmt\n";}
+      | returnstmt {
+        make_stmt(&$$);
+        reset_hidden_count();
+        cout << "stmt => returnstmt\n";}
+      | BREAK SEMICOLON{
+        make_stmt(&$$);
+        $$->breakList = newlist(nextquad());
+        $$->constList = 0;
+        emit(jump, NULL, NULL, NULL, 0, yylineno);
+        
+        if(inloop==0) { 
+            red(); 
+            cout << "Error: Cannot use BREAK when not in loop -> line " << yylineno << endl;
+             cout << "stmt => break;\n"; reset();}
+        reset_hidden_count();
+
+        }
+      | CONTINUE SEMICOLON{
+        make_stmt(&$$);
+        $$->constList = newlist(nextquad());
+        $$->breakList = 0;
+        emit(jump, NULL, NULL, NULL, 0, yylineno);
+        if(inloop==0){ red(); cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;cout << "stmt => continue;\n"; reset();}
+        reset_hidden_count(); }
+      | block {
+        $$ = $1;
+        reset_hidden_count();
+        cout << "stmt => block\n";}
+      | funcdef {
+        make_stmt(&$$);
+        reset_hidden_count();
+        cout << "stmt => funcdef\n";}
+      | SEMICOLON {
+        make_stmt(&$$);
+        reset_hidden_count();
+        cout << "stmt => ;\n";}
       ;
 
 expr: assignexpr {$$=$1;}
       | expr PLUS expr {$$ =newexpr(arithexp_e);
-                        $$->sym=newtmp();
+                        if(istempname($1)){
+                            $$->sym = newtmp();
+                        }else{
+                            $$->sym = $1->sym;
+                        }
+                        
                         emit(add,$1,$3,$$,0,yylineno);}
       | expr MINUS expr {$$ =newexpr(arithexp_e);
-                        $$->sym=newtmp();
+                        if(istempname($1)){
+                            $$->sym = newtmp();
+                        }else{
+                            $$->sym = $1->sym;
+                        }
                         emit(sub,$1,$3,$$,0,yylineno);}
       | expr MUL expr   {$$ =newexpr(arithexp_e);
-                         $$->sym=newtmp();
+                         if(istempname($1)){
+                            $$->sym = newtmp();
+                        }else{
+                            $$->sym = $1->sym;
+                        }
                          emit(mul,$1,$3,$$,0,yylineno);}
       | expr DIV expr  {$$ =newexpr(arithexp_e);
-                        $$->sym=newtmp();
+                        if(istempname($1)){
+                            $$->sym = newtmp();
+                        }else{
+                            $$->sym = $1->sym;
+                        }
                         emit(div,$1,$3,$$,0,yylineno);;}
       | expr MOD expr  {$$ =newexpr(arithexp_e);
-                        $$->sym=newtmp();
+                        if(istempname($1)){
+                            $$->sym = newtmp();
+                        }else{
+                            $$->sym = $1->sym;
+                        }
                         emit(mod,$1,$3,$$,0,yylineno);}
-      | expr EQUAL expr {$$ = newexpr(boolexpr_e);
-		                 $$->sym = newtmp();
-                         //emit(if_eq, $1, $3, $$, nextQuad()+3 , yylineno);
+      | expr EQUAL{
+        if($1->type == boolexpr_e){
+            if(istempname($1)){
+                $$->sym = newtmp();
+            }else{
+                $$->sym = $1->sym;
+            }
+            patchlist($1->truequad, nextquad());
+            emit(assign, newexpr_constbool(1), NULL, $1, nextquad(), yylineno);
+            emit(jump, NULL, NULL, NULL, nextquad()+2, yylineno);
+            patchlist($1->falsequad, nextquad());
+            emit(assign, newexpr_constbool(0), NULL, $1, nextquad(), yylineno);
+        }
+      } expr {$$ = newexpr(boolexpr_e);
+		                //  $$->sym = newtmp();
+                         $$->truequad = nextquad()
+                         $$->falsequad = nextquad()+1
+                         emit(if_eq, $1, $4, NULL, 0 , yylineno);
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
-		                 //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
+		                 emit(jump,NULL,NULL,NULL,0, yylineno);
                          //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
                          }
-      | expr NOT_EQUAL expr {$$ = newexpr(boolexpr_e);
-		                     $$->sym = newtmp();
-                             //emit(if_noteq, $1, $3, $$, nextQuad()+3 , yylineno);
-		                     //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
-		                     //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
-                             //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+      | expr NOT_EQUAL{
+        if($1->type == boolexpr_e){
+            if(istempname($1)){
+                $$->sym = newtmp();
+            }else{
+                $$->sym = $1->sym;
+            }
+            patchlist($1->truequad, nextquad());
+            emit(assign, newexpr_constbool(1), NULL, $1, nextquad(), yylineno);
+            emit(jump, NULL, NULL, NULL, nextquad()+2, yylineno);
+            patchlist($1->falsequad, nextquad());
+            emit(assign, newexpr_constbool(0), NULL, $1, nextquad(), yylineno);
+        }
+      } expr {$$ = newexpr(boolexpr_e);
+		                //  $$->sym = newtmp();
+                         $$->truequad = nextquad()
+                         $$->falsequad = nextquad()+1
+                         emit(if_noteq, $1, $4, NULL, 0 , yylineno);
+		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                 emit(jump,NULL,NULL,NULL,0, yylineno);
+                         //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
                          }
       | expr GREATER expr   {$$ = newexpr(boolexpr_e);
-		                     $$->sym = newtmp();
-                             //emit(if_greater, $1, $3, $$, nextQuad()+3 , yylineno);
-		                     //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
-		                     //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
-                             //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+		                //  $$->sym = newtmp();
+                         $$->truequad = nextquad()
+                         $$->falsequad = nextquad()+1
+                         emit(if_greater, $1, $3, NULL, 0 , yylineno);
+		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                 emit(jump,NULL,NULL,NULL,0, yylineno);
+                         //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
                          }
       | expr LESS expr      {$$ = newexpr(boolexpr_e);
-		                     $$->sym = newtmp();
-                             //emit(if_less, $1, $3, $$, nextQuad()+3 , yylineno);
-		                     //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
-		                     //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
-                             //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+		                //  $$->sym = newtmp();
+                         $$->truequad = nextquad()
+                         $$->falsequad = nextquad()+1
+                         emit(if_less, $1, $3, NULL, 0 , yylineno);
+		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                 emit(jump,NULL,NULL,NULL,0, yylineno);
+                         //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
                          }
       | expr GREATER_EQUAL expr {$$ = newexpr(boolexpr_e);
-		                         $$->sym = newtmp();
-                                 //emit(if_greatereq, $1, $3, $$, nextQuad()+3 , yylineno);
-		                         //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
-		                         //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
-                                 //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+		                //  $$->sym = newtmp();
+                         $$->truequad = nextquad()
+                         $$->falsequad = nextquad()+1
+                         emit(if_greatereq, $1, $3, NULL, 0 , yylineno);
+		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                 emit(jump,NULL,NULL,NULL,0, yylineno);
+                         //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
                                 }
       | expr LESS_EQUAL expr    {$$ = newexpr(boolexpr_e);
-		                         $$->sym = newtmp();
-                                 //emit(if_lesseq, $1, $3, $$, nextQuad()+3 , yylineno);
-		                         //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
-		                         //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
-                                 //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+		                //  $$->sym = newtmp();
+                         $$->truequad = nextquad()
+                         $$->falsequad = nextquad()+1
+                         emit(if_lesseq, $1, $3, NULL, 0 , yylineno);
+		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+		                 emit(jump,NULL,NULL,NULL,0, yylineno);
+                         //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
                                  }
-      | expr AND expr {$$ = newexpr(boolexpr_e);
-		                         $$->sym = newtmp();
-                                 //emit(andc, $1, $3, $$, nextQuad()+3 , yylineno);
-		                         //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
-		                         //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
-                                 //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+      | expr AND {
+        if($1->type != boolexpr_e){
+            $5->truequad = nextquad();
+            $5->falsequad = nextquad()+1;
+            emit(if_eq, $1, newexpr_constbool(1), NULL, 0 , yylineno);
+            emit(jump,NULL,NULL,NULL,0, yylineno);
+            patchlist($1->truequad, nextquad());
+        }
+        
+      }M expr {$$ = newexpr(boolexpr_e);
+		                //  $$->sym = newtmp();
+                        if($5->type != boolexpr_e){
+                            $5->truequad = nextquad()
+                            $5->falsequad = nextquad()+1
+                            emit(if_eq, $5, newexpr_constbool(1), NULL, 0 , yylineno);
+                            //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+                            emit(jump,NULL,NULL,NULL,0, yylineno);
+                            //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                        }
+                        if($1->type == boolexpr_e){
+                            patchlist($1->truequad, $4);
+                        }
+                        $$->falsequad = mergelist($1->falsequad, $5->falsequad);
+                        $$->truequad = $5->truequad;
+                         
         
       }
-      | expr OR expr {$$ = newexpr(boolexpr_e);
-		              $$->sym = newtmp();
-		              //emit(or_c, $1, $3, $$, nextQuad()+3 , yylineno);
-		              //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
-		              //emit(jump,NULL,NULL,NULL,nextQuad()+2, yylineno);
-		              //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+      | expr OR{
+        if($1->type != boolexpr_e){
+            $5->truequad = nextquad();
+            $5->falsequad = nextquad()+1;
+            emit(if_eq, $1, newexpr_constbool(1), NULL, 0 , yylineno);
+            emit(jump,NULL,NULL,NULL,0, yylineno);
+            patchlist($1->falsequad, nextquad());
+        }
+      } M expr {$$ = newexpr(boolexpr_e);
+		                //  $$->sym = newtmp();
+                        if($5->type != boolexpr_e){
+                            $5->truequad = nextquad()
+                            $5->falsequad = nextquad()+1
+                            emit(if_eq, $5, newexpr_constbool(1), NULL, 0 , yylineno);
+                            //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
+                            emit(jump,NULL,NULL,NULL,0, yylineno);
+                            //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                        }
+                        if($1->type == boolexpr_e){
+                            patchlist($1->falsequad, $4);
+                        }
+                        $$->truequad = mergelist($1->truequad, $5->truequad);
+                        $$->falsequad = $5->falsequad;
                       }
       | term {$$=$1;}
       ;
@@ -171,81 +325,155 @@ expr: assignexpr {$$=$1;}
 term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
 	    | UMINUS expr  {check_arith($2);
                         $$ =newexpr(arithexp_e);
-                        $$->sym=newtmp();
-                        emit(uminus,$2,NULL,$$,0,yylineno);}
-	    | NOT expr {$$ =newexpr(arithexp_e);
-                        $$->sym=newtmp();
+                        if(istempname($2)){
+                            $$->sym = newtmp();
+                        }else{
+                            $$->sym = $2->sym;
+                        }
+                        emit(uminus,$2,NULL,$$,-1,yylineno);}
+	    | NOT expr {$$ =newexpr(boolexpr_e);
+                        if(istempname($2)){
+                            $$->sym = newtmp();
+                        }else{
+                            $$->sym = $2->sym;
+                        }
+                        if($2->type != boolexpr_e){
+                            $2->truequad = nextquad();
+                            $2->falsequad = nextquad()+1;
+                            emit(if_eq, $2,newexpr_constbool(1), NULL, 0, yylineno);
+                            emit(jump, NULL, NULL, NULL, 0, yylineno);
+                        }
+                        int tmp = $2->truequad;
+                        $$->truequad = $2->falsequad;
+                        $$->falsequad = tmp;
                         emit(notc,$2,NULL,$$,0,yylineno);}
 		| PLUS_PLUS lvalue {
-                             //lookup
-                             //if programfunc_s || libraryfunc_s
-                             //Error
-                             //if tableitem_e
-                             //$$=emit_iftableitem($2);
-                             //expr *tmp = newexpr(costnum_e);
-                             //tmp->numConst=1;
-                             //emit(add,$$,tmp,$$,0,yylineno);
-                             //emit(tablesetelem,$2->getIndex(),$$,$2,0,yylineno);
-                             //else
-                             //expr *tmp = newexpr(costnum_e);
-                             //tmp->numConst=1;
-                             //emit(add,$2,tmp,$2,0,yylineno);
-                             //$$ = newexpr(arithexp_e);
-                             //$$->sym=newtmp();
-                             //emit(assign,$2,NULL,$$,0,yylineno);
+                            string name = $2->sym->name;
+                            int i = scope;
+                            SymbolTableEntry lookupent;
+                            while(i >=0 ){
+                                lookupent = lookupcurrentscope(name, i);
+                                if(lookupent.isActive)
+                                    break;
+                                i--;
+                            }
+                            if(lookupent.type == USERFUNC && lookupcurrentscope(name, scope).type != LOCALV){
+                                red();
+                                cout <<"Error: " <<name << " is defined as function \n";
+                                reset();
+                            }
+                            check_arith($2);
+                            if($2->tableitem_e){
+                                $$ = emit_iftableitem($2);
+                                emit(add,$$,newexpr_constnum(1), $$, -1, yylineno);
+                                emit(tablesetelem, $2, $2->index, $$, -1, yylineno);
+                            }else{
+                                emit(add,$2,newexpr_constnum(1), $2, -1, yylineno);
+                                $$ = newexpr(arithexp_e);
+                                if(istempname($2)){
+                                    $$->sym = newtmp();
+                                }else{
+                                    $$->sym = $2->sym;
+                                }
+                                emit(assign, $2, NULL, $$, -1, yylineno);
+                            }
                            }
 		| lvalue PLUS_PLUS {
-                             //lookup
-                             //if programfunc_s || libraryfunc_s
-                             //check_arith($$);
-                             //Error
-                             //if tableitem_e
-                             //expr *value = emit_iftableitem($1);
-                             //expr *tmp = newexpr(costnum_e);
-                             //tmp->numConst=1;
-                             //emit(assign,value,NULL,$$,0,yylineno);
-                             //emit(add,value,tmp,value,0,yylineno);
-                             //emit(tablesetelem,$1->getIndex(),value,$1,0,yylineno);
-                             //else
-                             //emit(assign,$1,NULL,$$,0,yylineno);
-                             //expr *tmp = newexpr(costnum_e);
-                             //tmp->numConst=1;
-                             //emit(add,$1,tmp,$1,0,yylineno);
+                            string name = $1->sym->name;
+                            int i = scope;
+                            SymbolTableEntry lookupent;
+                            while(i >=0 ){
+                                lookupent = lookupcurrentscope(name, i);
+                                if(lookupent.isActive)
+                                    break;
+                                i--;
+                            }
+                            if(lookupent.type == USERFUNC && lookupcurrentscope(name, scope).type != LOCALV){
+                                red();
+                                cout <<"Error: " <<name << " is defined as function \n";
+                                reset();
+                            }
+                            check_arith($1);
+                            $$ = newexpr(var_e);
+                            if(istempname($1)){
+                                $$->sym = newtmp();
+                            }else{
+                                $$->sym = $1->sym;
+                            }
+                            if($2->tableitem_e){
+                                expr* val = emit_iftableitem($1);
+                                
+                                emit(assign,val, NULL,$$,-1,yylineno);
+                                emit(add,val, newexpr_constnum(1),val,-1,yylineno);
+                                emit(tablesetelem, $1, $1->index, $$, -1, yylineno);
+                            }else{
+                                emit(assign,$1, NULL,$$,-1,yylineno);
+                                emit(add,$1, newexpr_constnum(1),$1,-1,yylineno);
+                            }
                            }
 		| MINUS_MINUS lvalue {
-                             //lookup
-                             //if programfunc_s || libraryfunc_s
-                             //Error
-                             //if tableitem_e
-                             //$$=emit_iftableitem($2);
-                             //expr *tmp = newexpr(costnum_e);
-                             //tmp->numConst=-1;
-                             //emit(add,$$,tmp,$$,0,yylineno);
-                             //emit(tablesetelem,$2->getIndex(),$$,$2,0,yylineno);
-                             //else
-                             //expr *tmp = newexpr(costnum_e);
-                             //tmp->numConst=-1;
-                             //emit(add,$2,tmp,$2,0,yylineno);
-                             //$$ = newexpr(arithexp_e);
-                             //$$->sym=newtmp();
-                             //emit(assign,$2,NULL,$$,0,yylineno);
+                             string name = $2->sym->name;
+                            int i = scope;
+                            SymbolTableEntry lookupent;
+                            while(i >=0 ){
+                                lookupent = lookupcurrentscope(name, i);
+                                if(lookupent.isActive)
+                                    break;
+                                i--;
+                            }
+                            if(lookupent.type == USERFUNC && lookupcurrentscope(name, scope).type != LOCALV){
+                                red();
+                                cout <<"Error: " <<name << " is defined as function \n";
+                                reset();
+                            }
+                            check_arith($2);
+                            if($2->tableitem_e){
+                                $$ = emit_iftableitem($2);
+                                emit(sub,$$,newexpr_constnum(1), $$, -1, yylineno);
+                                emit(tablesetelem, $2, $2->index, $$, -1, yylineno);
+                            }else{
+                                emit(sub,$2,newexpr_constnum(1), $2, -1, yylineno);
+                                $$ = newexpr(arithexp_e);
+                                if(istempname($2)){
+                                    $$->sym = newtmp();
+                                }else{
+                                    $$->sym = $2->sym;
+                                }
+                                emit(assign, $2, NULL, $$, -1, yylineno);
+                            }
                            }
 		| lvalue MINUS_MINUS {
-                             //lookup
-                             //if programfunc_s || libraryfunc_s
-                             //Error
-                             //if tableitem_e
-                             //expr *value = emit_iftableitem($1);
-                             //expr *tmp = newexpr(costnum_e);
-                             //tmp->numConst=-1;
-                             //emit(assign,value,NULL,$$,0,yylineno);
-                             //emit(add,value,tmp,value,0,yylineno);
-                             //emit(tablesetelem,$1->getIndex(),value,$1,0,yylineno);
-                             //else
-                             //emit(assign,$1,NULL,$$,0,yylineno);
-                             //expr *tmp = newexpr(costnum_e);
-                             //tmp->numConst=-1;
-                             //emit(add,$1,tmp,$1,0,yylineno);
+                             string name = $1->sym->name;
+                            int i = scope;
+                            SymbolTableEntry lookupent;
+                            while(i >=0 ){
+                                lookupent = lookupcurrentscope(name, i);
+                                if(lookupent.isActive)
+                                    break;
+                                i--;
+                            }
+                            if(lookupent.type == USERFUNC && lookupcurrentscope(name, scope).type != LOCALV){
+                                red();
+                                cout <<"Error: " <<name << " is defined as function \n";
+                                reset();
+                            }
+                            check_arith($1);
+                            $$ = newexpr(var_e);
+                            if(istempname($1)){
+                                $$->sym = newtmp();
+                            }else{
+                                $$->sym = $1->sym;
+                            }
+                            if($2->tableitem_e){
+                                expr* val = emit_iftableitem($1);
+                                
+                                emit(assign,val, NULL,$$,-1,yylineno);
+                                emit(sub,val, newexpr_constnum(1),val,-1,yylineno);
+                                emit(tablesetelem, $1, $1->index, $$, -1, yylineno);
+                            }else{
+                                emit(assign,$1, NULL,$$,-1,yylineno);
+                                emit(sub,$1, newexpr_constnum(1),$1,-1,yylineno);
+                            }
                              }
 		| primary {$$=$1;}
 		;
@@ -271,9 +499,35 @@ assignexpr: lvalue ASSIGN expr{
                                         reset();
                                     }
                                 }
-                                //if programfunc_s || libraryfunc_s
-                                //Error
-                                //code...
+                                if($3->type == boolexpr_e){
+                                    if(istempname($3)){
+                                        $3->sym = $3->sym;
+                                    }else{
+                                        $3->sym = newtmp();
+                                    }
+                                    patchlist($3->truequad, nextquad());
+                                    emit(assign, newexpr_constbool(1), NULL, $3, nextquad(), yylineno);
+                                    emit(jump, NULL, NULL, NULL, nextquad(), yylineno);
+                                    patchlist($3->falsequad, nextquad());
+                                    emit(assign, newexpr_constbool(0), NULL, $3, nextquad(), yylineno);
+                                }
+
+                                if($1!=NULL){
+                                    if($1->type == tableitem_e){
+                                        emit(tablesetelem, $1, $1->index, $3, -1, yylineno);
+                                        $$ = emit_iftableitem($1);
+                                        $$->type = assignexpr_e;
+                                    }else{
+                                        emit(assign, $3, NULL, $1, -1, yylineno);
+                                        $$ = newexpr(assignexpr_e);
+                                        if(istempname($1)){
+                                            $$->sym = $1->sym;
+                                        }else{
+                                            $$->sym = newtmp();
+                                        }
+                                        emit(assign, $1, NULL,$$,-1,yylineno);
+                                    }
+                                }
                             }
                         
             ;
@@ -332,7 +586,7 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                 ent.scopespace = currscopespace();
                 ent.symt = var_s;
                 insert(ent);
-                $$ = lvalue_exp(ent);
+                
                 
                 $$ = lvalue_exp(ent);
             }
@@ -345,15 +599,17 @@ lvalue: ID { /*wait for irene to fix 2nd phase*/
                 red();
                 cout << "Error: there is no global variable with name "<<name<<endl;
                 reset();
+                $$ = newexpr(nil_e);
             } else{
                 $$=lvalue_exp(ste);
             }
             
         }
-        | member{isMember=true;}
+        | member{$$ = $1;
+            isMember=true;}
         ;
 
-member: lvalue PERIOD ID {}
+member: lvalue PERIOD ID {$$ = member_item($1,$3);}
 		| lvalue LEFT_BRACKET expr RIGHT_BRACKET {$1 = emit_iftableitem($1);
                                                   $$ = newexpr(tableitem_e);
                                                   $$->sym = $1->sym;
@@ -364,7 +620,15 @@ member: lvalue PERIOD ID {}
 		;
 
 call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
-		| lvalue callsuffix  {/**/}
+		| lvalue callsuffix  {
+                              if ($2->method){
+                                expr *self = $1;
+                                $1 = emit_iftableitem(member_item(self,$2->name)); 
+                                self->next = $2;
+                                $2 = self; /*pushing self in front*/
+                              }
+                              $$ = make_call($1,$2->elist);
+                            }
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {expr *func = newexpr(programfunc_e);
                                                                                                 func->sym=$2;
                                                                                                 $$ = make_call(func,$5);}
@@ -375,10 +639,20 @@ callsuffix:	normcall {$$=$1;}
 			;
 
 
-normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "normcall => (elist)\n";}
+normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
+                                                     c.name="nil";
+                                                     c.method=false;
+                                                     c.elist=$2;
+                                                     $$=c;
+                                                     }
           ;
         
-methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {cout << "methodcall => ..id(elist)\n";}
+methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
+                                                                        c.name=$2;
+                                                                        c.method=true;
+                                                                        c.elist=$4;
+                                                                        $$=c;
+                                                                        }
             ;
 
 elist: expr  {cout << "elist => expr\n";
@@ -498,20 +772,20 @@ func_bend:  { /* loopcounter = LoopCounterStack.top(); LoopCounterStack.pop(); *
 
 func_args:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {enterscopespace(); resetfunctionlocaloffset();};
                                                                  
-func_body: { scope--; infunction++;}func_bstart block func_bend {infunction--;cout <<"funcdef => function(idlist)block\n"; exitscopespace(); } ;
+func_body: { scope--; infunction++;} func_bstart block func_bend {infunction--;cout <<"funcdef => function(idlist)block\n"; exitscopespace(); } ;
 
 
-const:	INTEGER {$$ = newexpr(costnum_e);
-                 $$->numConst=$1;}
-		| REAL {$$ = newexpr(costnum_e);
-                 $$->numConst=$1;}
-		| STRING {$$ = newexpr(conststring_e);
-                  $$->strConst=$1($1);}
-		| NIL {$$ = newexpr(nil_e)}
-		| TRUE { $$ = newexpr(constbool_e);
-                 $$->boolConst=true;}
-		| FALSE { $$ = new expr(constbool_e);
-                  $$->boolConst=false;}
+const:	INTEGER {$$ = newexpr_constnum($1);
+                 /* $$->numConst=$1; */}
+		| REAL {$$ = newexpr_constnum($1);
+                 /* $$->numConst=$1; */}
+		| STRING {$$ = newexpr_conststring($1);
+                  /* $$->strConst=$1; */}
+		| NIL {$$ = newexpr(nil_e);}
+		| TRUE { $$ = newexpr_constbool($1);
+                 /* $$->boolConst=true; */}
+		| FALSE { $$ = newexpr_constbool($1);
+                  /* $$->boolConst=false; */}
 		;
 
 idlist: ID{
@@ -520,15 +794,15 @@ idlist: ID{
             if(ste.isActive){red(); cout << "Error: " << name << " is declared in this scope already.\n"; reset();
             }else if(is_sysfunc(name)){red(); cout << "Error: "<< name <<" is a system function, it cannot be a function argument.\n"; reset();
             }else {
-                  ste.type=FORMAL;
+                  ste.type = FORMAL;
                   ste.name = name;
                   ste.scope = scope;
                   ste.line = yylineno;
-                  ste.isActive=true;
+                  ste.isActive = true;
                   inccurrscopeoffset()
                   ste.offset = currscopeoffset();
                   ste.scopespace = currscopespace();
-                  ste.symt=var_s;
+                  ste.symt = var_s;
                   insert(ste);
             }
           }
@@ -562,18 +836,29 @@ loopstmt : loopstart stmt loopend { $$ = $2; } ;
 
 
 ifstmt:	if_prefix stmt {//patchlabel($1-2, $1+1);
-                        //patchlabel($1-1, nextQuad()+1);
+                        patchlabel($1, nextQuad());
                        }
-		|if_prefix stmt else_prefix stmt   {//patchlabel($1-2,$3-1); //if eq if_prefix
-                                            //patchlabel($1-1,$3+2); //jmp if_prefix
-                                            //patchlabel($3, nextQuad()+1); // jmp to end   
+		|if_prefix stmt else_prefix stmt   {patchlabel($1,$3+1); //if eq if_prefix
+                                            patchlabel($3, nextquad()); //jmp if_prefix
+                                            
         }
 	    ;	 
-if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{expr *tmp = newexpr(constbool_e);
-                                                      tmp->boolConst=true;
-                                                      //code..
-                                                      //backpatching (truelist & falselist)
-                                                      $$ = nextquad();
+if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
+                                                        if($3->type == boolexpr_e){
+                                                            if(istempname($3)){
+                                                                $3->sym = $3->sym;
+                                                            }else{
+                                                                $3->sym = newtmp();
+                                                            }
+                                                            patchlist($3->truequad, nextquad());
+                                                            emit(assign,newexpr_constbool(1), NULL, $3, nextquad(), yylineno);
+                                                            emit(jump, NULL, NULL, NULL, nextquad()+2, yylineno);
+                                                            patchlist($3->falsequad, nextquad());
+                                                            emit(assign,newexpr_constbool(0), NULL, $3, nextquad(), yylineno);
+                                                        }
+                                                        emit(if_eq, $3, newexpr_constbool(1), NULL, nextquad()+2, yylineno);
+                                                        $$ = nextquad();
+                                                        emit(jump, NULL, NULL, NULL,0,yylineno);
                                                       }
 
 else_prefix: ELSE {$$ = nextquad();   
@@ -600,15 +885,13 @@ for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {cout <<"forstmt => 
 		
 N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);};
 
-for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{
-
-};
-
 M:{/*nextquad*/ $$ = nextquad(); };
+
+for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{};
 
 returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
-                    cout <<"returnstmt => return expr;"<<endl;
+                    /* cout <<"returnstmt => return expr;"<<endl; */
                     emit(ret,NULL,NULL,$2,0,yylineno);
          }
 			| RETURN SEMICOLON { if(infunction==0) {red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}

@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -48,6 +49,7 @@ class SymbolTableEntry {
         unsigned int scope;
         unsigned int line;
         unsigned offset;
+        unsigned int iaddress;
         stype type;
 }; 
 
@@ -61,5 +63,5 @@ SymbolTableEntry LookuplastRef(string s);
 void hide(int scope);
 void insertLibFuncs(string name);
 void printsymbols();
-string create_hiddenvar_name();
-void reset_hidden_count();
+/* string create_hiddenvar_name();
+void reset_hidden_count(); */

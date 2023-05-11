@@ -328,8 +328,8 @@ funcdef: FUNCTION ID {
          } funLEFT_PAR idlist funRIGHT_PAR {infunction++;}block{infunction--;cout <<"funcdef => function(idlist)block\n";}
          ;
 
-funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
-funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
+// funLEFT_PAR:    LEFT_PARENTHESIS{scope++;}
+// funRIGHT_PAR:   RIGHT_PARENTHESIS{scope--;}
 
 const:	INTEGER {/*$$=$1;*/cout <<"const => integer:"<<yylval.intVal<<endl;}
 		| REAL {/*$$=$1;*/cout <<"const => real:"<<yylval.doubleVal<<endl;}
