@@ -91,6 +91,12 @@ typedef struct stmt_t
     int breakList, contList;
 } stmt_t;
 
+typedef struct indexedelements
+{
+    expr *index;
+    expr *value;
+} indexedelements;
+
 typedef struct calls
 {
     string name;

@@ -656,15 +656,17 @@ methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
             ;
 
 elist: expr  {cout << "elist => expr\n";
-             list< expr> temp;
+             list <expr> temp;
              temp.push_back($1);
-             $$=temp}
+             $$=temp;}
        | elist COMMA expr {cout << "elist => elist,expr\n";
-                           $$=$1;                           
-                           $$->elist->push_back($3);}
+                           list <expr> temp;
+                           temp=$1;                           
+                           temp.push_back($3);
+                           $$=temp;}
        | {cout << "elist => empty\n";
-          list< expr> temp;
-          $$=temp}
+          list <expr> temp;
+          $$=temp;}
        ;
 
 objectdef: LEFT_BRACKET elist RIGHT_BRACKET {expr *tmp = newexpr(newtable_e);
@@ -690,11 +692,26 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET {expr *tmp = newexpr(newtable_e);
                                                   }
            ;
 
-indexed: indexedelem  {cout << "indexed => indexedelem\n";}
-       | indexed COMMA indexedelem       {cout << "indexed => indexed, indexelem\n";}
+indexed: indexedelem  {cout << "indexed => indexedelem\n";
+                      list <indexedelements> indexedlist;
+                      indexedlist.push_back($1);
+                      $$=indexedlist;}
+       | indexed COMMA indexedelem       
+                      {cout << "indexed => indexed, indexelem\n";
+                      list <indexedelements> indexedlist;
+                      indexedlist=$1;
+                      indexedlist.push_back($3);
+                      $$=indexedlist;
+                      }
        ;
 
-indexedelem: LEFT_BRACE { /* flag_insert=0; */ } expr COLON { /* flag_insert=1; */ } expr RIGHT_BRACE  {cout << "indexedelem => {expr:expr}\n";}
+indexedelem: LEFT_BRACE { /* flag_insert=0; */ } expr COLON { /* flag_insert=1; */ } expr RIGHT_BRACE  
+                        {cout << "indexedelem => {expr:expr}\n";
+                        indexedelements temp;
+                        temp.index=$2;
+                        temp.value=$4;
+                        $$=temp;
+                        }
              ;
 
 block: LEFT_BRACE{scope++;} stmtlist RIGHT_BRACE{hide(scope--); cout << "block => {stmtlist}\n";}
