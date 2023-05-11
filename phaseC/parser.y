@@ -848,9 +848,9 @@ idlist: ID{
         |
        ;
 
-loopstart : {++inloop;};
+loopstart : {++inloop; ++loopc;};
 
-loopend : {--inloop;};
+loopend : {--inloop; --loopc;};
 
 loopstmt : loopstart stmt loopend { $$ = $2; } ;
 
