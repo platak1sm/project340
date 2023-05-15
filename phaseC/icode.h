@@ -12,7 +12,7 @@ typedef enum iopcode
     add,
     sub,
     mul,
-    div,
+    divc,
     mod,
     uminus,
     andc,
