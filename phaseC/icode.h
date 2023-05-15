@@ -104,6 +104,13 @@ typedef struct calls
     expr *elist;
 } calls;
 
+typedef struct forpr
+{
+    unsigned test;
+    unsigned enter;
+    
+} forpr;
+
 /* void expand();*/
 
 void emit(iopcode op, expr *arg1, expr *arg2, expr *result, unsigned label, unsigned line);

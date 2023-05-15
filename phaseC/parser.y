@@ -3,6 +3,7 @@
     #include <string>
     #include "symbol_table.h"
     #include "icode.h"
+    #include <list>
 
     /* #define YY_DECL int alpha_yylex (void* yylval)*/
     extern int yylex(void);
@@ -672,25 +673,24 @@ elist: expr  {cout << "elist => expr\n";
           $$=temp;}
        ;
 
-objectdef: LEFT_BRACKET elist RIGHT_BRACKET {expr *tmp = newexpr(newtable_e);
-                                             tmp->sym=newtmp();
-                                             emit(tablecreate,NULL,NULL,tmp,0,yylineno);
-                                             /* for(list <indexedelements>::iterator i = $2->getIndexedList()->begin() ;  i!=$2->getIndexedList()->end() ; i++){
-                                                emit(tablesetelem,i->getIndexElement(),i->getValueElement(),tmp,0,yylineno);
-                                             } */
-                                             $$ = tmp;
+objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*tempi;
+                                              tmp->sym=newtmp();
+                                              emit(tablecreate,NULL,NULL,tmp,0,yylineno);
+                                              int count = 0;
+                                              list <expr> elist =$2;
+                                              for(int i = elist.begin() ; i != elist.end() ; i++){
+                                                 tempi = newexpr(costnum_e);
+                                                 tempi->numConst=count;
+                                                 emit(tablesetelem,tempi,i,temp,0,yylineno);
+                                                 count++;
                                              }
-           | LEFT_BRACKET indexed RIGHT_BRACKET  {
-                                                  int numc=0;
-                                                  expr *tmp = newexpr(newtable_e);
+                                             }
+           | LEFT_BRACKET indexed RIGHT_BRACKET  {expr *tmp = newexpr(newtable_e);
                                                   tmp->sym=newtmp();
                                                   emit(tablecreate,NULL,NULL,tmp,0,yylineno);
-                                                  /* for(list <expr>::iterator i = $2->getElist()->begin() ; i!=$2->getElist()->end() ; i++){
-                                                  tmp2 = newexpr(costnum_e);
-                                                  tmp2->numConst=numc;
-                                                  emit(tablesetelem,tmp2,&*i,tmp,0,yylineno);
-                                                  numc++;
-                                                  } */
+                                                  list <indexedelements> indexed = $2;
+                                                  for(int i = indexed.begin(); i != indexed.end(); i++)
+                                                     emit(tablesetelem,indexed->index,indexed->value,tmp,0,yylineno);
                                                   $$ = tmp;
                                                   }
            ;
@@ -857,7 +857,7 @@ loopstmt : loopstart stmt loopend { $$ = $2; } ;
 
 
 ifstmt:	if_prefix stmt {//patchlabel($1-2, $1+1);
-                        patchlabel($1, nextQuad());
+                        patchlabel($1, nextquad());
                        }
 		|if_prefix stmt else_prefix stmt   {patchlabel($1,$3+1); //if eq if_prefix
                                             patchlabel($3, nextquad()); //jmp if_prefix
@@ -890,25 +890,59 @@ whilestmt: whilestart whilecon loopstmt {
     cout <<"whilestmt => while(expr) stmt"<<endl;
     emit(jump,NULL,NULL,NULL,$1,yylineno); 
     patchlabel($2, nextquad()+1);
-    /* patchlist($stmt.breaklist, nextquad());
-    patchlist($stmt.contlist, $1); */
  } ; 
 
 whilestart: WHILE{$$=nextquad()+1;};
 
 whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {
-        emit(if_eq, $2, newexpr_constbool(1), NULL, nextquad()+2, yylineno);
-		$$ = nextQuad();
-        emit(jump,NULL,NULL,NULL,0,yylineno);
+        if($2->type == boolexpr_e){
+            if(istempname($2)){
+                $2->sym = $2->sym;
+            }else{
+                $2->sym = newtmp();
+            }
+            patchlist($2->truequad, nextquad());
+            emit(assign,newexpr_constbool(1), NULL, $2, nextquad(), yylineno);
+            emit(jump, NULL, NULL, NULL, nextquad()+3, yylineno);
+            patchlist($2->falsequad, nextquad());
+            emit(assign,newexpr_constbool(0), NULL, $2, nextquad(), yylineno);
+        }
+        emit(if_eq, $2, newexpr_constbool(1), NULL, nextquad()+3, yylineno);
+        $$ = nextquad();
+        emit(jump, NULL, NULL, NULL,0,yylineno);
 };
 	
-for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;};
+for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;
+                    forpr pr=$1;
+                    patchlabel(pr.enter,$5+2); // true jump
+                    patchlabel($2,nextQuad()+1); // false jump
+                    patchlabel($5,$pr.test+1); // loop jump
+                    patchlabel($7,$2+2); // closure jump
+};
 		
 N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);};
 
 M:{/*nextquad*/ $$ = nextquad(); };
 
-for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{};
+for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{
+            if($6->type == boolexpr_e){
+            if(istempname($2)){
+                $6->sym = $6->sym;
+            }else{
+                $6->sym = newtmp();
+            }
+            patchlist($6->truequad, nextquad());
+            emit(assign,newexpr_constbool(1), NULL, $6, nextquad(), yylineno);
+            emit(jump, NULL, NULL, NULL, nextquad()+3, yylineno);
+            patchlist($6->falsequad, nextquad());
+            emit(assign,newexpr_constbool(0), NULL, $6, nextquad(), yylineno);
+        }
+        forpr pr;
+        pr.enter=nextquad();
+        pr.test=$5;
+        $$=pr;
+        emit(if_eq,$6,newexpr_constbool(1),NULL,0,yylineno);
+};
 
 returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
