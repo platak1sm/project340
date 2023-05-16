@@ -67,7 +67,7 @@
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
 %type <exp> lvalue expr term assignexpr const primary member objectdef call
-%type <stringVal> funcname
+
 
 %right ASSIGN
 %left OR
