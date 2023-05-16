@@ -55,7 +55,12 @@
 	int intVal;
     char *stringVal;
 	double doubleVal;
-    expr *exp;
+    expr *expVal;
+    forpr *forval;
+    SymbolTableEntry *steVal;
+    calls *callVal;
+    indexedelements *indelVal;
+    stmt_t *stmtVal;
 }
 
 %token <intVal> INTEGER
@@ -66,7 +71,13 @@
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <exp> lvalue expr term assignexpr const primary member objectdef call
+%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist indexedelem
+%type <intVal> if_prefix else_prefix whilestart whilecon N M func_body
+%type <steVal> func_prefix funcdef
+%type <forVal> for_prefix
+%type <stmtVal> stmtlist stmt ifstmt for_stmt whilestmt block loopstmt returnstmt
+%type <callVal> normcall methodcall callsuffix
+%type <indelVal> indexed
 
 
 %right ASSIGN
@@ -107,7 +118,7 @@ stmt: expr SEMICOLON {
       | ifstmt {
         make_stmt(&$$);
         reset_hidden_count();
-        cout << "stmt => ifstm\n";
+        cout << "stmt => ifstmt\n";
         }
       | {inloop++;}whilestmt{
         make_stmt(&$$);
@@ -116,7 +127,7 @@ stmt: expr SEMICOLON {
       | {inloop++;}for_stmt{
         make_stmt(&$$);
         reset_hidden_count();
-        inloop--; cout << "stmt => forstmt\n";}
+        inloop--; cout << "stmt => for_stmt\n";}
       | returnstmt {
         make_stmt(&$$);
         reset_hidden_count();
@@ -1009,6 +1020,6 @@ int main (int argc, char** argv) {
     insertLibFuncs("cos");
     insertLibFuncs("sin");
     yyparse();
-    printsymbols();
+    print_quads();
     return 0;
 }
