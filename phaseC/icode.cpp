@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stack>
 #include <list>
+#include <string.h>
 
 
 // using namespace std;
