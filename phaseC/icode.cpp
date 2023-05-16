@@ -420,3 +420,36 @@ void match_label(int val){
     }
     
 }
+
+void print_quads2(){
+    int i = 1;
+    printf("%5s %20s %20s %20s %20s %20s", "quad#", "opcode","result","arg1","arg2","label");
+    printf("\n------------------------------------------------------------");
+    printf("----------------------------------------------------\n");
+    while (i<currQuad)
+    {
+        printf("%4d: ", i);
+        match_op(quads[i].op);
+        match_expr(quads[i].result);
+        match_expr(quads[i].arg1);
+        match_expr(quads[i].arg2);
+        if(quads[i].op == if_greatereq
+            || quads[i].op == if_eq 
+            || quads[i].op == if_noteq 
+            || quads[i].op == if_lesseq 
+            || quads[i].op == if_greatereq 
+            || quads[i].op == if_less 
+            || quads[i].op == if_greater
+            || quads[i].op == jump
+        ){
+            match_label(quads[i].label);
+        }else
+        {
+            printf("%20s","-");
+        }
+        
+        printf("\n");
+        i++;
+    }
+    
+}
