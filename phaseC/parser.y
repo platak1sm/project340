@@ -916,7 +916,7 @@ for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {
                     forpr pr=$1;
                     patchlabel(pr.enter,$5+2); // true jump
                     patchlabel($2,nextQuad()+1); // false jump
-                    patchlabel($5,$pr.test+1); // loop jump
+                    patchlabel($5,pr.test+1); // loop jump
                     patchlabel($7,$2+2); // closure jump
 };
 		
