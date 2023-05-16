@@ -164,3 +164,8 @@ bool istempexpr(expr *e);
 expr *member_item(expr *lvalue, string name);
 
 void resettmpcounter();
+
+void match_expr(expr* ex);
+
+void match_op(iopcode code);
+
