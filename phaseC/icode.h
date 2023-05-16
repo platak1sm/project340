@@ -169,3 +169,5 @@ void match_expr(expr* ex);
 
 void match_op(iopcode code);
 
+void print_quads2();
+
