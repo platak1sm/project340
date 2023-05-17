@@ -71,13 +71,16 @@
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist indexedelem
-%type <intVal> if_prefix else_prefix whilestart whilecon N M func_body
-%type <steVal> func_prefix funcdef
+%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist indexedelem indexed
+%type <intVal> if_prefix else_prefix whilestart whilecon N M func_body func_bend
+%type <steVal>  funcdef func_prefix
 %type <forVal> for_prefix
 %type <stmtVal> stmtlist stmt ifstmt for_stmt whilestmt block loopstmt returnstmt
 %type <callVal> normcall methodcall callsuffix
-%type <indelVal> indexed
+
+
+
+
 
 
 %right ASSIGN
@@ -285,8 +288,8 @@ expr: assignexpr {$$=$1;}
                                  }
       | expr AND {
         if($1->type != boolexpr_e){
-            $5->truequad = nextquad();
-            $5->falsequad = nextquad()+1;
+            $1->truequad = nextquad();
+            $1->falsequad = nextquad()+1;
             emit(if_eq, $1, newexpr_constbool(1), NULL, 0 , yylineno);
             emit(jump,NULL,NULL,NULL,0, yylineno);
             patchlist($1->truequad, nextquad());
@@ -312,8 +315,8 @@ expr: assignexpr {$$=$1;}
       }
       | expr OR{
         if($1->type != boolexpr_e){
-            $5->truequad = nextquad();
-            $5->falsequad = nextquad()+1;
+            $1->truequad = nextquad();
+            $1->falsequad = nextquad()+1;
             emit(if_eq, $1, newexpr_constbool(1), NULL, 0 , yylineno);
             emit(jump,NULL,NULL,NULL,0, yylineno);
             patchlist($1->falsequad, nextquad());
@@ -415,7 +418,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                             }else{
                                 $$->sym = $1->sym;
                             }
-                            if($2->tableitem_e){
+                            if($1->tableitem_e){
                                 expr* val = emit_iftableitem($1);
                                 
                                 emit(assign,val, NULL,$$,-1,yylineno);
@@ -479,7 +482,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                             }else{
                                 $$->sym = $1->sym;
                             }
-                            if($2->tableitem_e){
+                            if($1->tableitem_e){
                                 expr* val = emit_iftableitem($1);
                                 
                                 emit(assign,val, NULL,$$,-1,yylineno);
