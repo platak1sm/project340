@@ -95,6 +95,7 @@ typedef struct indexedelements
 {
     expr *index;
     expr *value;
+    indexedelements *next;
 } indexedelements;
 
 typedef struct calls

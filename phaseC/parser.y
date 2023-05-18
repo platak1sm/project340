@@ -675,51 +675,59 @@ methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
             ;
 
 elist: expr  {cout << "elist => expr\n";
-             list <expr> temp;
-             temp.push_back($1);
-             $$=temp;}
+             expr* head;
+             head=$1;
+             $$= head;}
        | elist COMMA expr {cout << "elist => elist,expr\n";
-                           list <expr> temp;
-                           temp=$1;                           
-                           temp.push_back($3);
-                           $$=temp;}
+                           expr* temp;
+                           temp=$1;  
+                           $$=temp;
+                          while(temp->next!=NULL)
+                                temp=temp->next;
+                            temp->next=$3;
+                           }
        | {cout << "elist => empty\n";
-          list <expr> temp;
-          $$=temp;}
+          expr* head;
+          $$=head;}
        ;
 
 objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*tempi;
                                               tmp->sym=newtmp();
                                               emit(tablecreate,NULL,NULL,tmp,0,yylineno);
                                               int count = 0;
-                                              list <expr> elist =$2;
-                                              for(int i = elist.begin() ; i != elist.end() ; i++){
+                                              expr* elist =$2;
+                                              while(elist->next != NULL){
                                                  tempi = newexpr(constnum_e);
                                                  tempi->numConst=count;
-                                                 emit(tablesetelem,tempi,i,tmp,0,yylineno);
+                                                 emit(tablesetelem,tempi,elist,tmp,0,yylineno);
                                                  count++;
+                                                 elist=elist->next;
                                              }
                                              }
            | LEFT_BRACKET indexed RIGHT_BRACKET  {expr *tmp = newexpr(newtable_e);
                                                   tmp->sym=newtmp();
                                                   emit(tablecreate,NULL,NULL,tmp,0,yylineno);
-                                                  list <indexedelements> indexed = $2;
-                                                  for(int i = indexed.begin(); i != indexed.end(); i++)
-                                                     emit(tablesetelem,indexed->index,indexed->value,tmp,0,yylineno);
+                                                  indexedelements indexed = $2;
+                                                  while(indexed.next!=NULL)
+                                                     emit(tablesetelem,indexed.index,indexed.value,tmp,0,yylineno);
                                                   $$ = tmp;
                                                   }
            ;
 
 indexed: indexedelem  {cout << "indexed => indexedelem\n";
-                      list <indexedelements> indexedlist;
-                      indexedlist.push_back($1);
+                      indexedelements indexedlist;
+                      indexedlist=$1;
                       $$=indexedlist;}
        | indexed COMMA indexedelem       
                       {cout << "indexed => indexed, indexelem\n";
-                      list <indexedelements> indexedlist;
+                      indexedelements indexedlist;
                       indexedlist=$1;
-                      indexedlist.push_back($3);
                       $$=indexedlist;
+                      while(indexedlist.next!=NULL)
+                        indexedlist=indexedlist.next;
+                      indexedlist.next= $3;
+                      $1=indexedlist;
+
                       }
        ;
 
@@ -728,6 +736,7 @@ indexedelem: LEFT_BRACE expr COLON expr RIGHT_BRACE
                         indexedelements temp;
                         temp.index=$2;
                         temp.value=$4;
+                        temp.next=NULL;
                         $$=temp;
                         }
              ;
