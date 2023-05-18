@@ -55,9 +55,9 @@
 	int intVal;
     char *stringVal;
 	double doubleVal;
-    boolean boolVal;
+    bool boolVal;
     expr *expVal;
-    forpr *forVal;
+    forpr *forval;
     SymbolTableEntry *steVal;
     calls *callVal;
     indexedelements *indelVal;
