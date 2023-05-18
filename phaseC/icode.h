@@ -155,6 +155,8 @@ expr *make_call(expr *lv, expr *reversed_elist);
 
 expr *newexpr_constnum(double i);
 
+expr *newexpr_conststring(string s);
+
 void check_arith(expr *e, string context);
 
 bool istempname(string s);
@@ -171,3 +173,4 @@ void match_op(iopcode code);
 
 void print_quads();
 
+expr *lvalue_exp(SymbolTableEntry sym);

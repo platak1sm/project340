@@ -13,8 +13,8 @@ unsigned totalLocals = 0, programVarOffset = 0, functionLocalOffset = 0, formalA
 unsigned int currQuad = 0;
 bool isMember;
 int tmpc = 0; // tmp counter
-stack <unsigned> funcLocalStack;
-stack <unsigned> loopCountStack;
+extern stack <unsigned> funcLocalStack;
+extern stack <unsigned> loopCountStack;
 
 
 

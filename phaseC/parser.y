@@ -4,6 +4,7 @@
     #include "symbol_table.h"
     #include "icode.h"
     #include <list>
+    #include <stack>
 
     /* #define YY_DECL int alpha_yylex (void* yylval)*/
     extern int yylex(void);
@@ -11,7 +12,8 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
-    extern stack <unsigned> funcLocalStack, loopCountStack;
+    stack <unsigned> funcLocalStack;
+    stack <unsigned> loopCountStack;
     extern unsigned programVarOffset, functionLocalOffset, formalArgOffset;
    /*  extern int tmpc; */
 
@@ -55,7 +57,7 @@
 	int intVal;
     char *stringVal;
 	double doubleVal;
-    boolean boolVal;
+    bool boolVal;
     expr *expVal;
     forpr *forVal;
     SymbolTableEntry *steVal;
@@ -763,7 +765,7 @@ func_prefix: FUNCTION ID{
                   ste.scopespace = currscopespace();
                   ste.symt=programfunc_s;
                   insert(ste);
-                  $$ = ste;
+                  $$ = &ste;
                   emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
                   funcLocalStack.push(functionLocalOffset); 
                   enterscopespace();
@@ -791,7 +793,7 @@ func_prefix: FUNCTION ID{
                     ste.scopespace = currscopespace();
                     ste.symt=programfunc_s;
                     insert(ste);
-                    $$ = ste;
+                    $$ = &ste;
                     emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
                     funcLocalStack.push(functionLocalOffset); 
                     enterscopespace();
@@ -835,7 +837,7 @@ idlist: ID{
                   ste.scope = scope;
                   ste.line = yylineno;
                   ste.isActive = true;
-                  inccurrscopeoffset()
+                  inccurrscopeoffset();
                   ste.offset = currscopeoffset();
                   ste.scopespace = currscopespace();
                   ste.symt = var_s;
@@ -853,7 +855,7 @@ idlist: ID{
                   ste.scope = scope;
                   ste.line = yylineno;
                   ste.isActive=true;
-                  inccurrscopeoffset()
+                  inccurrscopeoffset();
                   ste.offset = currscopeoffset();
                   ste.scopespace = currscopespace();
                   ste.symt=var_s;
@@ -881,7 +883,7 @@ ifstmt:	if_prefix stmt {//patchlabel($1-2, $1+1);
 	    ;	 
 if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
                                                         if($3->type == boolexpr_e){
-                                                            if(istempname($3)){
+                                                            if(istempname($3->sym.name)){
                                                                 $3->sym = $3->sym;
                                                             }else{
                                                                 $3->sym = newtmp();
@@ -911,7 +913,7 @@ whilestart: WHILE{$$=nextquad()+1;};
 
 whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {
         if($2->type == boolexpr_e){
-            if(!istempname($2)){
+            if(!istempname($2->sym.name)){
                 $2->sym = newtmp();
             }
             patchlist($2->truequad, nextquad());
@@ -926,20 +928,20 @@ whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {
 };
 	
 for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {
-                    forpr pr=$1;
-                    patchlabel(pr.enter,$5+2); // true jump
-                    patchlabel($2,nextQuad()+1); // false jump
-                    patchlabel($5,pr.test+1); // loop jump
+                    forpr *pr=$1;
+                    patchlabel(pr->enter,$5+2); // true jump
+                    patchlabel($2,nextquad()+1); // false jump
+                    patchlabel($5,pr->test+1); // loop jump
                     patchlabel($7,$2+2); // closure jump
 };
 		
-N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);};
+N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,NULL,0,yylineno);};
 
 M:{/*nextquad*/ $$ = nextquad(); };
 
 for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{
             if($6->type == boolexpr_e){
-            if(!istempname($6)){
+            if(!istempname($6->sym.name)){
                 $6->sym = newtmp();
             }
             patchlist($6->truequad, nextquad());
@@ -951,7 +953,7 @@ for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{
         forpr pr;
         pr.enter=nextquad();
         pr.test=$5;
-        $$=pr;
+        $$=&pr;
         emit(if_eq,$6,newexpr_constbool(1),NULL,0,yylineno);
 };
 
