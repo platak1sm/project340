@@ -153,7 +153,7 @@ stmt: expr SEMICOLON {
         }
       | CONTINUE SEMICOLON{
         make_stmt($$);
-        $$->constList = newlist(nextquad());
+        $$->contList = newlist(nextquad());
         $$->breakList = 0;
         emit(jump, NULL, NULL, NULL, 0, yylineno);
         if(inloop==0){ red(); cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;cout << "stmt => continue;\n"; reset();}
@@ -163,18 +163,18 @@ stmt: expr SEMICOLON {
         resettmpcounter();
         cout << "stmt => block\n";}
       | funcdef {
-        make_stmt(&$$);
+        make_stmt($$);
         resettmpcounter();
         cout << "stmt => funcdef\n";}
       | SEMICOLON {
-        make_stmt(&$$);
+        make_stmt($$);
         resettmpcounter();
         cout << "stmt => ;\n";}
       ;
 
 expr: assignexpr {$$=$1;}
       | expr PLUS expr {$$ =newexpr(arithexp_e);
-                        if(istempname($1)){
+                        if(istempname($1->sym.name)){
                             $$->sym = newtmp();
                         }else{
                             $$->sym = $1->sym;
@@ -182,26 +182,26 @@ expr: assignexpr {$$=$1;}
                         
                         emit(add,$1,$3,$$,0,yylineno);}
       | expr MINUS expr {$$ =newexpr(arithexp_e);
-                        if(istempname($1)){
+                        if(istempname($1->sym.name)){
                             $$->sym = newtmp();
                         }else{
                             $$->sym = $1->sym;
                         }
                         emit(sub,$1,$3,$$,0,yylineno);}
       | expr MUL expr   {$$ =newexpr(arithexp_e);
-                         if(istempname($1)){
+                         if(istempname($1->sym.name)){
                             $$->sym = newtmp();
                         }else{
                             $$->sym = $1->sym;
                         }
                          emit(mul,$1,$3,$$,0,yylineno);}
       | expr DIV expr  {$$ =newexpr(arithexp_e);
-                        if(istempname($1)){
+                        if(istempname($1->sym.name)){
                             $$->sym = newtmp();
                         }else{
                             $$->sym = $1->sym;
                         }
-                        emit(div,$1,$3,$$,0,yylineno);;}
+                        emit(div,$1,$3,$$,0,yylineno);}
       | expr MOD expr  {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
                             $$->sym = newtmp();
