@@ -59,7 +59,7 @@
 	double doubleVal;
     bool boolVal;
     struct expr *expVal;
-    struct forpr *forval;
+    struct forpr *forVal;
     struct SymbolTableEntry *steVal;
     struct calls *callVal;
     struct indexedelements *indelVal;
@@ -74,13 +74,13 @@
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist indexedelem indexed
+%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist indexed
 %type <intVal> if_prefix else_prefix whilestart whilecon N M func_body func_bend
 %type <steVal>  funcdef func_prefix
 %type <forVal> for_prefix
 %type <stmtVal> stmtlist stmt ifstmt for_stmt whilestmt block loopstmt returnstmt
 %type <callVal> normcall methodcall callsuffix
-
+%type <indelVal> indexedelem
 
 
 
@@ -643,7 +643,7 @@ member: lvalue PERIOD ID {$$ = member_item($1,$3);}
 call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
 		| lvalue callsuffix  {
                               if ($2->method){
-                                expr *self = $1;
+                                calls *self = $1;
                                 $1 = emit_iftableitem(member_item(self,$2->name)); 
                                 self->next = $2;
                                 $2 = self; /*pushing self in front*/
@@ -651,7 +651,7 @@ call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
                               $$ = make_call($1,$2->elist);
                             }
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {expr *func = newexpr(programfunc_e);
-                                                                                                func->sym=$2;
+                                                                                                func->sym=*($2);
                                                                                                 $$ = make_call(func,$5);}
 		;
 
@@ -664,7 +664,7 @@ normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
                                                      c.name="nil";
                                                      c.method=false;
                                                      c.elist=$2;
-                                                     $$=c;
+                                                     $$=&c;
                                                      }
           ;
         
@@ -672,7 +672,7 @@ methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
                                                                         c.name=$2;
                                                                         c.method=true;
                                                                         c.elist=$4;
-                                                                        $$=c;
+                                                                        $$=&c;
                                                                         }
             ;
 
@@ -730,7 +730,7 @@ indexedelem: LEFT_BRACE expr COLON expr RIGHT_BRACE
                         indexedelements temp;
                         temp.index=$2;
                         temp.value=$4;
-                        $$=temp;
+                        $$=&temp;
                         }
              ;
 
@@ -742,7 +742,7 @@ stmtlist: stmt stmtlist  {cout << "stmtlist => stmt stmtlist\n";}
           ;
 
 funcdef: func_prefix func_args func_body { exitscopespace(); 
-                                           $$->totalloc(functionLocalOffset);
+                                           $$->totalloc=functionLocalOffset;
                                            functionLocalOffset=funcLocalStack.top();
                                            funcLocalStack.pop(); 
                                            $$=$1;
