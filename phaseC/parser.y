@@ -57,7 +57,7 @@
 	double doubleVal;
     boolean boolVal;
     expr *expVal;
-    forpr *forval;
+    forpr *forVal;
     SymbolTableEntry *steVal;
     calls *callVal;
     indexedelements *indelVal;
