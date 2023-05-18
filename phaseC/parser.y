@@ -911,9 +911,7 @@ whilestart: WHILE{$$=nextquad()+1;};
 
 whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {
         if($2->type == boolexpr_e){
-            if(istempname($2)){
-                $2->sym = $2->sym;
-            }else{
+            if(!istempname($2)){
                 $2->sym = newtmp();
             }
             patchlist($2->truequad, nextquad());
@@ -941,9 +939,7 @@ M:{/*nextquad*/ $$ = nextquad(); };
 
 for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{
             if($6->type == boolexpr_e){
-            if(istempname($2)){
-                $6->sym = $6->sym;
-            }else{
+            if(!istempname($6)){
                 $6->sym = newtmp();
             }
             patchlist($6->truequad, nextquad());
