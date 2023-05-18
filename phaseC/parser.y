@@ -201,7 +201,7 @@ expr: assignexpr {$$=$1;}
                         }else{
                             $$->sym = $1->sym;
                         }
-                        emit(div,$1,$3,$$,0,yylineno);}
+                        emit(divc,$1,$3,$$,0,yylineno);}
       | expr MOD expr  {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
                             $$->sym = newtmp();
