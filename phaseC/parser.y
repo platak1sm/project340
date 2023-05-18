@@ -694,9 +694,9 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*t
                                               int count = 0;
                                               list <expr> elist =$2;
                                               for(int i = elist.begin() ; i != elist.end() ; i++){
-                                                 tempi = newexpr(costnum_e);
+                                                 tempi = newexpr(constnum_e);
                                                  tempi->numConst=count;
-                                                 emit(tablesetelem,tempi,i,temp,0,yylineno);
+                                                 emit(tablesetelem,tempi,i,tmp,0,yylineno);
                                                  count++;
                                              }
                                              }
