@@ -107,7 +107,7 @@ program: stmt program {cout << "program stmt\n";}
 stmt: expr SEMICOLON {
     make_stmt($$);
     if($1->type == boolexpr_e){
-        if(istempname($1)){
+        if(istempname($1->sym->name)){
             $$->sym = newtmp();
         }else{
             $$->sym = $1->sym;
