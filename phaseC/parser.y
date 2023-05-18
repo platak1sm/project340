@@ -709,9 +709,9 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*t
            | LEFT_BRACKET indexed RIGHT_BRACKET  {expr *tmp = newexpr(newtable_e);
                                                   tmp->sym=newtmp();
                                                   emit(tablecreate,NULL,NULL,tmp,0,yylineno);
-                                                  indexedelements indexed = $2;
-                                                  while(indexed.next!=NULL)
-                                                     emit(tablesetelem,indexed.index,indexed.value,tmp,0,yylineno);
+                                                  indexedelements* indexed = $2;
+                                                  while(indexed->next!=NULL)
+                                                     emit(tablesetelem,indexed->index,indexed->value,tmp,0,yylineno);
                                                   $$ = tmp;
                                                   }
            ;
