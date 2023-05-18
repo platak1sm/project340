@@ -210,9 +210,9 @@ expr: assignexpr {$$=$1;}
       | expr EQUAL{
         if($1->type == boolexpr_e){
             if(istempname($1)){
-                $$->sym = newtmp();
+                $<expVal>$->sym = newtmp();
             }else{
-                $$->sym = $1->sym;
+                $<expVal>$->sym = $1->sym;
             }
             patchlist($1->truequad, nextquad());
             emit(assign, newexpr_constbool(1), NULL, $1, nextquad(), yylineno);
@@ -232,9 +232,9 @@ expr: assignexpr {$$=$1;}
       | expr NOT_EQUAL{
         if($1->type == boolexpr_e){
             if(istempname($1)){
-                $$->sym = newtmp();
+                $<expVal>$->sym = newtmp();
             }else{
-                $$->sym = $1->sym;
+                $<expVal>$->sym = $1->sym;
             }
             patchlist($1->truequad, nextquad());
             emit(assign, newexpr_constbool(1), NULL, $1, nextquad(), yylineno);
