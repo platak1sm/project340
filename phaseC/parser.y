@@ -1,7 +1,7 @@
 %{
     #include <iostream>
     #include <string>
-    #include "symbol_table.h"
+    // #include "symbol_table.h"
     #include "icode.h"
     #include <list>
     #include <stack>
@@ -58,12 +58,12 @@
     char *stringVal;
 	double doubleVal;
     bool boolVal;
-    expr *expVal;
-    forpr *forVal;
-    SymbolTableEntry *steVal;
-    calls *callVal;
-    indexedelements *indelVal;
-    stmt_t *stmtVal;
+    struct expr *expVal;
+    struct forpr *forval;
+    struct SymbolTableEntry *steVal;
+    struct calls *callVal;
+    struct indexedelements *indelVal;
+    struct stmt_t *stmtVal;
 }
 
 %token <intVal> INTEGER
@@ -105,7 +105,7 @@ program: stmt program {cout << "program stmt\n";}
          ;
  
 stmt: expr SEMICOLON {
-    make_stmt(&$$);
+    make_stmt($$);
     if($1->type == boolexpr_e){
         if(istempname($1)){
             $$->sym = newtmp();
