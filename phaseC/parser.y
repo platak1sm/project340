@@ -521,7 +521,7 @@ assignexpr: lvalue ASSIGN expr{
                                     }
                                 }
                                 if($3->type == boolexpr_e){
-                                    if(istempname($3)){
+                                    if(istempname($3->sym.name)){
                                         $3->sym = $3->sym;
                                     }else{
                                         $3->sym = newtmp();
@@ -541,7 +541,7 @@ assignexpr: lvalue ASSIGN expr{
                                     }else{
                                         emit(assign, $3, NULL, $1, -1, yylineno);
                                         $$ = newexpr(assignexpr_e);
-                                        if(istempname($1)){
+                                        if(istempname($1->sym.name)){
                                             $$->sym = $1->sym;
                                         }else{
                                             $$->sym = newtmp();
@@ -557,7 +557,7 @@ primary: lvalue{ $$ = emit_iftableitem($1);}
         | call {$$=$1;}
         | objectdef {$$=$1;}
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{$$ = newexpr(programfunc_e);
-                                                     $$->sym = $2;}
+                                                     $$->sym = *($2);}
 		| const{$$=$1;}
         ;
 
@@ -574,7 +574,7 @@ lvalue: ID {
                 ent.name = name;
                 ent.scope = scope;
                 ent.line = yylineno;
-                inccurrscopeoffset()
+                inccurrscopeoffset();
                 ent.offset = currscopeoffset();
                 ent.scopespace = currscopespace();
                 ent.symt = var_s;
@@ -602,7 +602,7 @@ lvalue: ID {
                 ent.name = name;
                 ent.scope = scope;
                 ent.line = yylineno;
-                inccurrscopeoffset()
+                inccurrscopeoffset();
                 ent.offset = currscopeoffset();
                 ent.scopespace = currscopespace();
                 ent.symt = var_s;
@@ -643,7 +643,7 @@ member: lvalue PERIOD ID {$$ = member_item($1,$3);}
 call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
 		| lvalue callsuffix  {
                               if ($2->method){
-                                calls *self = $1;
+                                expr *self = $1;
                                 $1 = emit_iftableitem(member_item(self,$2->name)); 
                                 self->next = $2;
                                 $2 = self; /*pushing self in front*/
