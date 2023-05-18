@@ -122,24 +122,24 @@ stmt: expr SEMICOLON {
     cout << "stmt => expr\n";
     }
       | ifstmt {
-        make_stmt(&$$);
+        make_stmt($$);
         resettmpcounter();
         cout << "stmt => ifstmt\n";
         }
       | {inloop++;}whilestmt{
-        make_stmt(&$$);
+        make_stmt($$);
         resettmpcounter();
         cout << "stmt => whilestmt\n";inloop--;}
       | {inloop++;}for_stmt{
-        make_stmt(&$$);
+        make_stmt($$);
         resettmpcounter();
         inloop--; cout << "stmt => for_stmt\n";}
       | returnstmt {
-        make_stmt(&$$);
+        make_stmt($$);
         resettmpcounter();
         cout << "stmt => returnstmt\n";}
       | BREAK SEMICOLON{
-        make_stmt(&$$);
+        make_stmt($$);
         $$->breakList = newlist(nextquad());
         $$->constList = 0;
         emit(jump, NULL, NULL, NULL, 0, yylineno);
