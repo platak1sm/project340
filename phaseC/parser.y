@@ -579,7 +579,7 @@ lvalue: ID {
                 insert(ent);
                 $$ = lvalue_exp(ent);
             }else{
-                if(lookupactivevar(name).varVal.scope < infunction && lookupactivevar(name).varVal.scope > 0){
+                if(lookupactivevar(name).scope < infunction && lookupactivevar(name).scope > 0){
                     red(); cout << "Error: " <<" There is function between the uses of variable "<< name <<endl; reset();
                 }
             }
