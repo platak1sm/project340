@@ -141,7 +141,7 @@ stmt: expr SEMICOLON {
       | BREAK SEMICOLON{
         make_stmt($$);
         $$->breakList = newlist(nextquad());
-        $$->constList = 0;
+        $$->contList = 0;
         emit(jump, NULL, NULL, NULL, 0, yylineno);
         
         if(inloop==0) { 
@@ -152,7 +152,7 @@ stmt: expr SEMICOLON {
 
         }
       | CONTINUE SEMICOLON{
-        make_stmt(&$$);
+        make_stmt($$);
         $$->constList = newlist(nextquad());
         $$->breakList = 0;
         emit(jump, NULL, NULL, NULL, 0, yylineno);
@@ -480,12 +480,12 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                             }
                             check_arith($1);
                             $$ = newexpr(var_e);
-                            if(istempname($1->sym.name)){
+                            if(istempname($1)){
                                 $$->sym = newtmp();
                             }else{
                                 $$->sym = $1->sym;
                             }
-                            if($1->type == tableitem_e){
+                            if($1->tableitem_e){
                                 expr* val = emit_iftableitem($1);
                                 
                                 emit(assign,val, NULL,$$,-1,yylineno);
@@ -500,7 +500,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
 		;
 
 assignexpr: lvalue ASSIGN expr{		
-                                string name = $1->sym.name;
+                                string name = $1;
                                 if((is_sysfunc(name) || lookupactivefunc(name).isActive==true)){
                                     red();
                                     cout <<"Error: " <<name << " is defined as function \n";
@@ -537,10 +537,10 @@ assignexpr: lvalue ASSIGN expr{
                                     if($1->type == tableitem_e){
                                         emit(tablesetelem, $1, $1->index, $3, -1, yylineno);
                                         $$ = emit_iftableitem($1);
-                                        $$->type = assignexp_e;
+                                        $$->type = assignexpr_e;
                                     }else{
                                         emit(assign, $3, NULL, $1, -1, yylineno);
-                                        $$ = newexpr(assignexp_e);
+                                        $$ = newexpr(assignexpr_e);
                                         if(istempname($1->sym.name)){
                                             $$->sym = $1->sym;
                                         }else{
