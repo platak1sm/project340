@@ -243,7 +243,7 @@ expr* newexpr_constnum(double i) {
 	return e;
 }
 
-void check_arith(expr* e, string context) {
+void check_arith(expr* e) {
 	if (e->type == constbool_e ||
 	e->type == conststring_e ||
 	e->type == nil_e ||
@@ -251,8 +251,7 @@ void check_arith(expr* e, string context) {
 	e->type == programfunc_e ||
 	e->type == libraryfunc_e ||
 	e->type == boolexpr_e ){
-		cout << "Illegal expr used in" << context << " !" ;
-		//exit(0);
+		
 	}
 }
 void resettmpcounter(){
