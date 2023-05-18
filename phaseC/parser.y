@@ -115,26 +115,26 @@ stmt: expr SEMICOLON {
         emit(jump, NULL, NULL, NULL, nextquad()+2, yylineno);
         patchlist($1->falsequad, nextquad());
         emit(assign, newexpr_constbool(0), NULL, $1, nextquad(), yylineno);
-        reset_hidden_count();
+        resettmpcounter();
     }
     cout << "stmt => expr\n";
     }
       | ifstmt {
         make_stmt(&$$);
-        reset_hidden_count();
+        resettmpcounter();
         cout << "stmt => ifstmt\n";
         }
       | {inloop++;}whilestmt{
         make_stmt(&$$);
-        reset_hidden_count();
+        resettmpcounter();
         cout << "stmt => whilestmt\n";inloop--;}
       | {inloop++;}for_stmt{
         make_stmt(&$$);
-        reset_hidden_count();
+        resettmpcounter();
         inloop--; cout << "stmt => for_stmt\n";}
       | returnstmt {
         make_stmt(&$$);
-        reset_hidden_count();
+        resettmpcounter();
         cout << "stmt => returnstmt\n";}
       | BREAK SEMICOLON{
         make_stmt(&$$);
@@ -146,7 +146,7 @@ stmt: expr SEMICOLON {
             red(); 
             cout << "Error: Cannot use BREAK when not in loop -> line " << yylineno << endl;
              cout << "stmt => break;\n"; reset();}
-        reset_hidden_count();
+        resettmpcounter();
 
         }
       | CONTINUE SEMICOLON{
@@ -155,18 +155,18 @@ stmt: expr SEMICOLON {
         $$->breakList = 0;
         emit(jump, NULL, NULL, NULL, 0, yylineno);
         if(inloop==0){ red(); cout << "Error: Cannot use CONTINUE when not in loop -> line " << yylineno << endl;cout << "stmt => continue;\n"; reset();}
-        reset_hidden_count(); }
+        resettmpcounter(); }
       | block {
         $$ = $1;
-        reset_hidden_count();
+        resettmpcounter();
         cout << "stmt => block\n";}
       | funcdef {
         make_stmt(&$$);
-        reset_hidden_count();
+        resettmpcounter();
         cout << "stmt => funcdef\n";}
       | SEMICOLON {
         make_stmt(&$$);
-        reset_hidden_count();
+        resettmpcounter();
         cout << "stmt => ;\n";}
       ;
 
