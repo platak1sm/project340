@@ -74,13 +74,13 @@
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist indexed
+%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist 
 %type <intVal> if_prefix else_prefix whilestart whilecon N M func_body func_bend
 %type <steVal>  funcdef func_prefix
 %type <forVal> for_prefix
 %type <stmtVal> stmtlist stmt ifstmt for_stmt whilestmt block loopstmt returnstmt
 %type <callVal> normcall methodcall callsuffix
-%type <indelVal> indexedelem
+%type <indelVal> indexedelem indexed
 
 
 
@@ -645,8 +645,8 @@ call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
                               if ($2->method){
                                 expr *self = $1;
                                 $1 = emit_iftableitem(member_item(self,$2->name)); 
-                                self->next = $2;
-                                $2 = self; /*pushing self in front*/
+                                self->next = $2->elist;
+                                $2->elist = self; /*pushing self in front*/
                               }
                               $$ = make_call($1,$2->elist);
                             }
@@ -709,9 +709,9 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*t
            | LEFT_BRACKET indexed RIGHT_BRACKET  {expr *tmp = newexpr(newtable_e);
                                                   tmp->sym=newtmp();
                                                   emit(tablecreate,NULL,NULL,tmp,0,yylineno);
-                                                  indexedelements indexed = $2;
-                                                  while(indexed.next!=NULL)
-                                                     emit(tablesetelem,indexed.index,indexed.value,tmp,0,yylineno);
+                                                  indexedelements *indexed = $2;
+                                                  while(indexed->next!=NULL)
+                                                  emit(tablesetelem,indexed->index,indexed->value,tmp,0,yylineno);
                                                   $$ = tmp;
                                                   }
            ;
@@ -755,7 +755,7 @@ funcdef: func_prefix func_args func_body { exitscopespace();
                                            functionLocalOffset=funcLocalStack.top();
                                            funcLocalStack.pop(); 
                                            $$=$1;
-                                           emit(funcend,NULL,NULL,lvalue_exp($1),0,yylineno);
+                                           emit(funcend,NULL,NULL,lvalue_exp(*($1)),0,yylineno);
                                            }
                                            ;
 func_prefix: FUNCTION ID{

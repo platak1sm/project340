@@ -11,7 +11,7 @@
 vector<quad> quads;
 unsigned totalLocals = 0, programVarOffset = 0, functionLocalOffset = 0, formalArgOffset = 0, scopeSpaceCounter = 1;
 unsigned int currQuad = 0;
-bool isMember;
+extern bool isMember;
 int tmpc = 0; // tmp counter
 extern stack <unsigned> funcLocalStack;
 extern stack <unsigned> loopCountStack;
