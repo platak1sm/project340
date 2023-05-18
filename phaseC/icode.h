@@ -86,9 +86,10 @@ typedef struct symbol
     bool isActive;
 } symbol;
 
-typedef struct stmt_t
+typedef struct stmt_t 
 {
     int breakList, contList;
+    SymbolTableEntry sym;
 } stmt_t;
 
 typedef struct indexedelements
