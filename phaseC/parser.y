@@ -56,12 +56,12 @@
     char *stringVal;
 	double doubleVal;
     bool boolVal;
-    expr *expVal;
-    forpr *forval;
-    SymbolTableEntry *steVal;
-    calls *callVal;
-    indexedelements *indelVal;
-    stmt_t *stmtVal;
+    struct expr *expVal;
+    struct forpr *forval;
+    struct SymbolTableEntry *steVal;
+    struct calls *callVal;
+    struct indexedelements *indelVal;
+    struct stmt_t *stmtVal;
 }
 
 %token <intVal> INTEGER
