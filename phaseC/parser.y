@@ -717,17 +717,17 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*t
            ;
 
 indexed: indexedelem  {cout << "indexed => indexedelem\n";
-                      indexedelements indexedlist;
+                      indexedelements* indexedlist;
                       indexedlist=$1;
                       $$=indexedlist;}
        | indexed COMMA indexedelem       
                       {cout << "indexed => indexed, indexelem\n";
-                      indexedelements indexedlist;
+                      indexedelements* indexedlist;
                       indexedlist=$1;
                       $$=indexedlist;
-                      while(indexedlist.next!=NULL)
-                        indexedlist=indexedlist.next;
-                      indexedlist.next= $3;
+                      while(indexedlist->next!=NULL)
+                        indexedlist=indexedlist->next;
+                      indexedlist->next= $3;
                       $1=indexedlist;
 
                       }
