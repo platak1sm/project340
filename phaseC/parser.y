@@ -224,8 +224,8 @@ expr: assignexpr {$$=$1;}
         }
       } expr {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
-                         $$->truequad = nextquad()
-                         $$->falsequad = nextquad()+1
+                         $$->truequad = nextquad();
+                         $$->falsequad = nextquad()+1;
                          emit(if_eq, $1, $4, NULL, 0 , yylineno);
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
@@ -246,8 +246,8 @@ expr: assignexpr {$$=$1;}
         }
       } expr {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
-                         $$->truequad = nextquad()
-                         $$->falsequad = nextquad()+1
+                         $$->truequad = nextquad();
+                         $$->falsequad = nextquad()+1;
                          emit(if_noteq, $1, $4, NULL, 0 , yylineno);
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
@@ -255,8 +255,8 @@ expr: assignexpr {$$=$1;}
                          }
       | expr GREATER expr   {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
-                         $$->truequad = nextquad()
-                         $$->falsequad = nextquad()+1
+                         $$->truequad = nextquad();
+                         $$->falsequad = nextquad()+1;
                          emit(if_greater, $1, $3, NULL, 0 , yylineno);
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
@@ -264,8 +264,8 @@ expr: assignexpr {$$=$1;}
                          }
       | expr LESS expr      {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
-                         $$->truequad = nextquad()
-                         $$->falsequad = nextquad()+1
+                         $$->truequad = nextquad();
+                         $$->falsequad = nextquad()+1;
                          emit(if_less, $1, $3, NULL, 0 , yylineno);
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
@@ -273,8 +273,8 @@ expr: assignexpr {$$=$1;}
                          }
       | expr GREATER_EQUAL expr {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
-                         $$->truequad = nextquad()
-                         $$->falsequad = nextquad()+1
+                         $$->truequad = nextquad();
+                         $$->falsequad = nextquad()+1;
                          emit(if_greatereq, $1, $3, NULL, 0 , yylineno);
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
@@ -282,8 +282,8 @@ expr: assignexpr {$$=$1;}
                                 }
       | expr LESS_EQUAL expr    {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
-                         $$->truequad = nextquad()
-                         $$->falsequad = nextquad()+1
+                         $$->truequad = nextquad();
+                         $$->falsequad = nextquad()+1;
                          emit(if_lesseq, $1, $3, NULL, 0 , yylineno);
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
@@ -301,8 +301,8 @@ expr: assignexpr {$$=$1;}
       }M expr {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
                         if($5->type != boolexpr_e){
-                            $5->truequad = nextquad()
-                            $5->falsequad = nextquad()+1
+                            $5->truequad = nextquad();
+                            $5->falsequad = nextquad()+1;
                             emit(if_eq, $5, newexpr_constbool(1), NULL, 0 , yylineno);
                             //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
                             emit(jump,NULL,NULL,NULL,0, yylineno);
