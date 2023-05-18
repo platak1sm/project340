@@ -159,7 +159,7 @@ expr *newexpr_constnum(double i);
 
 expr *newexpr_conststring(string s);
 
-void check_arith(expr *e, string context);
+void check_arith(expr *e);
 
 bool istempname(string s);
 

@@ -480,12 +480,12 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                             }
                             check_arith($1);
                             $$ = newexpr(var_e);
-                            if(istempname($1)){
+                            if(istempname($1->sym.name)){
                                 $$->sym = newtmp();
                             }else{
                                 $$->sym = $1->sym;
                             }
-                            if($1->tableitem_e){
+                            if($1->type == tableitem_e){
                                 expr* val = emit_iftableitem($1);
                                 
                                 emit(assign,val, NULL,$$,-1,yylineno);
@@ -500,7 +500,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
 		;
 
 assignexpr: lvalue ASSIGN expr{		
-                                string name = $1;
+                                string name = $1->sym.name;
                                 if((is_sysfunc(name) || lookupactivefunc(name).isActive==true)){
                                     red();
                                     cout <<"Error: " <<name << " is defined as function \n";
@@ -537,10 +537,10 @@ assignexpr: lvalue ASSIGN expr{
                                     if($1->type == tableitem_e){
                                         emit(tablesetelem, $1, $1->index, $3, -1, yylineno);
                                         $$ = emit_iftableitem($1);
-                                        $$->type = assignexpr_e;
+                                        $$->type = assignexp_e;
                                     }else{
                                         emit(assign, $3, NULL, $1, -1, yylineno);
-                                        $$ = newexpr(assignexpr_e);
+                                        $$ = newexpr(assignexp_e);
                                         if(istempname($1->sym.name)){
                                             $$->sym = $1->sym;
                                         }else{
