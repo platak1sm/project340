@@ -1,7 +1,7 @@
 all:
 	bison --yacc --defines --output=parser.cpp parser.y
 	flex --outfile=scanner.cpp scanner.l
-	g++  scanner.cpp parser.cpp symbol_table.cpp icode.cpp icode.h symbol_table.h
+	g++ -fcompare-debug-second scanner.cpp parser.cpp symbol_table.cpp icode.cpp icode.h symbol_table.h
 
 clean:
 	rm a.out
