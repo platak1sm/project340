@@ -327,8 +327,8 @@ expr: assignexpr {$$=$1;}
       } M expr {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
                         if($5->type != boolexpr_e){
-                            $5->truequad = nextquad()
-                            $5->falsequad = nextquad()+1
+                            $5->truequad = nextquad();
+                            $5->falsequad = nextquad()+1;
                             emit(if_eq, $5, newexpr_constbool(1), NULL, 0 , yylineno);
                             //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
                             emit(jump,NULL,NULL,NULL,0, yylineno);
@@ -346,14 +346,14 @@ expr: assignexpr {$$=$1;}
 term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
 	    | UMINUS expr  {check_arith($2);
                         $$ =newexpr(arithexp_e);
-                        if(istempname($2)){
+                        if(istempname($2->sym.name)){
                             $$->sym = newtmp();
                         }else{
                             $$->sym = $2->sym;
                         }
                         emit(uminus,$2,NULL,$$,-1,yylineno);}
 	    | NOT expr {$$ =newexpr(boolexpr_e);
-                        if(istempname($2)){
+                        if(istempname($2->sym.name)){
                             $$->sym = newtmp();
                         }else{
                             $$->sym = $2->sym;
@@ -369,7 +369,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                         $$->falsequad = tmp;
                         emit(notc,$2,NULL,$$,0,yylineno);}
 		| PLUS_PLUS lvalue {
-                            string name = $2->sym->name;
+                            string name = $2->sym.name;
                             int i = scope;
                             SymbolTableEntry lookupent;
                             while(i >=0 ){
@@ -384,14 +384,14 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                                 reset();
                             }
                             check_arith($2);
-                            if($2->tableitem_e){
+                            if($2->type == tableitem_e){
                                 $$ = emit_iftableitem($2);
                                 emit(add,$$,newexpr_constnum(1), $$, -1, yylineno);
                                 emit(tablesetelem, $2, $2->index, $$, -1, yylineno);
                             }else{
                                 emit(add,$2,newexpr_constnum(1), $2, -1, yylineno);
                                 $$ = newexpr(arithexp_e);
-                                if(istempname($2)){
+                                if(istempname($2->sym.name)){
                                     $$->sym = newtmp();
                                 }else{
                                     $$->sym = $2->sym;
@@ -400,7 +400,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                             }
                            }
 		| lvalue PLUS_PLUS {
-                            string name = $1->sym->name;
+                            string name = $1->sym.name;
                             int i = scope;
                             SymbolTableEntry lookupent;
                             while(i >=0 ){
@@ -416,12 +416,12 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                             }
                             check_arith($1);
                             $$ = newexpr(var_e);
-                            if(istempname($1)){
+                            if(istempname($1->sym.name)){
                                 $$->sym = newtmp();
                             }else{
                                 $$->sym = $1->sym;
                             }
-                            if($1->tableitem_e){
+                            if($1->type == tableitem_e){
                                 expr* val = emit_iftableitem($1);
                                 
                                 emit(assign,val, NULL,$$,-1,yylineno);
@@ -433,7 +433,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                             }
                            }
 		| MINUS_MINUS lvalue {
-                             string name = $2->sym->name;
+                            string name = $2->sym.name;
                             int i = scope;
                             SymbolTableEntry lookupent;
                             while(i >=0 ){
@@ -448,14 +448,14 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                                 reset();
                             }
                             check_arith($2);
-                            if($2->tableitem_e){
+                            if($2->type == tableitem_e){
                                 $$ = emit_iftableitem($2);
                                 emit(sub,$$,newexpr_constnum(1), $$, -1, yylineno);
                                 emit(tablesetelem, $2, $2->index, $$, -1, yylineno);
                             }else{
                                 emit(sub,$2,newexpr_constnum(1), $2, -1, yylineno);
                                 $$ = newexpr(arithexp_e);
-                                if(istempname($2)){
+                                if(istempname($2->sym.name)){
                                     $$->sym = newtmp();
                                 }else{
                                     $$->sym = $2->sym;
@@ -464,7 +464,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                             }
                            }
 		| lvalue MINUS_MINUS {
-                             string name = $1->sym->name;
+                             string name = $1->sym.name;
                             int i = scope;
                             SymbolTableEntry lookupent;
                             while(i >=0 ){
