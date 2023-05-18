@@ -8,4 +8,5 @@ clean:
 	rm parser.cpp
 	rm parser.hpp
 	rm scanner.cpp
-	rm symbol_table.h.gchm
+	rm symbol_table.h.gch
+	rm icode.h.gch
