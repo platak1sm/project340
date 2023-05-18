@@ -726,8 +726,8 @@ indexed: indexedelem  {cout << "indexed => indexedelem\n";
 indexedelem: LEFT_BRACE { /* flag_insert=0; */ } expr COLON { /* flag_insert=1; */ } expr RIGHT_BRACE  
                         {cout << "indexedelem => {expr:expr}\n";
                         indexedelements temp;
-                        temp.index=$2;
-                        temp.value=$4;
+                        temp.index=$3;
+                        temp.value=$6;
                         $$=temp;
                         }
              ;
