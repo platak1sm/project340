@@ -1,9 +1,10 @@
 %{
     #include <iostream>
     #include <string>
-    #include "symbol_table.h"
+    // #include "symbol_table.h"
     #include "icode.h"
     #include <list>
+    #include <stack>
 
     /* #define YY_DECL int alpha_yylex (void* yylval)*/
     extern int yylex(void);
@@ -11,7 +12,8 @@
     extern int yylineno;
     extern char* yytext;
     extern FILE* yyin;
-    extern stack <unsigned> funcLocalStack, loopCountStack;
+    stack <unsigned> funcLocalStack;
+    stack <unsigned> loopCountStack;
     extern unsigned programVarOffset, functionLocalOffset, formalArgOffset;
    /*  extern int tmpc; */
 
@@ -55,13 +57,13 @@
 	int intVal;
     char *stringVal;
 	double doubleVal;
-    boolean boolVal;
-    expr *expVal;
-    forpr *forval;
-    SymbolTableEntry *steVal;
-    calls *callVal;
-    indexedelements *indelVal;
-    stmt_t *stmtVal;
+    bool boolVal;
+    struct expr *expVal;
+    struct forpr *forVal;
+    struct SymbolTableEntry *steVal;
+    struct calls *callVal;
+    struct indexedelements *indelVal;
+    struct stmt_t *stmtVal;
 }
 
 %token <intVal> INTEGER
@@ -72,13 +74,13 @@
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist indexedelem indexed
+%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist indexed
 %type <intVal> if_prefix else_prefix whilestart whilecon N M func_body func_bend
 %type <steVal>  funcdef func_prefix
 %type <forVal> for_prefix
 %type <stmtVal> stmtlist stmt ifstmt for_stmt whilestmt block loopstmt returnstmt
 %type <callVal> normcall methodcall callsuffix
-
+%type <indelVal> indexedelem
 
 
 
@@ -103,9 +105,9 @@ program: stmt program {cout << "program stmt\n";}
          ;
  
 stmt: expr SEMICOLON {
-    make_stmt(&$$);
+    make_stmt($$);
     if($1->type == boolexpr_e){
-        if(istempname($1)){
+        if(istempname($1->sym.name)){
             $$->sym = newtmp();
         }else{
             $$->sym = $1->sym;
@@ -519,7 +521,7 @@ assignexpr: lvalue ASSIGN expr{
                                     }
                                 }
                                 if($3->type == boolexpr_e){
-                                    if(istempname($3)){
+                                    if(istempname($3->sym.name)){
                                         $3->sym = $3->sym;
                                     }else{
                                         $3->sym = newtmp();
@@ -539,7 +541,7 @@ assignexpr: lvalue ASSIGN expr{
                                     }else{
                                         emit(assign, $3, NULL, $1, -1, yylineno);
                                         $$ = newexpr(assignexpr_e);
-                                        if(istempname($1)){
+                                        if(istempname($1->sym.name)){
                                             $$->sym = $1->sym;
                                         }else{
                                             $$->sym = newtmp();
@@ -555,7 +557,7 @@ primary: lvalue{ $$ = emit_iftableitem($1);}
         | call {$$=$1;}
         | objectdef {$$=$1;}
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{$$ = newexpr(programfunc_e);
-                                                     $$->sym = $2;}
+                                                     $$->sym = *($2);}
 		| const{$$=$1;}
         ;
 
@@ -572,7 +574,7 @@ lvalue: ID {
                 ent.name = name;
                 ent.scope = scope;
                 ent.line = yylineno;
-                inccurrscopeoffset()
+                inccurrscopeoffset();
                 ent.offset = currscopeoffset();
                 ent.scopespace = currscopespace();
                 ent.symt = var_s;
@@ -600,7 +602,7 @@ lvalue: ID {
                 ent.name = name;
                 ent.scope = scope;
                 ent.line = yylineno;
-                inccurrscopeoffset()
+                inccurrscopeoffset();
                 ent.offset = currscopeoffset();
                 ent.scopespace = currscopespace();
                 ent.symt = var_s;
@@ -649,7 +651,7 @@ call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
                               $$ = make_call($1,$2->elist);
                             }
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {expr *func = newexpr(programfunc_e);
-                                                                                                func->sym=$2;
+                                                                                                func->sym=*($2);
                                                                                                 $$ = make_call(func,$5);}
 		;
 
@@ -662,7 +664,7 @@ normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
                                                      c.name="nil";
                                                      c.method=false;
                                                      c.elist=$2;
-                                                     $$=c;
+                                                     $$=&c;
                                                      }
           ;
         
@@ -670,7 +672,7 @@ methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
                                                                         c.name=$2;
                                                                         c.method=true;
                                                                         c.elist=$4;
-                                                                        $$=c;
+                                                                        $$=&c;
                                                                         }
             ;
 
@@ -749,7 +751,7 @@ stmtlist: stmt stmtlist  {cout << "stmtlist => stmt stmtlist\n";}
           ;
 
 funcdef: func_prefix func_args func_body { exitscopespace(); 
-                                           $$->totalloc(functionLocalOffset);
+                                           $$->totalloc=functionLocalOffset;
                                            functionLocalOffset=funcLocalStack.top();
                                            funcLocalStack.pop(); 
                                            $$=$1;
@@ -772,7 +774,7 @@ func_prefix: FUNCTION ID{
                   ste.scopespace = currscopespace();
                   ste.symt=programfunc_s;
                   insert(ste);
-                  $$ = ste;
+                  $$ = &ste;
                   emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
                   funcLocalStack.push(functionLocalOffset); 
                   enterscopespace();
@@ -800,7 +802,7 @@ func_prefix: FUNCTION ID{
                     ste.scopespace = currscopespace();
                     ste.symt=programfunc_s;
                     insert(ste);
-                    $$ = ste;
+                    $$ = &ste;
                     emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
                     funcLocalStack.push(functionLocalOffset); 
                     enterscopespace();
@@ -844,7 +846,7 @@ idlist: ID{
                   ste.scope = scope;
                   ste.line = yylineno;
                   ste.isActive = true;
-                  inccurrscopeoffset()
+                  inccurrscopeoffset();
                   ste.offset = currscopeoffset();
                   ste.scopespace = currscopespace();
                   ste.symt = var_s;
@@ -862,7 +864,7 @@ idlist: ID{
                   ste.scope = scope;
                   ste.line = yylineno;
                   ste.isActive=true;
-                  inccurrscopeoffset()
+                  inccurrscopeoffset();
                   ste.offset = currscopeoffset();
                   ste.scopespace = currscopespace();
                   ste.symt=var_s;
@@ -890,7 +892,7 @@ ifstmt:	if_prefix stmt {//patchlabel($1-2, $1+1);
 	    ;	 
 if_prefix: IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{
                                                         if($3->type == boolexpr_e){
-                                                            if(istempname($3)){
+                                                            if(istempname($3->sym.name)){
                                                                 $3->sym = $3->sym;
                                                             }else{
                                                                 $3->sym = newtmp();
@@ -920,7 +922,7 @@ whilestart: WHILE{$$=nextquad()+1;};
 
 whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {
         if($2->type == boolexpr_e){
-            if(!istempname($2)){
+            if(!istempname($2->sym.name)){
                 $2->sym = newtmp();
             }
             patchlist($2->truequad, nextquad());
@@ -935,20 +937,20 @@ whilecon: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {
 };
 	
 for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {
-                    forpr pr=$1;
-                    patchlabel(pr.enter,$5+2); // true jump
-                    patchlabel($2,nextQuad()+1); // false jump
-                    patchlabel($5,pr.test+1); // loop jump
+                    forpr *pr=$1;
+                    patchlabel(pr->enter,$5+2); // true jump
+                    patchlabel($2,nextquad()+1); // false jump
+                    patchlabel($5,pr->test+1); // loop jump
                     patchlabel($7,$2+2); // closure jump
 };
 		
-N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,0);};
+N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,NULL,0,yylineno);};
 
 M:{/*nextquad*/ $$ = nextquad(); };
 
 for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{
             if($6->type == boolexpr_e){
-            if(!istempname($6)){
+            if(!istempname($6->sym.name)){
                 $6->sym = newtmp();
             }
             patchlist($6->truequad, nextquad());
@@ -960,7 +962,7 @@ for_prefix: FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON{
         forpr pr;
         pr.enter=nextquad();
         pr.test=$5;
-        $$=pr;
+        $$=&pr;
         emit(if_eq,$6,newexpr_constbool(1),NULL,0,yylineno);
 };
 
