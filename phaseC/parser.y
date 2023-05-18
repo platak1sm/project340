@@ -1,9 +1,10 @@
 %{
     #include <iostream>
     #include <string>
-    #include "symbol_table.h"
+    // #include "symbol_table.h"
     #include "icode.h"
     #include <list>
+    #include <stack>
 
     /* #define YY_DECL int alpha_yylex (void* yylval)*/
     extern int yylex(void);
