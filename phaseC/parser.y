@@ -105,7 +105,7 @@ program: stmt program {cout << "program stmt\n";}
          ;
  
 stmt: expr SEMICOLON {
-    make_stmt($$);
+    //make_stmt($$);
     if($1->type == boolexpr_e){
         if(istempname($1->sym.name)){
             $$->sym = newtmp();
@@ -122,24 +122,24 @@ stmt: expr SEMICOLON {
     cout << "stmt => expr\n";
     }
       | ifstmt {
-        make_stmt($$);
+        //make_stmt($$);
         resettmpcounter();
         cout << "stmt => ifstmt\n";
         }
       | {inloop++;}whilestmt{
-        make_stmt($$);
+        //make_stmt($$);
         resettmpcounter();
         cout << "stmt => whilestmt\n";inloop--;}
       | {inloop++;}for_stmt{
-        make_stmt($$);
+        //make_stmt($$);
         resettmpcounter();
         inloop--; cout << "stmt => for_stmt\n";}
       | returnstmt {
-        make_stmt($$);
+        //make_stmt($$);
         resettmpcounter();
         cout << "stmt => returnstmt\n";}
       | BREAK SEMICOLON{
-        make_stmt($$);
+        //make_stmt($$);
         $$->breakList = newlist(nextquad());
         $$->contList = 0;
         emit(jump, NULL, NULL, NULL, 0, yylineno);
@@ -152,7 +152,7 @@ stmt: expr SEMICOLON {
 
         }
       | CONTINUE SEMICOLON{
-        make_stmt($$);
+        //make_stmt($$);
         $$->contList = newlist(nextquad());
         $$->breakList = 0;
         emit(jump, NULL, NULL, NULL, 0, yylineno);
@@ -163,11 +163,11 @@ stmt: expr SEMICOLON {
         resettmpcounter();
         cout << "stmt => block\n";}
       | funcdef {
-        make_stmt($$);
+       // make_stmt($$);
         resettmpcounter();
         cout << "stmt => funcdef\n";}
       | SEMICOLON {
-        make_stmt($$);
+        //make_stmt($$);
         resettmpcounter();
         cout << "stmt => ;\n";}
       ;
@@ -361,7 +361,7 @@ expr: assignexpr {$$=$1;
 
 term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
                                                 cout << "term => (expr)\n";}
-	    | UMINUS expr  {check_arith($2);
+	    | MINUS expr %prec UMINUS  {check_arith($2);
                         $$ =newexpr(arithexp_e);
                         if(istempname($2->sym.name)){
                             $$->sym = newtmp();
