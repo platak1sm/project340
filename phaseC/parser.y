@@ -745,7 +745,7 @@ elist: expr  {cout << "elist => expr\n";
                             $$->next=NULL;
                            }
        | {cout << "elist => empty\n";
-          expr* head;
+          expr* head= new expr;
           $$=head;}
        ;
 
