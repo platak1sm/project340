@@ -154,9 +154,9 @@ int newlist(int i) // de kserw an xreiazetai
 
 int mergelist(int l1, int l2) // de kserw an xreiazetai
 {
-    if (!l1)
+    if (!l1 || l1 < 0 || l1 >= quads.size())
         return l2;
-    else if (!l2)
+    else if (!l2 || l2 < 0 || l2>quads.size())
         return l1;
     else
     {
