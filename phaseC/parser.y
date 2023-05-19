@@ -290,6 +290,7 @@ expr: assignexpr {$$=$1;}
                          //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
                                  }
       | expr AND {
+    
         if($1->type != boolexpr_e){
             $1->truequad = nextquad();
             $1->falsequad = nextquad()+1;
@@ -297,6 +298,7 @@ expr: assignexpr {$$=$1;}
             emit(jump,NULL,NULL,NULL,0, yylineno);
             patchlist($1->truequad, nextquad());
         }
+        
         
       }M expr {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
@@ -340,7 +342,8 @@ expr: assignexpr {$$=$1;}
                         $$->truequad = mergelist($1->truequad, $5->truequad);
                         $$->falsequad = $5->falsequad;
                       }
-      | term {$$=$1;}
+      | term {
+        $$=$1;}
       ;
 
 term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
@@ -562,15 +565,18 @@ primary: lvalue{ $$ = emit_iftableitem($1);}
         ;
 
 lvalue: ID { 
+    
             string name($1);
-
+    
             if(lookupactivevar(name).isActive == false && lookupactivefunc(name).isActive == false ){
                 SymbolTableEntry ent;
+                
                 ent.isActive = true;
                 if(scope == 0)
                     ent.type = GLOBAL;
                 else
                     ent.type = LOCALV;
+                
                 ent.name = name;
                 ent.scope = scope;
                 ent.line = yylineno;
@@ -578,14 +584,17 @@ lvalue: ID {
                 ent.offset = currscopeoffset();
                 ent.scopespace = currscopespace();
                 ent.symt = var_s;
+                
                 insert(ent);
+                
                 $$ = lvalue_exp(ent);
+                
             }else{
                 if(lookupactivevar(name).scope < infunction && lookupactivevar(name).scope > 0){
                     red(); cout << "Error: " <<" There is function between the uses of variable "<< name <<endl; reset();
                 }
             }
-
+            
             
             }
         | LOCAL ID {
@@ -640,8 +649,10 @@ member: lvalue PERIOD ID {$$ = member_item($1,$3);}
 		| call LEFT_BRACKET expr RIGHT_BRACKET {}
 		;
 
-call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {$$ = make_call($1,$3);}
+call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {
+    $$ = make_call($1,$3);}
 		| lvalue callsuffix  {
+            
                               if ($2->method){
                                 expr *self = $1;
                                 $1 = emit_iftableitem(member_item(self,$2->name)); 
@@ -660,7 +671,8 @@ callsuffix:	normcall {$$=$1;}
 			;
 
 
-normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
+normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {
+    calls c;
                                                      c.name="nil";
                                                      c.method=false;
                                                      c.elist=$2;
@@ -679,8 +691,11 @@ methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
 elist: expr  {cout << "elist => expr\n";
              expr* head;
              head=$1;
-             $$= head;}
+             $$= head;
+             
+             }
        | elist COMMA expr {cout << "elist => elist,expr\n";
+       
                            expr* temp;
                            temp=$1;  
                            $$=temp;

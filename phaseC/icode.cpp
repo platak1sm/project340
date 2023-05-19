@@ -195,7 +195,7 @@ void restorecurrscopeoffset(unsigned n)
 expr *lvalue_exp(SymbolTableEntry sym) // thelei diorthwsh
 {
     
-    expr *e=NULL;
+    expr *e=new expr;
     switch (sym.symt)
     {
     case var_s:
@@ -225,11 +225,13 @@ expr *newexpr_conststring(string s)
 expr *make_call(expr *lv, expr *reversed_elist)
 {
     expr *func = emit_iftableitem(lv);
+    
     while (reversed_elist)
     {
         emit(param, reversed_elist, NULL, NULL, 0, yylineno);
         reversed_elist = reversed_elist->next;
     }
+    
     emit(call, func, NULL, NULL, 0, yylineno);
     expr *result = newexpr(var_e);
     result->sym = newtmp();
