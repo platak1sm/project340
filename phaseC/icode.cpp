@@ -423,7 +423,7 @@ void match_label(int val){
 }
 
 void print_quads(){
-    int i = 1;
+    int i = 0;
     printf("%5s %20s %20s %20s %20s %20s", "quad#", "opcode","result","arg1","arg2","label");
     printf("\n------------------------------------------------------------");
     printf("----------------------------------------------------\n");
