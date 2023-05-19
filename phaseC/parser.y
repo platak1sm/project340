@@ -172,14 +172,15 @@ stmt: expr SEMICOLON {
         cout << "stmt => ;\n";}
       ;
 
-expr: assignexpr {$$=$1;}
+expr: assignexpr {$$=$1;
+                 cout << "expr => assignexpr\n";}
       | expr PLUS expr {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
                             $$->sym = newtmp();
                         }else{
                             $$->sym = $1->sym;
                         }
-                        
+                        cout << "expr => expr+expr\n";
                         emit(add,$1,$3,$$,0,yylineno);}
       | expr MINUS expr {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
@@ -187,6 +188,7 @@ expr: assignexpr {$$=$1;}
                         }else{
                             $$->sym = $1->sym;
                         }
+                        cout << "expr => expr-expr\n";
                         emit(sub,$1,$3,$$,0,yylineno);}
       | expr MUL expr   {$$ =newexpr(arithexp_e);
                          if(istempname($1->sym.name)){
@@ -194,6 +196,7 @@ expr: assignexpr {$$=$1;}
                         }else{
                             $$->sym = $1->sym;
                         }
+                        cout << "expr => expr*expr\n";
                          emit(mul,$1,$3,$$,0,yylineno);}
       | expr DIV expr  {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
@@ -201,6 +204,7 @@ expr: assignexpr {$$=$1;}
                         }else{
                             $$->sym = $1->sym;
                         }
+                        cout << "expr => expr div expr\n";
                         emit(divc,$1,$3,$$,0,yylineno);}
       | expr MOD expr  {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
@@ -208,6 +212,7 @@ expr: assignexpr {$$=$1;}
                         }else{
                             $$->sym = $1->sym;
                         }
+                        cout << "expr => expr mod expr\n";
                         emit(mod,$1,$3,$$,0,yylineno);}
       | expr EQUAL{
         if($1->type == boolexpr_e){
@@ -230,6 +235,7 @@ expr: assignexpr {$$=$1;}
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
                          //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         cout << "expr => expr == expr\n";
                          }
       | expr NOT_EQUAL{
         if($1->type == boolexpr_e){
@@ -252,6 +258,7 @@ expr: assignexpr {$$=$1;}
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
                          //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         cout << "expr => expr!=expr\n";
                          }
       | expr GREATER expr   {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
@@ -261,6 +268,7 @@ expr: assignexpr {$$=$1;}
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
                          //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         cout << "expr => expr > expr\n";
                          }
       | expr LESS expr      {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
@@ -270,6 +278,7 @@ expr: assignexpr {$$=$1;}
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
                          //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         cout << "expr => expr < expr\n";
                          }
       | expr GREATER_EQUAL expr {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
@@ -279,6 +288,7 @@ expr: assignexpr {$$=$1;}
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
                          //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         cout << "expr => expr >= expr\n";
                                 }
       | expr LESS_EQUAL expr    {$$ = newexpr(boolexpr_e);
 		                //  $$->sym = newtmp();
@@ -288,6 +298,7 @@ expr: assignexpr {$$=$1;}
 		                 //emit(assign, newexpr_constbool(false), NULL, $$, -1 , yylineno);
 		                 emit(jump,NULL,NULL,NULL,0, yylineno);
                          //emit(assign, newexpr_constbool(true), NULL, $$, -1 , yylineno);
+                         cout << "expr => expr <= expr\n";
                                  }
       | expr AND {
     
@@ -315,7 +326,7 @@ expr: assignexpr {$$=$1;}
                         }
                         $$->falsequad = mergelist($1->falsequad, $5->falsequad);
                         $$->truequad = $5->truequad;
-                         
+                         cout << "expr => expr && expr\n";
         
       }
       | expr OR{
@@ -341,12 +352,15 @@ expr: assignexpr {$$=$1;}
                         }
                         $$->truequad = mergelist($1->truequad, $5->truequad);
                         $$->falsequad = $5->falsequad;
+                        cout << "expr => expr || expr\n";
                       }
       | term {
-        $$=$1;}
+        $$=$1;
+        cout << "expr => term\n";}
       ;
 
-term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
+term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
+                                                cout << "term => (expr)\n";}
 	    | UMINUS expr  {check_arith($2);
                         $$ =newexpr(arithexp_e);
                         if(istempname($2->sym.name)){
@@ -354,6 +368,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                         }else{
                             $$->sym = $2->sym;
                         }
+                        cout << "term => -expr\n";
                         emit(uminus,$2,NULL,$$,-1,yylineno);}
 	    | NOT expr {$$ =newexpr(boolexpr_e);
                         if(istempname($2->sym.name)){
@@ -370,6 +385,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                         int tmp = $2->truequad;
                         $$->truequad = $2->falsequad;
                         $$->falsequad = tmp;
+                        cout << "term => !expr\n";
                         emit(notc,$2,NULL,$$,0,yylineno);}
 		| PLUS_PLUS lvalue {
                             string name = $2->sym.name;
@@ -401,6 +417,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                                 }
                                 emit(assign, $2, NULL, $$, -1, yylineno);
                             }
+                            cout << "term => ++lvalue\n";
                            }
 		| lvalue PLUS_PLUS {
                             string name = $1->sym.name;
@@ -434,6 +451,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                                 emit(assign,$1, NULL,$$,-1,yylineno);
                                 emit(add,$1, newexpr_constnum(1),$1,-1,yylineno);
                             }
+                            cout << "term => lvalue++\n";
                            }
 		| MINUS_MINUS lvalue {
                             string name = $2->sym.name;
@@ -465,6 +483,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                                 }
                                 emit(assign, $2, NULL, $$, -1, yylineno);
                             }
+                            cout << "term => --lvalue\n";
                            }
 		| lvalue MINUS_MINUS {
                              string name = $1->sym.name;
@@ -498,8 +517,10 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;}
                                 emit(assign,$1, NULL,$$,-1,yylineno);
                                 emit(sub,$1, newexpr_constnum(1),$1,-1,yylineno);
                             }
+                            cout << "term => lvalue--\n";
                              }
-		| primary {$$=$1;}
+		| primary {$$=$1;
+                    cout << "term => primary\n";}
 		;
 
 assignexpr: lvalue ASSIGN expr{		
@@ -552,16 +573,22 @@ assignexpr: lvalue ASSIGN expr{
                                         emit(assign, $1, NULL,$$,-1,yylineno);
                                     }
                                 }
+                                cout << "assignexpr => lvalue=expr\n";
                             }
                         
             ;
 	
-primary: lvalue{ $$ = emit_iftableitem($1);}
-        | call {$$=$1;}
-        | objectdef {$$=$1;}
+primary: lvalue{ $$ = emit_iftableitem($1);
+                cout << "primary => lvalue\n";}
+        | call {$$=$1;
+                cout << "primary => call\n";}
+        | objectdef {$$=$1;
+                    cout << "primary => objectdef\n";}
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS{$$ = newexpr(programfunc_e);
-                                                     $$->sym = *($2);}
-		| const{$$=$1;}
+                                                     $$->sym = *($2);
+                                                    cout << "primary => (funcdef)\n";}
+		| const{$$=$1;
+                cout << "primary => const\n";}
         ;
 
 lvalue: ID { 
@@ -595,7 +622,7 @@ lvalue: ID {
                 }
             }
             
-            
+            cout << "lvalue => id:" << yylval.stringVal<<endl;
             }
         | LOCAL ID {
             string name($2);
@@ -620,7 +647,7 @@ lvalue: ID {
                 
                 $$ = lvalue_exp(ent);
             }
-           
+           cout << "lvalue => local id:" << yylval.stringVal<<", "<<scope<<endl;
         }
         | DOUBLE_COLON ID {
             string name($2);
@@ -633,24 +660,28 @@ lvalue: ID {
             } else{
                 $$=lvalue_exp(ste);
             }
-            
+            cout << "lvalue => ::id:" << yylval.stringVal<<endl;
         }
         | member{$$ = $1;
-            isMember=true;}
+            isMember=true;
+            cout << "lvalue => member" <<endl;}
         ;
 
-member: lvalue PERIOD ID {$$ = member_item($1,$3);}
+member: lvalue PERIOD ID {$$ = member_item($1,$3);
+                            cout << "member => lvalue.id\n";}
 		| lvalue LEFT_BRACKET expr RIGHT_BRACKET {$1 = emit_iftableitem($1);
                                                   $$ = newexpr(tableitem_e);
                                                   $$->sym = $1->sym;
                                                   $$->index=$3;
+                                                  cout << "member => lvalue[expr]\n";
                                                   }
-		| call PERIOD ID {}
-		| call LEFT_BRACKET expr RIGHT_BRACKET {}
+		| call PERIOD ID {cout << "member => call.id\n";}
+		| call LEFT_BRACKET expr RIGHT_BRACKET {cout << "member => call[expr]\n";}
 		;
 
 call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {
-    $$ = make_call($1,$3);}
+    $$ = make_call($1,$3);
+    cout << "call => (elist)\n";}
 		| lvalue callsuffix  {
             
                               if ($2->method){
@@ -660,23 +691,28 @@ call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {
                                 $2->elist = self; /*pushing self in front*/
                               }
                               $$ = make_call($1,$2->elist);
+                              cout << "call => lvalue callsuffix\n";
                             }
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {expr *func = newexpr(programfunc_e);
                                                                                                 func->sym=*($2);
-                                                                                                $$ = make_call(func,$5);}
+                                                                                                $$ = make_call(func,$5);
+                                                                                                cout << "call => (funcdef)(elist)\n";}
 		;
 
-callsuffix:	normcall {$$=$1;}
-			| methodcall {$$=$1;}
+callsuffix:	normcall {$$=$1;
+                     cout << "callsuffix => normcall\n";}
+			| methodcall {$$=$1;
+                         cout << "callsuffix => methodcall\n";}
 			;
 
 
 normcall: LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {
-    calls c;
+                                                     calls c;
                                                      c.name="nil";
                                                      c.method=false;
                                                      c.elist=$2;
                                                      $$=&c;
+                                                     cout << "normcall => (elist)\n";
                                                      }
           ;
         
@@ -685,6 +721,7 @@ methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
                                                                         c.method=true;
                                                                         c.elist=$4;
                                                                         $$=&c;
+                                                                        cout << "methodcall => ..id(elist)\n";
                                                                         }
             ;
 
@@ -722,6 +759,7 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*t
                                                  elist=elist->next;
                                              }
                                              $$=tmp;
+                                             cout << "objectdef => [elist]\n";
                                              }
            | LEFT_BRACKET indexed RIGHT_BRACKET  {expr *tmp = newexpr(newtable_e);
                                                   tmp->sym=newtmp();
@@ -732,6 +770,7 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*t
                                                     indexed=indexed->next;
                                                   }
                                                   $$ = tmp;
+                                                  cout << "objectdef => [indexed]\n";
                                                   }
            ;
 
@@ -836,22 +875,28 @@ func_bstart: {loopCountStack.push(loopc); loopc=0;};
 
 func_bend:  {loopc = loopCountStack.top(); loopCountStack.pop();};
 
-func_args:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {enterscopespace(); resetfunctionlocaloffset();};
+func_args:  LEFT_PARENTHESIS {scope++;} idlist RIGHT_PARENTHESIS {enterscopespace(); resetfunctionlocaloffset();cout <<"funcdef => function id(idlist)block\n";};
                                                                  
 func_body: { scope--; infunction++;} func_bstart block func_bend {infunction--; exitscopespace(); } ;
 
 
 const:	INTEGER {$$ = newexpr_constnum($1);
-                 /* $$->numConst=$1; */}
+                 /* $$->numConst=$1; */
+                 cout <<"const => integer:"<<yylval.intVal<<endl;}
 		| REAL {$$ = newexpr_constnum($1);
-                 /* $$->numConst=$1; */}
+                 /* $$->numConst=$1; */
+                 cout <<"const => real:"<<yylval.doubleVal<<endl;}
 		| STRING {$$ = newexpr_conststring($1);
-                  /* $$->strConst=$1; */}
-		| NIL {$$ = newexpr(nil_e);}
+                  /* $$->strConst=$1; */
+                  cout <<"const => string"<<yylval.stringVal<<endl;}
+		| NIL {$$ = newexpr(nil_e);
+              cout <<"const => nil"<<endl;}
 		| TRUE { $$ = newexpr_constbool($1);
-                 /* $$->boolConst=true; */}
+                 /* $$->boolConst=true; */
+                 cout <<"const => true"<<endl;}
 		| FALSE { $$ = newexpr_constbool($1);
-                  /* $$->boolConst=false; */}
+                  /* $$->boolConst=false; */
+                  cout <<"const => false"<<endl;}
 		;
 
 idlist: ID{
@@ -871,6 +916,7 @@ idlist: ID{
                   ste.symt = var_s;
                   insert(ste);
             }
+            cout <<"idlist => id"<<endl;
           }
         | idlist COMMA ID{
             string name = $3; 
@@ -889,6 +935,7 @@ idlist: ID{
                   ste.symt=var_s;
                   insert(ste);
             }
+            cout <<"idlist => idlist, id"<<endl;
          }
         |
        ;
@@ -903,9 +950,11 @@ loopstmt : loopstart stmt loopend { $$ = $2; } ;
 
 ifstmt:	if_prefix stmt {//patchlabel($1-2, $1+1);
                         patchlabel($1, nextquad());
+                        cout <<"ifstmt => if(expr) stmt"<<endl;
                        }
 		|if_prefix stmt else_prefix stmt   {patchlabel($1,$3+1); //if eq if_prefix
                                             patchlabel($3, nextquad()); //jmp if_prefix
+                                            cout <<"ifstmt => if(expr) stmt else stmt"<<endl;
                                             
         }
 	    ;	 
@@ -961,6 +1010,7 @@ for_stmt: for_prefix N elist RIGHT_PARENTHESIS N loopstmt N {
                     patchlabel($2,nextquad()+1); // false jump
                     patchlabel($5,pr->test+1); // loop jump
                     patchlabel($7,$2+2); // closure jump
+                    cout <<"forstmt => for(elist;expr;elist) stmt"<<endl;
 };
 		
 N: {/*unfinished jump*/ $$ = nextquad(); emit(jump,NULL,NULL,NULL,0,yylineno);};
@@ -989,6 +1039,7 @@ returnstmt: RETURN expr SEMICOLON{
                     if(infunction==0) { red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
                     /* cout <<"returnstmt => return expr;"<<endl; */
                     emit(ret,NULL,NULL,$2,0,yylineno);
+                    cout <<"returnstmt => return expr;"<<endl;
          }
 			| RETURN SEMICOLON { if(infunction==0) {red(); cout << "Error: Cannot use RETURN when not in function, in line " << yylineno << endl; reset();}
                                 cout <<"returnstmt => return;"<<endl;
