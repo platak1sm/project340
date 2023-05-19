@@ -430,9 +430,13 @@ void print_quads(){
     while (i<currQuad)
     {
         printf("%4d: ", i);
+        cout << "\t\t\t";
         match_op(quads[i].op);
+        cout << "\t\t\t";
         match_expr(quads[i].result);
+        cout << "\t\t";
         match_expr(quads[i].arg1);
+        cout << "\t\t\t";
         match_expr(quads[i].arg2);
         if(quads[i].op == if_greatereq
             || quads[i].op == if_eq 
