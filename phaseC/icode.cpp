@@ -46,6 +46,10 @@ expr *newexpr(expr_t t)
     expr *e = new expr;
     // memset(e, 0, sizeof(expr));
     e->type = t;
+    if(t == boolexpr_e){
+        e->truequad = 0;
+        e->falsequad = 0;
+    }
     return e;
 }
 
