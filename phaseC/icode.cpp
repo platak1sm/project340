@@ -164,8 +164,13 @@ int mergelist(int l1, int l2) // de kserw an xreiazetai
         cout <<"quads:" << i <<","<<quads.size()<<endl;
         
         while (quads[i].label){
-            cout <<"quads:" << quads[i].label<<endl;
-            i = quads[i].label;
+            if((i >= 0) && (i < quads.size())) {
+                cout <<"quads:" << quads[i].label<<endl;
+                i = quads[i].label;
+            }
+            else {
+                break;
+            }
         }
         quads[i].label = l2;
         return l1;
