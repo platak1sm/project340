@@ -63,6 +63,8 @@ typedef struct expr
     int truequad;
     int falsequad;
     expr *next;
+
+    expr(){};
 } expr;
 
 typedef struct quad

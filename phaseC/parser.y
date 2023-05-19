@@ -745,7 +745,11 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET {  expr* t = newexpr(newtable_e);
                                                 t->sym = newtmp();
                                                 emit(tablecreate,  NULL, NULL,t, -1, yylineno);
                                                 int num = 0;
-                                                for(int i=0; i<=$2->elist.size(); i++) emit(tablesetelem, newexpr_constnum(num++), $2->elist[i],t,-1,yylineno);
+                                                if ($2!=NULL && $2->elist.size()>0){
+                                                    for(int i=0; i <= $2->elist.size() - 1; i++)
+                                                    emit(tablesetelem, newexpr_constnum(i), $2->elist[i],t,-1,yylineno);
+                                                }
+                                                
                                                 $$ = t;
                                              cout << "objectdef => [elist]\n";
                                              }
