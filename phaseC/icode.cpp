@@ -195,7 +195,7 @@ void restorecurrscopeoffset(unsigned n)
 expr *lvalue_exp(SymbolTableEntry sym) // thelei diorthwsh
 {
     
-    expr *e;
+    expr *e=NULL;
     switch (sym.symt)
     {
     case var_s:
