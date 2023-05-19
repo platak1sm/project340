@@ -729,42 +729,27 @@ methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
             ;
 
 elist: expr  {cout << "elist => expr\n";
-             expr* head;
-             head=$1;
-             $$= head;
-             
+             $$ = $1;     
              }
        | elist COMMA expr {cout << "elist => elist,expr\n";
-       
-                           expr* temp;
-                           temp=$1;  
-                           $$=temp;
-                          while(temp->next!=NULL)
-                                temp=temp->next;
-                            temp->next=$3;
-                            $$->next=NULL;
-                           }
+                        expr* tmp = $1;
+                        while(tmp->next!=NULL) tmp = tmp->next;
+                        tmp->next = $3;
+                        $$ = $1; }
        | {cout << "elist => empty\n";
-          expr* head= new expr;
-          $$=head;}
+          $$ = NULL;}
        ;
 
-objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*tempi;
-                                              tmp->sym=newtmp();
-                                              emit(tablecreate,NULL,NULL,tmp,0,yylineno);
-                                              int count = 0;
-                                              expr* elist =$2;
-                                              while(elist->next != NULL){
-                                                 tempi = newexpr(constnum_e);
-                                                 tempi->numConst=count;
-                                                 emit(tablesetelem,tempi,elist,tmp,0,yylineno);
-                                                 count++;
-                                                 elist=elist->next;
-                                             }
-                                             $$=tmp;
+objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr* t = newexpr(newtable_e);
+                                                t->sym = newtmp();
+                                                emit(tablecreate,  NULL, NULL,t, -1, yylineno);
+                                                int num = 0;
+                                                for(expr* i = $2; i!=NULL; i = i->next) emit(tablesetelem, newexpr_constnum(num++), i,t,-1,yylineno);
+                                                $$ = t;
                                              cout << "objectdef => [elist]\n";
                                              }
-           | LEFT_BRACKET indexed RIGHT_BRACKET  {expr *tmp = newexpr(newtable_e);
+           | LEFT_BRACKET indexed RIGHT_BRACKET  {
+                                                   expr *tmp = newexpr(newtable_e);
                                                   tmp->sym=newtmp();
                                                   emit(tablecreate,NULL,NULL,tmp,0,yylineno);
                                                   indexedelements *indexed = $2;
@@ -772,34 +757,31 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*t
                                                     emit(tablesetelem,indexed->index,indexed->value,tmp,0,yylineno);
                                                     indexed=indexed->next;
                                                   }
-                                                  $$ = tmp;
+                                                  $$ = tmp; 
                                                   cout << "objectdef => [indexed]\n";
                                                   }
            ;
 
 indexed: indexedelem  {cout << "indexed => indexedelem\n";
-                      indexedelements* indexedlist;
-                      indexedlist=$1;
-                      $$=indexedlist;}
+                      $$ = $1;}
        | indexed COMMA indexedelem       
                       {cout << "indexed => indexed, indexelem\n";
-                      indexedelements* indexedlist;
-                      indexedlist=$1;
-                      $$=indexedlist;
+                      indexedelements* indexedlist=$1;
+                      
+                     
                       while(indexedlist->next!=NULL)
                         indexedlist=indexedlist->next;
                       indexedlist->next= $3;
-                      $1=indexedlist;
+                      $$=$1;
 
                       }
        ;
 
 indexedelem: LEFT_BRACE expr COLON expr RIGHT_BRACE  
                         {cout << "indexedelem => {expr:expr}\n";
-                        indexedelements *temp;
+                        indexedelements *temp=new indexedelements;
                         temp->index=$2;
                         temp->value=$4;
-                        temp->next=NULL;
                         $$=temp;
                         }
              ;
