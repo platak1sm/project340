@@ -75,14 +75,13 @@
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <expVal> lvalue expr term assignexpr const primary member objectdef call  
+%type <expVal> lvalue expr term assignexpr const primary member objectdef call indexedelem 
 %type <intVal> if_prefix else_prefix whilestart whilecon N M func_body func_bend
 %type <steVal>  funcdef func_prefix
 %type <forVal> for_prefix
 %type <stmtVal> stmtlist stmt ifstmt for_stmt whilestmt block loopstmt returnstmt
 %type <callVal> normcall methodcall callsuffix
-%type <indelVal> indexedelem indexed
-%type <elistVal> elist
+%type <elistVal> elist indexed 
 
 
 
@@ -754,40 +753,40 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET {  expr* t = newexpr(newtable_e);
                                              cout << "objectdef => [elist]\n";
                                              }
            | LEFT_BRACKET indexed RIGHT_BRACKET  {
-                                                   expr *tmp = newexpr(newtable_e);
-                                                  tmp->sym=newtmp();
-                                                  emit(tablecreate,NULL,NULL,tmp,0,yylineno);
-                                                  indexedelements *indexed = $2;
-                                                  for(indexedelements* i = $2; i!=NULL; i = i->next){
-                                                    emit(tablesetelem,indexed->index,indexed->value,tmp,0,yylineno);
-                                                    indexed=indexed->next;
-                                                  }
-                                                  $$ = tmp; 
+                                                expr* t = newexpr(newtable_e);
+                                                t->sym = newtmp();
+                                                emit(tablecreate,  NULL, NULL,t, -1, yylineno);
+                                                int num = 0;
+                                                if ($2!=NULL && $2->elist.size()>0){
+                                                    for(int i=0; i <= $2->elist.size() - 1; i++)
+                                                    emit(tablesetelem, newexpr_constnum(i), $2->elist[i],t,-1,yylineno);
+                                                }
+                                                
+                                                $$ = t;
                                                   cout << "objectdef => [indexed]\n";
                                                   }
            ;
 
 indexed: indexedelem  {cout << "indexed => indexedelem\n";
-                      $$ = $1;}
+                      $$ = new elist_t();
+                      $$->elist.push_back($1);}
        | indexed COMMA indexedelem       
                       {cout << "indexed => indexed, indexelem\n";
-                      indexedelements* indexedlist=$1;
-                      
-                     
-                      while(indexedlist->next!=NULL)
-                        indexedlist=indexedlist->next;
-                      indexedlist->next= $3;
-                      $$=$1;
-
+                      $$ = new elist_t();
+                      $$->elist.push_back($3);
                       }
        ;
 
 indexedelem: LEFT_BRACE expr COLON expr RIGHT_BRACE  
                         {cout << "indexedelem => {expr:expr}\n";
-                        indexedelements *temp=new indexedelements;
-                        temp->index=$2;
-                        temp->value=$4;
-                        $$=temp;
+                        if($2==NULL || $4==NULL){
+                            $$=NULL;
+                        }else{
+                            expr *temp=$4;
+                            temp->index=$2;
+                            $$=temp;
+                        }
+                        
                         }
              ;
 
