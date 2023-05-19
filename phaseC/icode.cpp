@@ -134,11 +134,11 @@ void make_stmt(stmt_t *s)
 {
     if (s != NULL)
     {
-        if (s->breakList != NULL)
+        if (s->breakList != 0)
         {
             s->breakList = 0;
         }
-        if (s->contList != NULL)
+        if (s->contList != 0)
         {
             s->contList = 0;
         }
@@ -161,8 +161,12 @@ int mergelist(int l1, int l2) // de kserw an xreiazetai
     else
     {
         int i = l1;
-        while (quads[i].label)
+        cout <<"quads:" << i <<","<<quads.size()<<endl;
+        
+        while (quads[i].label){
+            cout <<"quads:" << quads[i].label<<endl;
             i = quads[i].label;
+        }
         quads[i].label = l2;
         return l1;
     }
