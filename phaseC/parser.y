@@ -754,7 +754,7 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET {  expr* t = newexpr(newtable_e);
                                                   tmp->sym=newtmp();
                                                   emit(tablecreate,NULL,NULL,tmp,0,yylineno);
                                                   indexedelements *indexed = $2;
-                                                  while(indexed->next!=NULL){
+                                                  for(indexedelements* i = $2; i!=NULL; i = i->next){
                                                     emit(tablesetelem,indexed->index,indexed->value,tmp,0,yylineno);
                                                     indexed=indexed->next;
                                                   }
