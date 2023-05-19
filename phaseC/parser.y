@@ -361,7 +361,7 @@ expr: assignexpr {$$=$1;
 
 term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
                                                 cout << "term => (expr)\n";}
-	    | UMINUS expr  {check_arith($2);
+	    | MINUS expr %prec UMINUS  {check_arith($2);
                         $$ =newexpr(arithexp_e);
                         if(istempname($2->sym.name)){
                             $$->sym = newtmp();
