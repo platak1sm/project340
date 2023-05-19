@@ -64,6 +64,7 @@
     struct calls *callVal;
     struct indexedelements *indelVal;
     struct stmt_t *stmtVal;
+    struct elist_t *elistVal;
 }
 
 %token <intVal> INTEGER
@@ -74,13 +75,14 @@
 %token ASSIGN PLUS MINUS MUL DIV MOD EQUAL NOT_EQUAL PLUS_PLUS MINUS_MINUS GREATER LESS GREATER_EQUAL LESS_EQUAL UMINUS
 %token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_PARENTHESIS RIGHT_PARENTHESIS SEMICOLON COMMA COLON DOUBLE_COLON PERIOD DOUBLE_PERIOD
 
-%type <expVal> lvalue expr term assignexpr const primary member objectdef call elist 
+%type <expVal> lvalue expr term assignexpr const primary member objectdef call  
 %type <intVal> if_prefix else_prefix whilestart whilecon N M func_body func_bend
 %type <steVal>  funcdef func_prefix
 %type <forVal> for_prefix
 %type <stmtVal> stmtlist stmt ifstmt for_stmt whilestmt block loopstmt returnstmt
 %type <callVal> normcall methodcall callsuffix
 %type <indelVal> indexedelem indexed
+%type <elistVal> elist
 
 
 
@@ -683,13 +685,12 @@ call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {
     $$ = make_call($1,$3);
     cout << "call => (elist)\n";}
 		| lvalue callsuffix  {
-            
+                  
                   if ($2 != NULL && $2->method != NULL) {
                      expr *self = $1;
                      if (self != NULL) {
                         $1 = emit_iftableitem(member_item(self, $2->name));
-                        self->next = $2->elist;
-                        $2->elist = self; /* pushing self in front */
+                        $2->elist->elist.push_back(self);
                     }
                     $$ = make_call($1, $2->elist);
 }
@@ -729,22 +730,22 @@ methodcall: DOUBLE_PERIOD ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {calls c;
             ;
 
 elist: expr  {cout << "elist => expr\n";
-             $$ = $1;     
+             $$ = new elist_t();  
+             $$->elist.push_back($1);   
              }
        | elist COMMA expr {cout << "elist => elist,expr\n";
-                        expr* tmp = $1;
-                        while(tmp->next!=NULL) tmp = tmp->next;
-                        tmp->next = $3;
-                        $$ = $1; }
+                        $$ = new elist_t();  
+                        $$->elist.push_back($3);  }
        | {cout << "elist => empty\n";
-          $$ = NULL;}
+          $$ = new elist_t();  
+        }
        ;
 
-objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr* t = newexpr(newtable_e);
+objectdef: LEFT_BRACKET elist RIGHT_BRACKET {  expr* t = newexpr(newtable_e);
                                                 t->sym = newtmp();
                                                 emit(tablecreate,  NULL, NULL,t, -1, yylineno);
                                                 int num = 0;
-                                                for(expr* i = $2; i!=NULL; i = i->next) emit(tablesetelem, newexpr_constnum(num++), i,t,-1,yylineno);
+                                                for(int i=0; i<=$2->elist.size(); i++) emit(tablesetelem, newexpr_constnum(num++), $2->elist[i],t,-1,yylineno);
                                                 $$ = t;
                                              cout << "objectdef => [elist]\n";
                                              }

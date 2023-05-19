@@ -75,6 +75,13 @@ typedef struct quad
     unsigned line;
 } quad;
 
+typedef struct elist_t
+{
+    vector<expr *>elist;
+    elist_t(){
+    };
+} elist_t;
+
 typedef struct symbol
 {
     symbol_t type;
@@ -103,8 +110,9 @@ typedef struct calls
 {
     string name;
     bool method;
-    expr *elist;
+    elist_t *elist;
 } calls;
+
 
 typedef struct forpr
 {
@@ -153,7 +161,7 @@ void resetfunctionlocaloffset(void);
 
 void restorecurrscopeoffset(unsigned n);
 
-expr *make_call(expr *lv, expr *reversed_elist);
+expr *make_call(expr *lv, elist_t *reversed_elist);
 
 expr *newexpr_constnum(double i);
 

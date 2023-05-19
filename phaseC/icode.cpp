@@ -46,7 +46,8 @@ expr *newexpr(expr_t t)
     expr *e = new expr;
     // memset(e, 0, sizeof(expr));
     e->type = t;
-    if(t == boolexpr_e){
+    if (t == boolexpr_e)
+    {
         e->truequad = 0;
         e->falsequad = 0;
     }
@@ -147,7 +148,6 @@ void make_stmt(stmt_t *s)
             s->contList = 0;
         }
     }
-    
 }
 
 int newlist(int i) // de kserw an xreiazetai
@@ -160,18 +160,18 @@ int mergelist(int l1, int l2) // de kserw an xreiazetai
 {
     if (!l1 || l1 < 0 || l1 >= quads.size())
         return l2;
-    else if (!l2 || l2 < 0 || l2>quads.size())
+    else if (!l2 || l2 < 0 || l2 > quads.size())
         return l1;
     else
     {
         int i = l1;
-        cout <<"quads:" << i <<","<<quads.size()<<endl;
-        
-        while ((i >= 0) && (i < quads.size())&& quads[i].label){
-            
-            cout <<"quads:" << quads[i].label<<endl;
+        cout << "quads:" << i << "," << quads.size() << endl;
+
+        while ((i >= 0) && (i < quads.size()) && quads[i].label)
+        {
+
+            cout << "quads:" << quads[i].label << endl;
             i = quads[i].label;
-            
         }
         quads[i].label = l2;
         return l1;
@@ -239,32 +239,20 @@ expr *newexpr_conststring(string s)
     return e;
 }
 
-expr *make_call(expr *lv, expr *reversed_elist)
+expr *make_call(expr *lv, elist_t *reversed_elist)
 {
     expr *func = emit_iftableitem(lv);
-
-    while (reversed_elist != NULL)
+    for (int i = reversed_elist->elist.size() - 1; i >= 0; --i)
     {
-        if (param != NULL)
-        {
-            emit(param, reversed_elist, NULL, NULL, 0, yylineno);
-        }
-        //if (reversed_elist->next != NULL)
-        //{
-            reversed_elist = reversed_elist->next;
-        //}
+        emit(param, reversed_elist->elist[i], NULL, NULL, 0, yylineno);
     }
-
-    if (call != NULL && func != NULL)
+    emit(call, func, NULL, NULL, 0, yylineno);
+    expr *result = newexpr(var_e);
+    if (result != NULL)
     {
-        emit(call, func, NULL, NULL, 0, yylineno);
-        expr *result = newexpr(var_e);
-        if (result != NULL)
-        {
-            result->sym = newtmp();
-            emit(getretval, NULL, NULL, result, 0, yylineno);
-            return result;
-        }
+        result->sym = newtmp();
+        emit(getretval, NULL, NULL, result, 0, yylineno);
+        return result;
     }
 }
 
