@@ -687,6 +687,7 @@ elist: expr  {cout << "elist => expr\n";
                           while(temp->next!=NULL)
                                 temp=temp->next;
                             temp->next=$3;
+                            $$->next=NULL;
                            }
        | {cout << "elist => empty\n";
           expr* head;
@@ -705,13 +706,16 @@ objectdef: LEFT_BRACKET elist RIGHT_BRACKET { expr *tmp = newexpr(newtable_e),*t
                                                  count++;
                                                  elist=elist->next;
                                              }
+                                             $$=tmp;
                                              }
            | LEFT_BRACKET indexed RIGHT_BRACKET  {expr *tmp = newexpr(newtable_e);
                                                   tmp->sym=newtmp();
                                                   emit(tablecreate,NULL,NULL,tmp,0,yylineno);
                                                   indexedelements *indexed = $2;
-                                                  while(indexed->next!=NULL)
-                                                  emit(tablesetelem,indexed->index,indexed->value,tmp,0,yylineno);
+                                                  while(indexed->next!=NULL){
+                                                    emit(tablesetelem,indexed->index,indexed->value,tmp,0,yylineno);
+                                                    indexed=indexed->next;
+                                                  }
                                                   $$ = tmp;
                                                   }
            ;
