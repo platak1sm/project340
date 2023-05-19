@@ -653,13 +653,16 @@ call:	call LEFT_PARENTHESIS elist	RIGHT_PARENTHESIS {
     $$ = make_call($1,$3);}
 		| lvalue callsuffix  {
             
-                              if ($2->method){
-                                expr *self = $1;
-                                $1 = emit_iftableitem(member_item(self,$2->name)); 
-                                self->next = $2->elist;
-                                $2->elist = self; /*pushing self in front*/
-                              }
-                              $$ = make_call($1,$2->elist);
+                  if ($2 != NULL && $2->method != NULL) {
+                     expr *self = $1;
+                     if (self != NULL) {
+                        $1 = emit_iftableitem(member_item(self, $2->name));
+                        self->next = $2->elist;
+                        $2->elist = self; /* pushing self in front */
+                    }
+                    $$ = make_call($1, $2->elist);
+}
+
                             }
 		| LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS  {expr *func = newexpr(programfunc_e);
                                                                                                 func->sym=*($2);

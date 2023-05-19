@@ -135,7 +135,10 @@ unsigned nextquad(void) { return currQuad; }
 
 void make_stmt(stmt_t *s)
 {
-    s->breakList = s->contList = 0;
+    if (s!=NULL){
+        s->breakList = 0;
+        s->contList = 0;
+    }
 }
 
 int newlist(int i) // de kserw an xreiazetai
