@@ -73,9 +73,13 @@ typedef struct quad
     expr *result;
     expr *arg1;
     expr *arg2;
+    unsigned taddress;
     unsigned label;
     unsigned line;
 } quad;
+
+extern vector<quad> quads;
+extern unsigned int currQuad;
 
 typedef struct elist_t
 {

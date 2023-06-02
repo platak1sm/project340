@@ -4,7 +4,7 @@
 vector<SymbolTableEntry> SymbolTable;
 int hidden_var_count = 0;
 
-
+int global_counter = 0;
 /* string create_hiddenvar_name(){
     string name = "_tmp"+to_string(hidden_var_count);
     hidden_var_count++;
@@ -15,6 +15,9 @@ void reset_hidden_count(){
     hidden_var_count = 0;
 } */
 void insert(SymbolTableEntry ste){
+    if(ste.scopespace == programvar && (ste.type == GLOBAL || ste.type == LOCALV)){
+        global_counter++;
+    }
     SymbolTable.push_back(ste);
     return;
 }
@@ -163,4 +166,8 @@ void printsymbols(){
     }
     
     
+}
+
+int getNumOfGlobals(){
+    return global_counter;
 }

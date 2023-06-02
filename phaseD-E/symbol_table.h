@@ -50,6 +50,7 @@ class SymbolTableEntry {
         unsigned int line;
         unsigned offset;
         unsigned int iaddress;
+        unsigned int taddress;
         unsigned int totalloc;
         stype type;
 }; 
@@ -64,5 +65,6 @@ SymbolTableEntry LookuplastRef(string s);
 void hide(int scope);
 void insertLibFuncs(string name);
 void printsymbols();
+int getNumOfGlobals();
 /* string create_hiddenvar_name();
 void reset_hidden_count(); */
