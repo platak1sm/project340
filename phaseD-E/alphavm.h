@@ -1,5 +1,6 @@
 #include "icode.h"
-
+#include "phase4.h"
+#include "target.hpp"
 struct avm_table;
 
 typedef enum avm_memcell_t{
@@ -116,6 +117,8 @@ double mod_impl( double x, double y ){
 	return (( unsigned ) x ) % (( unsigned ) y );
 }
 
+typedef double (*arithmetic_func_t) (double x,double y);
+
 arithmetic_func_t arithmeticFuncs[] ={
 	add_impl,
 	sub_impl,
@@ -123,3 +126,14 @@ arithmetic_func_t arithmeticFuncs[] ={
 	div_impl,
 	mod_impl
 };
+
+void avm_callsaveenvironment();
+unsigned avm_totalactuals();
+
+avm_memcell *avm_getactual(unsigned i);
+void libfunc_print();
+void avm_registerlibfunc(string id, library_func_t addr);
+void libfunc_typeof();
+void libfunc_totalarguments();
+
+void execute_arithmetic(instruction* instr);
