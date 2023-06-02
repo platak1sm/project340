@@ -1,7 +1,5 @@
 #include "alphavm.h"
-#include "parser.h"
-#include "phase4.h"
-#include "target.hpp"
+#include "parser.hpp"
 
 unsigned char executionFinished=0;
 unsigned pc=0;

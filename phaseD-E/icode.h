@@ -1,4 +1,5 @@
 #include "symbol_table.h"
+#include "phase4.h"
 
 /* #define EXPAND_SIZE 1024
 #define CURR_SIZE (total * sizeof(quad))

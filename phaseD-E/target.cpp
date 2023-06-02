@@ -1,5 +1,6 @@
 #include "target.hpp"
 #include <string.h>
+#include <assert.h>
 instruction* instructions = (instruction*) 0;
 unsigned total_i = 0;
 unsigned currinstruction = 0;

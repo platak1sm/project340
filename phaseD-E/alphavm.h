@@ -1,6 +1,4 @@
 #include "icode.h"
-#include "phase4.h"
-#include "target.hpp"
 struct avm_table;
 
 typedef enum avm_memcell_t{

@@ -1,5 +1,4 @@
 #include "icode.h"
-#include "phase4.h"
 #include <stack>
 
 #define EXPAND_SIZE_I 1024
