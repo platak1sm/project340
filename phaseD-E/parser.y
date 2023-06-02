@@ -109,9 +109,9 @@ stmt: expr SEMICOLON {
     //make_stmt($$);
     if($1->type == boolexpr_e){
         if(istempname($1->sym.name)){
-            $$->sym = newtmp();
-        }else{
             $$->sym = $1->sym;
+        }else{
+            $$->sym = newtmp();
         }
         patchlist($1->truequad, nextquad());
         emit(assign, newexpr_constbool(1), NULL, $1, nextquad(), yylineno);
@@ -177,50 +177,50 @@ expr: assignexpr {$$=$1;
                  cout << "expr => assignexpr\n";}
       | expr PLUS expr {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
-                            $$->sym = newtmp();
-                        }else{
                             $$->sym = $1->sym;
+                        }else{
+                            $$->sym = newtmp();
                         }
                         cout << "expr => expr+expr\n";
                         emit(add,$1,$3,$$,0,yylineno);}
       | expr MINUS expr {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
-                            $$->sym = newtmp();
-                        }else{
                             $$->sym = $1->sym;
+                        }else{
+                            $$->sym = newtmp();
                         }
                         cout << "expr => expr-expr\n";
                         emit(sub,$1,$3,$$,0,yylineno);}
       | expr MUL expr   {$$ =newexpr(arithexp_e);
                          if(istempname($1->sym.name)){
-                            $$->sym = newtmp();
-                        }else{
                             $$->sym = $1->sym;
+                        }else{
+                            $$->sym = newtmp();
                         }
                         cout << "expr => expr*expr\n";
                          emit(mul,$1,$3,$$,0,yylineno);}
       | expr DIV expr  {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
-                            $$->sym = newtmp();
-                        }else{
                             $$->sym = $1->sym;
+                        }else{
+                            $$->sym = newtmp();
                         }
                         cout << "expr => expr div expr\n";
                         emit(divc,$1,$3,$$,0,yylineno);}
       | expr MOD expr  {$$ =newexpr(arithexp_e);
                         if(istempname($1->sym.name)){
-                            $$->sym = newtmp();
-                        }else{
                             $$->sym = $1->sym;
+                        }else{
+                            $$->sym = newtmp();
                         }
                         cout << "expr => expr mod expr\n";
                         emit(mod,$1,$3,$$,0,yylineno);}
       | expr EQUAL{
         if($1->type == boolexpr_e){
             if(istempname($1->sym.name)){
-                $<expVal>$->sym = newtmp();
-            }else{
                 $<expVal>$->sym = $1->sym;
+            }else{
+                $<expVal>$->sym = newtmp();
             }
             patchlist($1->truequad, nextquad());
             emit(assign, newexpr_constbool(1), NULL, $1, nextquad(), yylineno);
@@ -241,9 +241,9 @@ expr: assignexpr {$$=$1;
       | expr NOT_EQUAL{
         if($1->type == boolexpr_e){
             if(istempname($1->sym.name)){
-                $<expVal>$->sym = newtmp();
-            }else{
                 $<expVal>$->sym = $1->sym;
+            }else{
+                $<expVal>$->sym = newtmp();
             }
             patchlist($1->truequad, nextquad());
             emit(assign, newexpr_constbool(1), NULL, $1, nextquad(), yylineno);
@@ -365,17 +365,17 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
 	    | MINUS expr %prec UMINUS  {check_arith($2);
                         $$ =newexpr(arithexp_e);
                         if(istempname($2->sym.name)){
-                            $$->sym = newtmp();
-                        }else{
                             $$->sym = $2->sym;
+                        }else{
+                            $$->sym = newtmp();
                         }
                         cout << "term => -expr\n";
                         emit(uminus,$2,NULL,$$,-1,yylineno);}
 	    | NOT expr {$$ =newexpr(boolexpr_e);
                         if(istempname($2->sym.name)){
-                            $$->sym = newtmp();
-                        }else{
                             $$->sym = $2->sym;
+                        }else{
+                            $$->sym = newtmp();
                         }
                         if($2->type != boolexpr_e){
                             $2->truequad = nextquad();
@@ -412,9 +412,9 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
                                 emit(add,$2,newexpr_constnum(1), $2, -1, yylineno);
                                 $$ = newexpr(arithexp_e);
                                 if(istempname($2->sym.name)){
-                                    $$->sym = newtmp();
-                                }else{
                                     $$->sym = $2->sym;
+                                }else{
+                                    $$->sym = newtmp();
                                 }
                                 emit(assign, $2, NULL, $$, -1, yylineno);
                             }
@@ -438,9 +438,9 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
                             check_arith($1);
                             $$ = newexpr(var_e);
                             if(istempname($1->sym.name)){
-                                $$->sym = newtmp();
-                            }else{
                                 $$->sym = $1->sym;
+                            }else{
+                                $$->sym = newtmp();
                             }
                             if($1->type == tableitem_e){
                                 expr* val = emit_iftableitem($1);
@@ -478,9 +478,9 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
                                 emit(sub,$2,newexpr_constnum(1), $2, -1, yylineno);
                                 $$ = newexpr(arithexp_e);
                                 if(istempname($2->sym.name)){
-                                    $$->sym = newtmp();
-                                }else{
                                     $$->sym = $2->sym;
+                                }else{
+                                    $$->sym = newtmp();
                                 }
                                 emit(assign, $2, NULL, $$, -1, yylineno);
                             }
@@ -504,9 +504,9 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
                             check_arith($1);
                             $$ = newexpr(var_e);
                             if(istempname($1->sym.name)){
-                                $$->sym = newtmp();
-                            }else{
                                 $$->sym = $1->sym;
+                            }else{
+                                $$->sym = newtmp();
                             }
                             if($1->type == tableitem_e){
                                 expr* val = emit_iftableitem($1);

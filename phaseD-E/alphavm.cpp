@@ -53,3 +53,16 @@ avm_memcell *avm_translate_operand(vmarg *arg){
     }
 }
 
+void avm_calllibfunc(string id){
+    libraru_func_t f = avm_getlibraryfunc(id);
+    if(!f){
+        avm_error("unsupported lib func");
+        executionFinished=1;
+    }else{
+        topsp=top;
+        totalActuals=0;
+        (*f)();
+        if(!executionFinished) execute_funcexit(vector<instruction>);
+    }
+}
+

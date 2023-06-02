@@ -25,6 +25,11 @@ typedef struct avm_memcell {
     } data;
 } avm_memcell;
 
+
+typedef void (*library_func_t)();
+library_func_t avm_getlibraryfunc(string id);
+void avm_calllibfunc(string id);
+
 avm_memcell *avm_translate_operand(vmarg *arg);
 
 void execute_assign(instruction t); 
@@ -79,4 +84,42 @@ execute_func_t executeFuncs[]{
     execute_tablesetelem, 
     execute_nop, 
     execute_jump
+};
+
+void avm_error(string v){
+	printf("%s",v.c_str());
+	exit(0);
+}
+void avm_warning(string v){
+	printf("%s",v.c_str());
+}
+
+double add_impl( double x, double y ){
+	return x+y;
+}
+
+double sub_impl( double x, double y ){
+	return x-y;
+}
+
+double mul_impl( double x, double y ){
+	return x*y;
+}
+
+double div_impl( double x, double y ){
+	if(y == 0){avm_error("Error:Division with zero attempted.\n");}
+	return x/y;
+}
+
+double mod_impl( double x, double y ){
+	if(y == 0){avm_error("Error:Division with zero attempted.\n");}
+	return (( unsigned ) x ) % (( unsigned ) y );
+}
+
+arithmetic_func_t arithmeticFuncs[] ={
+	add_impl,
+	sub_impl,
+	mul_impl,
+	div_impl,
+	mod_impl
 };
