@@ -57,6 +57,34 @@ void execute_tablesetelem(instruction t);
 void execute_nop(instruction t);
 void execute_jump(instruction t);
 
+typedef void (*execute_func_t)(instruction*);
+
+void execute_assign (instruction *instr);
+void execute_arithmetic(instruction* instr);
+void execute_add (instruction* instr);
+void execute_sub (instruction* instr);
+void execute_mul (instruction* instr);
+void execute_div (instruction* instr);
+void execute_mod (instruction* instr);
+void execute_uminus (instruction* instr);
+void execute_and (instruction* instr);
+void execute_or (instruction* instr);
+void execute_not (instruction* instr);
+void execute_jeq (instruction* instr);
+void execute_jne (instruction* instr);
+void execute_jle (instruction* instr);
+void execute_jge (instruction* instr);
+void execute_jlt (instruction* instr);
+void execute_jgt (instruction* instr);
+void execute_call (instruction* instr);
+void execute_pusharg (instruction* instr);
+void execute_funcenter (instruction* instr);
+void execute_funcexit (instruction* instr);
+void execute_newtable (instruction* instr);
+void execute_tablegetelem (instruction* instr);
+void execute_tablesetelem (instruction* instr);
+void execute_nop (instruction *instr);
+
 execute_func_t executeFuncs[]{
     execute_assign,   
     execute_add,  
@@ -134,4 +162,52 @@ void avm_registerlibfunc(string id, library_func_t addr);
 void libfunc_typeof();
 void libfunc_totalarguments();
 
-void execute_arithmetic(instruction* instr);
+
+typedef bool (*equality_func_t)(avm_memcell*, avm_memcell*);
+
+void execute_jump(instruction *instr);
+
+int avm_get_envvalue(int i);
+
+void avm_push_envvalue(int val);
+
+typedef void (*memclear_func_t)(avm_memcell*);
+
+void memclear_string (avm_memcell *m);
+void memclear_table (avm_memcell *m);
+
+static memclear_func_t memclearFuncs[] = {
+    NULL,
+    memclear_string,
+    NULL,
+    memclear_table,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+
+void avm_assign (avm_memcell *lv, avm_memcell *rv);
+
+typedef string (*tostring_func_t) (avm_memcell*);
+string number_tostring (avm_memcell*);
+string string_tostring (avm_memcell*);
+string bool_tostring (avm_memcell*);
+string table_tostring (avm_memcell*);
+string userfunc_tostring (avm_memcell*);
+string libfunc_tostring (avm_memcell*);
+string nil_tostring (avm_memcell*);
+string undef_tostring (avm_memcell*);
+
+tostring_func_t tostringFuncs[] = {
+    number_tostring,
+    string_tostring,
+    bool_tostring,
+    table_tostring,
+    userfunc_tostring,
+    libfunc_tostring,
+    nil_tostring,
+    undef_tostring
+};
+
+userfunc* avm_getfuncinfo(int address);
