@@ -179,7 +179,9 @@ void make_operand(expr* e, vmarg* arg){
     
     if(e == NULL) return;
     
-    
+    cout << "name:"<<e->sym.name << endl;
+    cout <<"type:"<<e->type << endl;
+    cout <<"scope:"<<e->sym.scopespace << endl;
     switch (e->type)
     {
     case var_e: 
@@ -465,6 +467,7 @@ void patch_incomplete_jumps(){
 void generate_all () {
     unsigned int i;
     for(i = 0; i< currQuad; ++i){
+        cout << "op:"<<quads.at(i).op <<endl;
         (*generators[quads.at(i).op])(&quads.at(i));
     }
     patch_incomplete_jumps();

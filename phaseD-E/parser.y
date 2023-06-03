@@ -1,10 +1,11 @@
 %{
-    #include <iostream>
-    #include <string>
-    // #include "symbol_table.h"
-    #include "icode.h"
-    #include <list>
-    #include <stack>
+    // #include <iostream>
+    // #include <string>
+    // // #include "symbol_table.h"
+    // #include "icode.h"
+    // #include <list>
+    // #include <stack>
+    #include "target.hpp"
 
     /* #define YY_DECL int alpha_yylex (void* yylval)*/
     extern int yylex(void);
@@ -370,7 +371,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
                             $$->sym = newtmp();
                         }
                         cout << "term => -expr\n";
-                        emit(uminus,$2,NULL,$$,-1,yylineno);}
+                        emit(mul,$2,newexpr_constnum(-1),$$,-1,yylineno);}
 	    | NOT expr {$$ =newexpr(boolexpr_e);
                         if(istempname($2->sym.name)){
                             $$->sym = $2->sym;
@@ -387,7 +388,7 @@ term:   LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {$$=$2;
                         $$->truequad = $2->falsequad;
                         $$->falsequad = tmp;
                         cout << "term => !expr\n";
-                        emit(notc,$2,NULL,$$,0,yylineno);}
+                        }
 		| PLUS_PLUS lvalue {
                             string name = $2->sym.name;
                             int i = scope;
@@ -820,6 +821,7 @@ func_prefix: FUNCTION ID{
                   inccurrscopeoffset();
                   ste.scopespace = currscopespace();
                   ste.symt=programfunc_s;
+                  ste.taddress = nextquad();
                   insert(ste);
                   $$ = &ste;
                   emit(funcstart,NULL,NULL,lvalue_exp(ste),0,yylineno);
@@ -1052,6 +1054,9 @@ void insertLibFuncs(string name){
     ste.line = 0;
     ste.isActive=true;
     ste.symt=libraryfunc_s;
+    ste.taddress = 0;
+    ste.scopespace = currscopespace();
+    ste.offset = 0;
     insert(ste);
 }
 
@@ -1091,5 +1096,10 @@ int main (int argc, char** argv) {
     insertLibFuncs("sin");
     yyparse();
     print_quads();
+    cout <<"1\n";
+    generate_all();
+    cout <<"2\n";
+    print_instructions();
+    cout <<"3\n";
     return 0;
 }

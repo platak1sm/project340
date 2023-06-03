@@ -16,10 +16,6 @@ typedef enum iopcode
     mul,
     divc,
     mod,
-    uminus,
-    andc,
-    orc,
-    notc,
     if_eq,
     if_noteq,
     if_lesseq,
@@ -35,7 +31,8 @@ typedef enum iopcode
     tablecreate,
     tablegetelem,
     tablesetelem,
-    jump
+    jump,
+    nop
 } iopcode;
 
 typedef enum expr_t
