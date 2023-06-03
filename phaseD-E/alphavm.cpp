@@ -18,6 +18,8 @@ vector<userfunc*> userFuncs;
 vector<instruction*> code;
 avm_memcell ax, bx, cx;
 avm_memcell retval;
+unsigned    codeSize;
+instruction* code=(instruction*) 0;
 
 int top, topsp;
 int totalActuals = 0;
@@ -39,17 +41,17 @@ avm_memcell *avm_translate_operand(vmarg *arg, avm_memcell* reg){
     case retval_a: return &retval;
     case number_a:{
         reg->type=number_m; 
-       // reg->data.numVal=
+        //reg->data.numVal=const_getnumber(arg->val);
         return reg;
     }
     case string_a:{
         reg->type=string_m; 
-        //reg->data.strVal=
+        //reg->data.strVal=const_getstring(arg->val);
         return reg;
     }
     case bool_a:{
         reg->type=bool_m; 
-        //reg->data.boolVal=
+        //reg->data.boolVal=arg->val;
         return reg;
     }
     case nil_a: {
@@ -71,6 +73,7 @@ avm_memcell *avm_translate_operand(vmarg *arg, avm_memcell* reg){
     default:
         break;
     }
+    return NULL;
 }
 
 void avm_calllibfunc(string id){
@@ -153,6 +156,32 @@ void libfunc_totalarguments(){
     }else{
         retval.type=number_m;
         retval.data.numVal=avm_get_envvalue(p_topsp + AVM_NUMACTUALS_OFFSET);
+    }
+}
+
+void execute_cycle (void) {
+    if(executionFinished)
+    return;
+    if (pc >= codeSize) {
+        executionFinished = 1;
+        return;
+    }
+    else{
+        if(pc==AVM_ENDING_PC){
+            executionFinished=true;
+            return;
+        }
+        else{
+            assert(pc<AVM_ENDING_PC);
+            instruction* instr = code + pc;
+            assert(instr->opcode>=0 && instr->opcode <=AVM_MAX_INSTRUCTIONS);
+            if(instr->srcLine)
+            currLine=instr->srcLine;
+            unsigned oldpc=pc;
+            (*executeFuncs[instr->opcode])(instr);
+            if(pc==oldpc)
+            ++pc;
+        }
     }
 }
 
@@ -244,7 +273,7 @@ string number_tostring(avm_memcell* m){
 
 }
 string string_tostring(avm_memcell* m){
-	return strdup(m->data.strVal);
+	return strdup((m->data).strVal);
 }
 
 string bool_tostring(avm_memcell* m){
