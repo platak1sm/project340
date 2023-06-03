@@ -15,7 +15,7 @@ vector<double> numConst;
 vector<string> stringConst;
 vector<string> libFuncConst;
 vector<userfunc*> userFuncs;
-vector<instruction*> code;
+//vector<instruction*> code;
 avm_memcell ax, bx, cx;
 avm_memcell retval;
 unsigned    codeSize;
