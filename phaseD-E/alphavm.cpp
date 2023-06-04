@@ -1,16 +1,16 @@
 #include "alphavm.h"
-#include "parser.hpp"
+
 
 #define AVM_STACKSIZE 4096
 #define AVM_MAX_INSTRUCTIONS (unsigned) nop_v
 #define AVM_WIPEOUT(m) memset(&(m), 0, sizeof(m))
-#define AVM_NUMACTUALS_OFFSET +4
-#define AVM_SAVEDPC_OFFSET +3
-#define AVM_SAVEDTOP_OFFSET +2
-#define AVM_SAVEDTOPSP_OFFSET +1
+#define AVM_NUMACTUALS_OFFSET 4
+#define AVM_SAVEDPC_OFFSET 3
+#define AVM_SAVEDTOP_OFFSET 2
+#define AVM_SAVEDTOPSP_OFFSET 1
 #define AVM_STACKENV_SIZE 4
 
-avm_memcell stack[AVM_STACKSIZE];
+
 vector<double> numConst;
 vector<string> stringConst;
 vector<string> libFuncConst;
@@ -21,6 +21,8 @@ avm_memcell retval;
 unsigned    codeSize;
 //instruction* code=(instruction*) 0;
 
+avm_memcell stackavm[AVM_STACKSIZE];
+
 int top, topsp;
 int totalActuals = 0;
 int currLine = 0;
@@ -30,14 +32,14 @@ int pc = 0;
 #define AVM_ENDING_PC codeSize
 
 
-avm_memcell *avm_translate_operand(vmarg *arg, avm_memcell* reg){
+avm_memcell* avm_translate_operand(vmarg *arg, avm_memcell* reg){
     if (arg==NULL) return NULL;
 
     switch (arg->type)
     {
-    case global_a: return &stack[AVM_STACKSIZE-1-arg->val];
-    case local_a: return &stack[topsp-arg->val];
-    case formal_a: return &stack[topsp+AVM_STACKENV_SIZE+1+arg->val];
+    case global_a: return &stackavm[AVM_STACKSIZE-1-arg->val];
+    case local_a: return &stackavm[topsp-arg->val];
+    case formal_a: return &stackavm[topsp+AVM_STACKENV_SIZE+1+arg->val];
     case retval_a: return &retval;
     case number_a:{
         reg->type=number_m; 
@@ -101,7 +103,7 @@ void execute_funcexit(instruction t){
     top= avm_get_envvalue(topsp + AVM_SAVEDTOP_OFFSET);
     pc=avm_get_envvalue(topsp + AVM_SAVEDPC_OFFSET);
     topsp=avm_get_envvalue(topsp + AVM_SAVEDTOPSP_OFFSET);
-    while  (oldTop++<=top) avm_memcellclear(&stack[oldTop]);
+    while  (oldTop++<=top) avm_memcellclear(&stackavm[oldTop]);
 }
 
 void execute_funcenter(instruction t){
@@ -117,7 +119,7 @@ unsigned avm_totalactuals(){
 
 avm_memcell *avm_getactual(unsigned i){
     assert(i<avm_totalactuals());
-    return &stack[topsp + AVM_STACKENV_SIZE];
+    return &stackavm[topsp + AVM_STACKENV_SIZE];
 }
 
 void libfunc_print(){
@@ -188,7 +190,7 @@ void execute_arithmetic(instruction* instr){
     avm_memcell *lv=avm_translate_operand(&instr->result, (avm_memcell*) 0);
     avm_memcell *rv1=avm_translate_operand(&instr->arg1, &ax);
     avm_memcell *rv2=avm_translate_operand(&instr->arg2, &bx);
-    assert(lv && (&stack[0] <= lv && &stack[top] > lv || lv==&retval));
+    assert(lv && (&stackavm[0] <= lv && &stackavm[top] > lv || lv==&retval));
     assert(rv1 && rv2);
     if(rv1->type !=number_m || rv2->type != number_m){
         avm_error("not a number in arithmetic");
@@ -215,13 +217,13 @@ void execute_jump(instruction *instr) {
 }
 
 int avm_get_envvalue(int i){
-    int val = (int) stack[i].data.numVal;
+    int val = (int) stackavm[i].data.numVal;
     return val;
 }
 
 void avm_push_envvalue(int val){
-	stack[top].type = number_m;
-	stack[top].data.numVal = val;
+	stackavm[top].type = number_m;
+	stackavm[top].data.numVal = val;
 	//avm_dec_top();
 }
 
@@ -264,11 +266,11 @@ void avm_assign (avm_memcell *lv, avm_memcell *rv) {
 
 string number_tostring(avm_memcell* m){
 	assert(m->type == number_m);
-	return strdup(to_string(m->data.numVal).c_str());
+	return to_string(m->data.numVal).c_str();
 
 }
 string string_tostring(avm_memcell* m){
-	return strdup((m->data).strVal);
+	return m->data.strVal;
 }
 
 string bool_tostring(avm_memcell* m){
@@ -288,7 +290,7 @@ string userfunc_tostring(avm_memcell* m){
 }
 
 string libfunc_tostring(avm_memcell* m){
-	 return strdup(m->data.libfuncVal);
+	 return m->data.libfuncVal;
 }
 
 string nil_tostring(avm_memcell* m){
@@ -305,3 +307,8 @@ userfunc* avm_getfuncinfo(int address) {
 	printf("Not found\n");
 	return NULL;
 } 
+
+/* string avm_type2str (unsigned i) {
+    assert(number_m <= i and i <= undef_m);
+    return typeStrings[i];
+}  */
