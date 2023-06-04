@@ -15,11 +15,11 @@ vector<double> numConst;
 vector<string> stringConst;
 vector<string> libFuncConst;
 vector<userfunc*> userFuncs;
-//vector<instruction*> code;
+vector<instruction*> code;
 avm_memcell ax, bx, cx;
 avm_memcell retval;
 unsigned    codeSize;
-instruction* code=(instruction*) 0;
+//instruction* code=(instruction*) 0;
 
 int top, topsp;
 int totalActuals = 0;
@@ -205,10 +205,6 @@ void execute_arithmetic(instruction* instr){
 void execute_assign (instruction *instr) {
     avm_memcell *lv = avm_translate_operand(&instr->result, NULL);
     avm_memcell *rv = avm_translate_operand(&instr->arg1, &ax);
-
-    // TODO not sure about those checks
-    // assert(lv and (&stack[bp] >= lv and lv > &stack[sp]) or lv == &retval);
-    // assert(rv and (&stack[bp] >= rv and rv > &stack[sp]));
     avm_assign(lv, rv);
 }
 
