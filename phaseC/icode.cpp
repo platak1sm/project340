@@ -357,22 +357,6 @@ void match_op(iopcode code)
         strcpy(s_code, "mod");
         // printf("mul");
         break;
-    case uminus:
-        // printf("uminus");
-        strcpy(s_code, "uminus");
-        break;
-    case andc:
-        // printf("b_and");
-        strcpy(s_code, "and");
-        break;
-    case orc:
-        // printf("b_or");
-        strcpy(s_code, "or");
-        break;
-    case notc:
-        // printf("b_not");
-        strcpy(s_code, "not");
-        break;
     case if_eq:
         // printf("if_eq");
         strcpy(s_code, "if_eq");

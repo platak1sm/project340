@@ -137,7 +137,16 @@ string avm_tostring(avm_memcell* m){
 void avm_registerlibfunc(string id, library_func_t addr){
     
 }
-
+void avm_memcellclear (avm_memcell *m) {
+    if (m->type == undef_m) {
+        return;
+    }
+    memclear_func_t f = memclearFuncs[m->type];
+    if (f) {
+        f(m);
+    }
+    m->type = undef_m;
+}
 void libfunc_typeof(){
     unsigned n= avm_totalactuals();
     if(n!=1) avm_error("one argument expected in 'typeof'!");
@@ -227,16 +236,7 @@ void avm_push_envvalue(int val){
 	//avm_dec_top();
 }
 
-void avm_memcellclear (avm_memcell *m) {
-    if (m->type == undef_m) {
-        return;
-    }
-    memclear_func_t f = memclearFuncs[m->type];
-    if (f) {
-        f(m);
-    }
-    m->type = undef_m;
-}
+
 
 void avm_assign (avm_memcell *lv, avm_memcell *rv) {
     if (lv == rv) {
