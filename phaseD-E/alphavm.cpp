@@ -173,12 +173,11 @@ void execute_cycle (void) {
         }
         else{
             assert(pc<AVM_ENDING_PC);
-            instruction* instr = code + pc;
-            assert(instr->opcode>=0 && instr->opcode <=AVM_MAX_INSTRUCTIONS);
-            if(instr->srcLine)
-            currLine=instr->srcLine;
+            assert(code[pc]->opcode>=0 && code[pc]->opcode <=AVM_MAX_INSTRUCTIONS);
+            if(code[pc]->srcLine)
+            currLine=code[pc]->srcLine;
             unsigned oldpc=pc;
-            (*executeFuncs[instr->opcode])(instr);
+            (*executeFuncs[code[pc]->opcode])(code[pc]);
             if(pc==oldpc)
             ++pc;
         }
