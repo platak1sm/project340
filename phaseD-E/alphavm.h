@@ -3,14 +3,14 @@
 struct avm_table;
 
 typedef enum avm_memcell_t{
-    number_m    = 0,
-    string_m    = 1,
-    bool_m      = 2,
-    table_m     = 3,
-    userfunc_m  = 4,
-    libfunc_m   = 5,
-    nil_m       = 6,
-    undef_m     = 7
+    number_m,
+    string_m,
+    bool_m,
+    table_m,
+    userfunc_m,
+    libfunc_m,
+    nil_m,
+    undef_m
 } avm_memcell_t;
 
 typedef struct avm_memcell {
