@@ -11,3 +11,4 @@ clean:
 	rm symbol_table.h.gch
 	rm icode.h.gch
 	rm target.hpp.gch
+	rm alphavm.h.gch
