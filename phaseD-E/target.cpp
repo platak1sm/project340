@@ -194,10 +194,10 @@ void make_operand(expr* e, vmarg* arg){
         arg->val = e->sym.offset;
         switch (e->sym.scopespace)
         {
-            case programvar: arg->type = global_a; break;
-            case functionlocal: arg->type = local_a; break;
-            case formalarg: arg->type = formal_a; break;
-            default: assert(0);
+            case programvar: {arg->type = global_a; break;}
+            case functionlocal: {arg->type = local_a; break;}
+            case formalarg: {arg->type = formal_a; break;}
+            default: {assert(0); break;}
         }
         break;
     }
