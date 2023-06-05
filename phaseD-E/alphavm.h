@@ -18,11 +18,11 @@ typedef struct avm_memcell {
     
     union{
         double numVal;
-        string strVal;
+        char* strVal;
         bool boolVal;
         avm_table *tableVal;
         unsigned userfuncVal;
-        string libfuncVal;
+        char* libfuncVal;
     } data;
 
 } avm_memcell;
@@ -75,7 +75,7 @@ void execute_tablegetelem (instruction* instr);
 void execute_tablesetelem (instruction* instr);
 void execute_nop (instruction *instr);
 
-execute_func_t executeFuncs[]{
+execute_func_t executeFuncs[]={
     execute_assign,   
     execute_add,  
     execute_sub,

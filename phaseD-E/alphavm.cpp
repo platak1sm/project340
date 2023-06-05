@@ -14,7 +14,7 @@
 vector<double> numConst;
 vector<string> stringConst;
 vector<string> libFuncConst;
-vector<userfunc*> userFuncs;
+vector<userfunc*> avmuserFuncs;
 vector<instruction*> code;
 avm_memcell ax, bx, cx;
 avm_memcell retval;
@@ -91,6 +91,17 @@ void avm_calllibfunc(string id){
     }
 }
 
+void avm_memcellclear (avm_memcell *m) {
+    if (m->type == undef_m) {
+        return;
+    }
+    memclear_func_t f = memclearFuncs[m->type];
+    if (f) {
+        f(m);
+    }
+    m->type = undef_m;
+}
+
 void avm_callsaveenvironment(){
     avm_push_envvalue(totalActuals);
     avm_push_envvalue(pc+1);
@@ -121,7 +132,10 @@ avm_memcell *avm_getactual(unsigned i){
     assert(i<avm_totalactuals());
     return &stackavm[topsp + AVM_STACKENV_SIZE];
 }
-
+string avm_tostring(avm_memcell* m){
+	assert(m->type >= 0 and m->type <= undef_m);
+	return tostringFuncs[m->type](m);
+}
 void libfunc_print(){
     unsigned n= avm_totalactuals();
     for (unsigned i=0; i<n; i++){
@@ -129,24 +143,38 @@ void libfunc_print(){
     }
 }
 
-string avm_tostring(avm_memcell* m){
-	assert(m->type >= 0 and m->type <= undef_m);
-	return tostringFuncs[m->type](m);
-}
+
 
 void avm_registerlibfunc(string id, library_func_t addr){
     
 }
-void avm_memcellclear (avm_memcell *m) {
-    if (m->type == undef_m) {
-        return;
-    }
-    memclear_func_t f = memclearFuncs[m->type];
-    if (f) {
-        f(m);
-    }
-    m->type = undef_m;
-}
+
+void memclear_string (avm_memcell *m){}
+void memclear_table (avm_memcell *m){}
+void execute_funcexit (instruction* instr){}
+void execute_or (instruction* instr){}
+void execute_add (instruction* instr){}
+void execute_and (instruction* instr){}
+void execute_div (instruction* instr){}
+void execute_jeq (instruction* instr){}
+void execute_jne (instruction* instr){}
+void execute_jle (instruction* instr){}
+void execute_jge (instruction* instr){}
+void execute_jlt (instruction* instr){}
+void execute_jgt (instruction* instr){}
+void execute_mod (instruction* instr){}
+void execute_mul (instruction* instr){}
+void execute_nop (instruction *instr){}
+void execute_not (instruction* instr){}
+void execute_sub (instruction* instr){}
+void execute_call (instruction* instr){}
+void execute_uminus (instruction* instr){}
+void execute_pusharg (instruction* instr){}
+void execute_newtable (instruction* instr){}
+void execute_tablegetelem (instruction* instr){}
+void execute_tablesetelem (instruction* instr){}
+void execute_funcenter (instruction* instr){}
+library_func_t avm_getlibraryfunc(string id){}
 void libfunc_typeof(){
     unsigned n= avm_totalactuals();
     if(n!=1) avm_error("one argument expected in 'typeof'!");
@@ -303,7 +331,7 @@ string undef_tostring(avm_memcell* m){
 }
 
 userfunc* avm_getfuncinfo(int address) {
-	for(auto i : userFuncs) if(i->address == address) return i;
+	for(auto i : avmuserFuncs) if(i->address == address) return i;
 	printf("Not found\n");
 	return NULL;
 } 
