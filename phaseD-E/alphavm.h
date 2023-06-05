@@ -13,7 +13,7 @@ typedef enum avm_memcell_t{
     undef_m
 } avm_memcell_t;
 
-typedef struct avm_memcell {
+typedef struct avm_memcell{
     avm_memcell_t type;
     
     union{
