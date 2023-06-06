@@ -147,10 +147,22 @@ void avm_callsaveenvironment();
 unsigned avm_totalactuals();
 
 avm_memcell *avm_getactual(unsigned i);
-void libfunc_print();
+// void libfunc_print();
 void avm_registerlibfunc(string id, library_func_t addr);
+// void libfunc_typeof();
+// void libfunc_totalarguments();
+void libfunc_print();
 void libfunc_typeof();
 void libfunc_totalarguments();
+void objectmemberkeys();
+void objecttotalmembers();
+void objectcopy();
+void input();
+void libfunc_argument();
+void libfunc_strtonum(void);
+void libfunc_sqrt(void);
+void libfunc_cos(void);
+void libfunc_sin(void);
 
 
 typedef bool (*equality_func_t)(avm_memcell*, avm_memcell*);

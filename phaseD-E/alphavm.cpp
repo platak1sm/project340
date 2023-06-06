@@ -9,6 +9,7 @@
 #define AVM_SAVEDTOP_OFFSET 2
 #define AVM_SAVEDTOPSP_OFFSET 1
 #define AVM_STACKENV_SIZE 4
+#define PI 3.141592654
 
 
 vector<double> numConst;
@@ -118,6 +119,7 @@ void execute_funcexit(instruction t){
 }
 
 void execute_funcenter(instruction t){
+    // avm_memcell* func = avm_translate_operand(t.result,)
     totalActuals=0;
     userfunc *funcInfo= avm_getfuncinfo(pc);
     topsp=top;
@@ -136,12 +138,333 @@ string avm_tostring(avm_memcell* m){
 	assert(m->type >= 0 and m->type <= undef_m);
 	return tostringFuncs[m->type](m);
 }
+// void libfunc_print(){
+//     unsigned n= avm_totalactuals();
+//     for (unsigned i=0; i<n; i++){
+//         string s = avm_tostring(avm_getactual(i));
+//     }
+// }
 void libfunc_print(){
-    unsigned n= avm_totalactuals();
-    for (unsigned i=0; i<n; i++){
-        string s = avm_tostring(avm_getactual(i));
+    unsigned n = avm_totalactuals();
+    for(unsigned i = 0; i<n;i++){
+        
+        char* s = &avm_tostring(avm_getactual(i))[0];
+        
+        puts(s);
+        free(s);
     }
 }
+
+void avm_error(char* format,...){
+    va_list args;
+    fprintf(stderr,"\033[0;31mError at line %d: \033[0m",currLine);
+    va_start(args, format);
+    int rc = vfprintf(stderr, format, args);
+    fprintf(stderr,"\n");
+    va_end(args);
+    executionFinished = 1;
+}
+
+void avm_warning(char* format,...){
+    va_list args;
+    fprintf(stderr,"\033[0;33mWarning at line %d: \033[0m",currLine);
+    va_start(args, format);
+    int rc = vfprintf(stderr, format, args);
+    fprintf(stderr,"\n");
+    va_end(args);
+}
+
+char* avm_memcell_type_to_string(avm_memcell_t t){
+    switch (t)
+    {
+    case number_m:  return "number";
+    case string_m:  return "string";
+    case bool_m:    return "boolean";
+    case userfunc_m:return "userfunction";
+    case libfunc_m: return "libraryfunction";
+    case table_m:   return "table";
+    case nil_m:     return "nil";
+    case undef_m:   return "undefined";
+    default:
+        assert(0);
+    }
+}
+
+void libfunc_typeof(){
+    unsigned n = avm_totalactuals();
+    if(n != 1) {
+        avm_error("typeof takes 1 paramter, %d were given",n);
+    }else{
+        char *s = avm_memcell_type_to_string(avm_getactual(n-1)->type);
+        retval.type = string_m;
+        retval.data.strVal = strdup(s);
+    }
+}
+
+
+void libfunc_argument(void){
+    unsigned p_topsp = avm_get_envvalue(topsp + AVM_SAVEDTOPSP_OFFSET);
+    unsigned n = avm_totalactuals();
+    if(n != 1) {
+        avm_error("'argument' takes 1 paramter, %d were given",n);
+    }
+    avm_memcellclear(&retval);
+    if(!p_topsp) {
+        avm_warning("'argument' called outside a function!");
+        retval.type = nil_m;
+    }else if(avm_getactual(0)->type != number_m){
+        avm_warning("'argument' needs number as argument!");
+        retval.type = nil_m;
+    }else
+    {
+        int offset = avm_getactual(0)->data.numVal;
+        printf("OFFSET as arg %d\n",offset);
+        if(offset >= avm_get_envvalue(p_topsp + AVM_NUMACTUALS_OFFSET)){
+            retval.type = nil_m;
+            return;
+        }
+        retval.type = stackavm[p_topsp+AVM_NUMACTUALS_OFFSET+1+offset].type;
+        retval.data = stackavm[p_topsp+AVM_NUMACTUALS_OFFSET+1+offset].data;
+    }
+}
+
+void libfunc_strtonum(void){
+    unsigned n = avm_totalactuals();
+    if(n != 1) {
+        avm_error("'strtonum' takes 1 paramter, %d were given",n);
+    }
+    avm_memcellclear(&retval);
+    if(avm_getactual(0)->type != string_m){
+        avm_warning("'strtonum' needs string as argument!");
+        retval.type = nil_m;
+    }else
+    {
+        char* str = avm_getactual(0)->data.strVal;
+        char* other;
+        double ret = 0;
+        ret = strtod(str, &other);
+        if(ret == 0){
+            retval.type = nil_m;
+        }else{
+            retval.type = number_m;
+            retval.data.numVal = ret;
+        }
+    }
+}
+
+void libfunc_sqrt(void){
+    unsigned n = avm_totalactuals();
+    if(n != 1) {
+        avm_error("'sqrt' takes 1 paramter, %d were given",n);
+    }
+    avm_memcellclear(&retval);
+    if(avm_getactual(0)->type != number_m){
+        avm_warning("'sqrt' needs number as argument!");
+        retval.type = nil_m;
+    }else
+    {
+        double num = avm_getactual(0)->data.numVal;
+        if(num<0){
+            retval.type = nil_m;
+        }else{
+            retval.type = number_m;
+            retval.data.numVal = sqrt(num);
+        }
+    }
+}
+
+void libfunc_cos(void){
+    unsigned n = avm_totalactuals();
+    if(n != 1) {
+        avm_error("'cos' takes 1 paramter, %d were given",n);
+    }
+    avm_memcellclear(&retval);
+    if(avm_getactual(0)->type != number_m){
+        avm_warning("'cos' needs number as argument!");
+        retval.type = nil_m;
+    }else
+    {
+        double angle =avm_getactual(0)->data.numVal;
+        angle = (angle * PI) / 180;
+        retval.type = number_m;
+        retval.data.numVal = cos(angle);
+        
+    }
+}
+
+void libfunc_sin(void){
+    unsigned n = avm_totalactuals();
+    if(n != 1) {
+        avm_error("'cos' takes 1 paramter, %d were given",n);
+    }
+    avm_memcellclear(&retval);
+    if(avm_getactual(0)->type != number_m){
+        avm_warning("'cos' needs number as argument!");
+        retval.type = nil_m;
+    }else
+    {
+        double angle =avm_getactual(0)->data.numVal;
+        angle = (angle * PI) / 180;
+        retval.type = number_m;
+        retval.data.numVal = sin(angle);
+        
+    }
+}
+// void objectmemberkeys(){
+//     avm_memcellclear(&retval);
+//     unsigned n = avm_totalactuals();
+//     if(n != 1) {
+//         avm_error("objectmemberkeys takes 1 paramter, %d were given",n);
+//     }else{
+//         avm_memcell* m = avm_getactual(0);
+//         // m->data.tableVal->
+//         IndexList* tmp = m->data.tableVal->indeces;
+        
+//         avm_memcell* value = (avm_memcell*)malloc(sizeof(avm_memcell));
+//         value->type = number_m;
+//         retval.type = table_m;
+//         retval.data.tableVal = (avm_table*)malloc(sizeof(avm_table));
+//         int i = 0;
+//         retval.type = table_m;
+
+//         while(tmp!=NULL){
+//             value->data.numVal = i;
+//             i++;
+//             avm_memcell* t = tmp->key;
+//             t->type = tmp->k_type;
+//             printf("K %s %d\n",t->data.strVal, t->type);
+//             avm_tablesetelem(retval.data.tableVal,value,t);
+            
+//             tmp = tmp->next;
+//         }
+//     }
+// }
+
+// void objecttotalmembers(){
+//     avm_memcellclear(&retval);
+//     unsigned n = avm_totalactuals();
+//     if(n != 1) {
+//         avm_error("objecttotalmembers takes 1 paramter, %d were given",n);
+//     }else{
+//         avm_memcell* m = avm_getactual(n-1);
+//         int length = 0;
+//         IndexList* tmp = m->data.tableVal->indeces;
+//         while(tmp!=NULL){
+//             length++;
+//             tmp = tmp->next;
+//         }
+//         retval.data.numVal = length;
+//         retval.type = number_m;
+//     }
+// }
+
+// void push(struct copyTables** head_ref, avm_table* m) 
+// { 
+//     /* 1. allocate node */
+//     struct copyTables* new_node = (struct copyTables*) malloc(sizeof(struct copyTables)); 
+   
+//     /* 2. put in the data  */
+//     new_node->m  = m; 
+   
+//     /* 3. Make next of new node as head */
+//     new_node->next = (*head_ref); 
+   
+//     /* 4. move the head to point to the new node */
+//     (*head_ref)    = new_node; 
+// } 
+
+// void objectcopy(){
+//     avm_memcellclear(&retval);
+//     unsigned n = avm_totalactuals();
+//     if(n != 1) {
+//         avm_error("objectcopy takes 1 paramter, %d were given",n);
+//     }else{
+//         avm_memcell* m = avm_getactual(n-1);
+        
+//         IndexList* tmp = m->data.tableVal->indeces;
+//         retval.data.tableVal = (avm_table*)malloc(sizeof(avm_table));
+//         retval.type = table_m;
+
+//         while(tmp!=NULL){
+//             tmp->key->type = tmp->k_type;
+//             tmp->value->type = tmp->v_type;
+//             avm_tablesetelem(retval.data.tableVal,tmp->key,tmp->value);
+//             tmp = tmp->next;
+//         }
+//         push(&retval.data.tableVal->tables,m->data.tableVal);
+//         push(&m->data.tableVal->tables,retval.data.tableVal);
+//     }
+// }
+int is_valid_int(const char *str)
+{
+   // Handle negative numbers.
+   //
+   if (*str == '-')
+      ++str;
+
+   // Handle empty string or just "-".
+   //
+   if (!*str)
+      return 0;
+
+   // Check for non-digit chars in the rest of the stirng.
+   //
+   while (*str)
+   {
+      if (!isdigit(*str) && (*str)!='.')
+         return 0;
+      else
+         ++str;
+   }
+
+   return 1;
+}
+
+void input(){
+    avm_memcellclear(&retval);
+    unsigned n = avm_totalactuals();
+    // if(n != 1) {
+    //     avm_error("typeof takes 1 paramter, %d were given",n);
+    // }else{
+        // avm_memcell* m = avm_getactual(n-1);
+        char c;
+        c = getchar();
+        int size = 1000;
+        char* buf = (char*)malloc(sizeof(char)*size);
+        int i = 0;
+        while(c!= '\n' && c!=EOF){
+            buf[i]= c;
+            i++;
+            if(i>=size){
+                buf = (char*)realloc(buf,sizeof(char)*(size+100));
+                size+=100;
+            }
+            c = getchar();
+        }
+        if(buf[0] == '"'){
+
+            retval.type = string_m;
+            retval.data.strVal = strdup(buf);
+        }
+        else if(is_valid_int(buf) == 1){
+            retval.type = number_m;
+            retval.data.numVal = atof(buf);
+        }else if(strcmp(buf,"true")==0 || strcmp(buf,"false")==0){
+            
+            retval.type = bool_m;
+            if(strcmp(buf,"true")==0)retval.data.boolVal = 1;
+            if(strcmp(buf,"false")==0)retval.data.boolVal = 0;
+            
+        }else if(strcmp(buf,"nil")==0){
+            
+            retval.type = nil_m;
+        }else{
+            retval.type = string_m;
+            retval.data.strVal = strdup(buf);
+        }
+    
+}
+
 
 
 
@@ -174,16 +497,35 @@ void execute_newtable (instruction* instr){}
 void execute_tablegetelem (instruction* instr){}
 void execute_tablesetelem (instruction* instr){}
 void execute_funcenter (instruction* instr){}
-library_func_t avm_getlibraryfunc(string id){}
-void libfunc_typeof(){
-    unsigned n= avm_totalactuals();
-    if(n!=1) avm_error("one argument expected in 'typeof'!");
-    else{
-        avm_memcellclear(&retval);
-        retval.type=string_m;
-        //retval.data.strVal=strdup(typeStrings[avm_getactual(0)->type]);
+library_func_t avm_getlibraryfunc(string id){
+    if(strcmp(id.c_str(),"print") ==0){
+        return &libfunc_print;
+    }else if(strcmp(id.c_str(),"typeof") == 0){
+        return &libfunc_typeof;
+    }else if(strcmp(id.c_str(),"totalarguments") == 0){
+        return &libfunc_totalarguments;
+    }else if(strcmp(id.c_str(),"objectmemberkeys")==0){
+        return &objectmemberkeys;
+    }else if(strcmp(id.c_str(),"objecttotalmembers")==0){
+        return &objecttotalmembers;
+    }else if(strcmp(id.c_str(),"objectcopy")==0){
+        return &objectcopy;
+    }else if(strcmp(id.c_str(),"input")==0){
+        return &input;
+    }else if(strcmp(id.c_str(),"argument") == 0){
+        return &libfunc_argument;
+    }else if(strcmp(id.c_str(),"strtonum")==0){
+        return &libfunc_strtonum;
+    }else if(strcmp(id.c_str(),"sqrt") == 0){
+        return &libfunc_sqrt;
+    }else if(strcmp(id.c_str(),"cos") == 0){
+        return &libfunc_cos;
+    }else if(strcmp(id.c_str(),"sin") == 0){
+        return &libfunc_sin;
     }
+    return 0;
 }
+
 
 void libfunc_totalarguments(){
     unsigned p_topsp=avm_get_envvalue(topsp+AVM_SAVEDTOPSP_OFFSET);
