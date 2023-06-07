@@ -182,15 +182,15 @@ static memclear_func_t memclearFuncs[] = {
 
 void avm_assign (avm_memcell *lv, avm_memcell *rv);
 
-typedef string (*tostring_func_t) (avm_memcell*);
-string number_tostring (avm_memcell*);
-string string_tostring (avm_memcell*);
-string bool_tostring (avm_memcell*);
-string table_tostring (avm_memcell*);
-string userfunc_tostring (avm_memcell*);
-string libfunc_tostring (avm_memcell*);
-string nil_tostring (avm_memcell*);
-string undef_tostring (avm_memcell*);
+typedef char* (*tostring_func_t) (avm_memcell*);
+char* number_tostring (avm_memcell*);
+char* string_tostring (avm_memcell*);
+char* bool_tostring (avm_memcell*);
+char* table_tostring (avm_memcell*);
+char* userfunc_tostring (avm_memcell*);
+char* libfunc_tostring (avm_memcell*);
+char* nil_tostring (avm_memcell*);
+char* undef_tostring (avm_memcell*);
 
 tostring_func_t tostringFuncs[] = {
     number_tostring,
@@ -211,15 +211,6 @@ bool userfunc_tobool (avm_memcell*);
 bool libfunc_tobool (avm_memcell*);
 bool nil_tobool (avm_memcell*);
 bool undef_tobool (avm_memcell*);
-tobool_func_t toboolFuncs[] = {
-    number_tobool,
-    string_tobool,
-    bool_tobool,
-    table_tobool,
-    userfunc_tobool,
-    libfunc_tobool,
-    nil_tobool,
-    undef_tobool
-};
+
 
 userfunc* avm_getfuncinfo(int address);
