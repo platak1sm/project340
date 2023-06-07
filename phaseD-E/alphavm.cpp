@@ -119,7 +119,7 @@ void execute_funcexit(instruction t){
 }
 
 void execute_funcenter(instruction t){
-    // avm_memcell* func = avm_translate_operand(t.result,)
+    avm_memcell* func = avm_translate_operand(t.result,);
     totalActuals=0;
     userfunc *funcInfo= avm_getfuncinfo(pc);
     topsp=top;
