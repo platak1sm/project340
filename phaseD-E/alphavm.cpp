@@ -330,6 +330,11 @@ string undef_tostring(avm_memcell* m){
 
 }
 
+/* string avm_tostring(avm_memcell* m){
+	assert(m->type >= 0 and m->type <= undef_m);
+	return tostringFuncs[m->type](m);
+} */
+
 userfunc* avm_getfuncinfo(int address) {
 	for(auto i : avmuserFuncs) if(i->address == address) return i;
 	printf("Not found\n");
@@ -340,3 +345,74 @@ userfunc* avm_getfuncinfo(int address) {
     assert(number_m <= i and i <= undef_m);
     return typeStrings[i];
 }  */
+
+/* void execute_jeq (instruction *instr) {
+    assert(instr->result.type == label_a);
+
+    avm_memcell *rv1 = avm_translate_operand(&instr->arg1, &ax);
+    avm_memcell *rv2 = avm_translate_operand(&instr->arg2, &bx);
+
+    bool res = false;
+
+    if (rv1->type == undef_m or rv2->type == undef_m) {
+        avm_error("Cannot perform equality comparison with 'undef' operands");
+    }
+    else if (rv1->type == nil_m or rv2->type == nil_m) {
+        res = rv1->type == nil_m and rv2->type == nil_m;
+    }
+    else if (rv1->type == bool_m or rv2->type == bool_m) {
+        res = (avm_tobool(rv1) == avm_tobool(rv2));
+    }
+    else if (rv1->type != rv2->type) {
+        avm_error(  "Cannot perform equality comparison between two different types");
+    }
+    else { // type can be: num, str, table, userFunc, libFunc
+        res = equalityFuncs[rv1->type](rv1, rv2);
+    }
+
+    if (!executionFinished and res) {
+        pc = instr->result.val;
+    }
+}
+bool avm_tobool(avm_memcell* m){
+	assert(m->type >= 0 and m->type <= undef_m);
+	return toboolFuncs[m->type](m);
+}
+static bool number_tobool  (avm_memcell *m) {
+    return m->data.numVal != 0.0;
+}
+
+static bool string_tobool  (avm_memcell *m) {
+    return m->data.strVal[0] != 0;
+}
+
+static bool bool_tobool    (avm_memcell *m) {
+    return m->data.boolVal;
+}
+
+static bool table_tobool   (avm_memcell *m) {
+    return true;
+    // return  m->data.tableVal->numIndexed.size() +
+    //         m->data.tableVal->strIndexed.size() > 0;
+}
+
+static bool userFunc_tobool(avm_memcell *m) {
+    return true;
+}
+
+static bool libFunc_tobool (avm_memcell *m) {
+    return true;
+}
+
+static bool nil_tobool (avm_memcell *m) {
+    return false;
+}
+
+static bool undef_tobool   (avm_memcell *m) {
+    avm_error("Cannot convert 'undef' to bool\n");
+    return false;
+}
+bool avm_tobool(avm_memcell* m){
+	assert(m->type >= 0 and m->type <= undef_m);
+	return toboolFuncs[m->type](m);
+} */

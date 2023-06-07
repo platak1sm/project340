@@ -38,6 +38,9 @@ string typeStrings[] = {
     "undef"
 };
 
+typedef bool (*tobool_func_t)(avm_memcell*);
+
+
 
 /* string avm_type2str (unsigned i);*/
 
@@ -198,6 +201,25 @@ tostring_func_t tostringFuncs[] = {
     libfunc_tostring,
     nil_tostring,
     undef_tostring
+};
+typedef bool (*tobool_func_t) (avm_memcell*);
+bool number_tobool (avm_memcell*);
+bool string_tobool (avm_memcell*);
+bool bool_tobool (avm_memcell*);
+bool table_tobool (avm_memcell*);
+bool userfunc_tobool (avm_memcell*);
+bool libfunc_tobool (avm_memcell*);
+bool nil_tobool (avm_memcell*);
+bool undef_tobool (avm_memcell*);
+tobool_func_t toboolFuncs[] = {
+    number_tobool,
+    string_tobool,
+    bool_tobool,
+    table_tobool,
+    userfunc_tobool,
+    libfunc_tobool,
+    nil_tobool,
+    undef_tobool
 };
 
 userfunc* avm_getfuncinfo(int address);
