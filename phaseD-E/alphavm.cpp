@@ -1,4 +1,5 @@
 #include "alphavm.h"
+#include "math.h"
 
 
 #define AVM_STACKSIZE 4096
@@ -119,7 +120,7 @@ void execute_funcexit(instruction t){
 }
 
 void execute_funcenter(instruction t){
-    avm_memcell* func = avm_translate_operand(t.result,);
+    avm_memcell* func = avm_translate_operand(&(t.result),&ax);
     totalActuals=0;
     userfunc *funcInfo= avm_getfuncinfo(pc);
     topsp=top;
@@ -158,20 +159,20 @@ void libfunc_print(){
 void avm_error(char* format,...){
     va_list args;
     fprintf(stderr,"\033[0;31mError at line %d: \033[0m",currLine);
-    va_start(args, format);
+    //va_start(args, format);
     int rc = vfprintf(stderr, format, args);
     fprintf(stderr,"\n");
-    va_end(args);
+    //va_end(args);
     executionFinished = 1;
 }
 
 void avm_warning(char* format,...){
     va_list args;
     fprintf(stderr,"\033[0;33mWarning at line %d: \033[0m",currLine);
-    va_start(args, format);
+    //va_start(args, format);
     int rc = vfprintf(stderr, format, args);
     fprintf(stderr,"\n");
-    va_end(args);
+    //va_end(args);
 }
 
 char* avm_memcell_type_to_string(avm_memcell_t t){
