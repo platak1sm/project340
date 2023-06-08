@@ -25,7 +25,7 @@ void generate_TABLEGETELEM(quad* quad);
 void generate_TABLESETELEM(quad* quad);
 void generate_ASSIGN(quad* quad);
 void generate_NOP(quad* quad);
-/* Relational */
+
 void generate_JUMP(quad* quad);
 void generate_IF_EQ(quad* quad);
 void generate_IF_NOTEQ(quad* quad);
@@ -33,11 +33,11 @@ void generate_IF_LESS(quad* quad);
 void generate_IF_LESSEQ(quad* quad);
 void generate_IF_GREATER(quad* quad);
 void generate_IF_GREATEREQ(quad* quad);
-/*Function Call*/
+
 void generate_PARAM(quad* quad);
 void generate_CALL(quad* quad);
 void generate_GETRETVAL(quad* quad);
-/*Function Definition*/
+
 void generate_FUNCSTART(quad* quad);
 void generate_FUNCEND(quad* quad);
 void generate_RETURN(quad* quad);

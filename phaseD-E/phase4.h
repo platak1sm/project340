@@ -48,13 +48,12 @@ struct userfunc {
 
 struct incomplete_jump 
 {
-    unsigned instrNo;    // The jump instruction number
-    unsigned iaddress;   //  The i-code jump-tartget address
+    unsigned instrNo;    //jump instruction number
+    unsigned iaddress;   //i-code jump-target address
     struct incomplete_jump* next;
 } typedef incomplete_jump;
 
 
-/* this struct is for reading/writing instructions to binary files */
 struct binary_instr{
     uint8_t op;
     uint8_t res_type;
