@@ -1,7 +1,11 @@
-#include "icode.h"
+// #include "icode.h"
 #include "parser.hpp"
-#include "target.hpp"
+// #include "target.hpp"
+#include "phase4.h"
+#include <string>
+#include <vector>
 struct avm_table;
+using namespace std;
 
 typedef enum avm_memcell_t{
     number_m,

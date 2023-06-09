@@ -875,83 +875,83 @@ void execute_jgt (instruction* instr){
 }
 
 int i;
-// void match_op_i(vmopcode code)
-// {
-//     char s_code[20] = "";
-//     switch (code)
-//     {
-//     case assign_v:
-//         strcpy(s_code, "assign");
-//         break;
-//     case add_v:
-//         strcpy(s_code, "add");
-//         break;
-//     case sub_v:
-//         strcpy(s_code, "sub");
-//         break;
-//     case mul_v:
-//         strcpy(s_code, "mul");
-//         break;
-//     case div_v:
-//         strcpy(s_code, "div");
-//         break;
-//     case mod_v:
-//         strcpy(s_code, "mod");
-//         break;
-//     case jeq_v:
-//         strcpy(s_code, "jeq");
-//         break;
-//     case jne_v:
-//         strcpy(s_code, "jne");
-//         break;
-//     case jle_v:
-//         strcpy(s_code, "jle");
-//         break;
-//     case jge_v:
-//         strcpy(s_code, "jge");
-//         break;
-//     case jlt_v:
-//         strcpy(s_code, "jlt");
-//         break;
-//     case jgt_v:
-//         strcpy(s_code, "jgt");
-//         break;
-//     case jump_v:
-//         strcpy(s_code, "jump");
-//         break;
-//     case call_v:
-//         strcpy(s_code, "call");
-//         break;
-//     case pusharg_v:
-//         strcpy(s_code, "pusharg");
-//         break;
-//     case return_v:
-//         strcpy(s_code, "return");
-//         break;
-//     case getretval_v:
-//         strcpy(s_code, "getretval");
-//         break;
-//     case funcenter_v:
-//         strcpy(s_code, "funcenter");
-//         break;
-//     case funcexit_v:
-//         strcpy(s_code, "funcexit");
-//         break;
-//     case newtable_v:
-//         strcpy(s_code, "newtable");
-//         break;
-//     case tablegetelem_v:
-//         strcpy(s_code, "tablegetelem");
-//         break;
-//     case tablesetelem_v:
-//         strcpy(s_code, "tablesetelem");
-//         break;
-//     default:
-//         strcpy(s_code, "NO OPCODE");
-//         break;
-//     }
-//     printf("%20s", s_code);
-// }
+void match_op_i(vmopcode code)
+{
+    char s_code[20] = "";
+    switch (code)
+    {
+    case assign_v:
+        strcpy(s_code, "assign");
+        break;
+    case add_v:
+        strcpy(s_code, "add");
+        break;
+    case sub_v:
+        strcpy(s_code, "sub");
+        break;
+    case mul_v:
+        strcpy(s_code, "mul");
+        break;
+    case div_v:
+        strcpy(s_code, "div");
+        break;
+    case mod_v:
+        strcpy(s_code, "mod");
+        break;
+    case jeq_v:
+        strcpy(s_code, "jeq");
+        break;
+    case jne_v:
+        strcpy(s_code, "jne");
+        break;
+    case jle_v:
+        strcpy(s_code, "jle");
+        break;
+    case jge_v:
+        strcpy(s_code, "jge");
+        break;
+    case jlt_v:
+        strcpy(s_code, "jlt");
+        break;
+    case jgt_v:
+        strcpy(s_code, "jgt");
+        break;
+    case jump_v:
+        strcpy(s_code, "jump");
+        break;
+    case call_v:
+        strcpy(s_code, "call");
+        break;
+    case pusharg_v:
+        strcpy(s_code, "pusharg");
+        break;
+    case return_v:
+        strcpy(s_code, "return");
+        break;
+    case getretval_v:
+        strcpy(s_code, "getretval");
+        break;
+    case funcenter_v:
+        strcpy(s_code, "funcenter");
+        break;
+    case funcexit_v:
+        strcpy(s_code, "funcexit");
+        break;
+    case newtable_v:
+        strcpy(s_code, "newtable");
+        break;
+    case tablegetelem_v:
+        strcpy(s_code, "tablegetelem");
+        break;
+    case tablesetelem_v:
+        strcpy(s_code, "tablesetelem");
+        break;
+    default:
+        strcpy(s_code, "NO OPCODE");
+        break;
+    }
+    printf("%20s", s_code);
+}
 
 unsigned char is_alpha_binfile(FILE *bin_file)
 {
