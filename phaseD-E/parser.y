@@ -1096,10 +1096,10 @@ int main (int argc, char** argv) {
     insertLibFuncs("sin");
     yyparse();
     print_quads();
-    cout <<"1\n";
+    cout <<"printed1\n";
     generate_all();
-    cout <<"2\n";
+    cout <<"generated2\n";
     print_instructions();
-    cout <<"3\n";
+    cout <<"printed3\n";
     return 0;
 }

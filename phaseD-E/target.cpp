@@ -197,7 +197,7 @@ void make_operand(expr* e, vmarg* arg){
             case programvar: {arg->type = global_a; break;}
             case functionlocal: {arg->type = local_a; break;}
             case formalarg: {arg->type = formal_a; break;}
-            default: {assert(0); break;}
+            // default: {assert(0); break;}
         }
         break;
     }
@@ -231,7 +231,7 @@ void make_operand(expr* e, vmarg* arg){
         arg->val = libfuncs_newused(&e->sym.name[0]);
         break;
     }
-    default: assert(0);
+    // default: assert(0);
     }
     
 }
@@ -592,9 +592,9 @@ char * match_type(vmarg_t type){
         case retval_a:
             return "retval";
             break;
-        default: assert(0);
+        // default: assert(0);
     }
-    assert(0);
+    // assert(0);
 }
 
 void match_vmarg(vmarg * arg){

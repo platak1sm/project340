@@ -1,6 +1,9 @@
 #include "icode.h"
 #include "parser.hpp"
+#include <string>
+#include <vector>
 struct avm_table;
+using namespace std;
 
 typedef enum avm_memcell_t
 {

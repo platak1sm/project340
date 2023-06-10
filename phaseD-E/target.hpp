@@ -45,7 +45,7 @@ void generate_RETURN(quad* quad);
 
 typedef void (*generator_func_t) (quad *);
 
-
+void match_op_i(vmopcode code);
 void generate_all (void);
 void print_instructions(void);
 

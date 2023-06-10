@@ -444,11 +444,13 @@ void match_label(int val)
 void print_quads()
 {
     int i = 0;
+    printf("quad len:%d\n", quads.size());
     printf("%5s %20s %20s %20s %20s %20s", "quad#", "opcode", "result", "arg1", "arg2", "label");
     printf("\n------------------------------------------------------------");
     printf("----------------------------------------------------\n");
     while (i < currQuad)
     {
+        
         printf("%4d: ", i);
         cout << "\t\t\t";
         match_op(quads[i].op);
