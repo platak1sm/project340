@@ -179,9 +179,7 @@ void make_operand(expr* e, vmarg* arg){
     
     if(e == NULL) return;
     
-    cout << "name:"<<e->sym.name << endl;
-    cout <<"type:"<<e->type << endl;
-    cout <<"scope:"<<e->sym.scopespace << endl;
+    
     switch (e->type)
     {
     case var_e: 
@@ -254,28 +252,28 @@ void make_retvaloperand(vmarg * arg){
 void generate(vmopcode op, quad *quad){
 
     instruction t;
-    cout <<"gen00\n";
+    
     t.opcode = op;
-    cout <<"gen01\n";
+    
     t.srcLine = quad->line;
-    cout <<"gen02\n";
+    
     reset_operand(&t.arg1);
-    cout <<"gen03\n";
+    
     reset_operand(&t.arg2);
-    cout <<"gen04\n";
+    
     reset_operand(&t.result);
-    cout <<"gen1\n";
+    
     make_operand(quad->arg1, &t.arg1);
 
-    cout <<"gen2\n";
+    
     make_operand(quad->arg2, &t.arg2);
-    cout <<"gen3\n";
+    
     make_operand(quad->result, &t.result);
-    cout <<"gen4\n";
+    
     quad->taddress = nextinstructionlabel();
-    cout <<"gen5\n";
+    
     emit_i(t);
-    cout <<"gen6\n";
+    
     currprocquad++;
 }
 void generate_ADD(quad* quad){
@@ -415,27 +413,27 @@ void generate_FUNCEND(quad* quad){
     quad->taddress = nextinstructionlabel();
     instruction t;
     t.opcode = funcexit_v;
-    cout<<"poop1\n";
+    
     t.srcLine = quad->line;
-    cout<<"poop2\n";
+    
     reset_operand(&t.arg1);
-    cout<<"poop3\n";
+    
     reset_operand(&t.arg2);
-    cout<<"poop4\n";
+    
     reset_operand(&t.result);
-    cout<<"poop5\n";
+    
 
     t.result.type = userfunc_a; // instead of make operand
-    cout<<"poop6\n";
-    cout << funcstack.size() << endl;
+    
+    
     if(funcstack.size() > 0){
         t.result.val = funcstack.top();
-        cout<<"poop7\n";
+    
         funcstack.pop();
     }
-    cout<<"poop8\n";
+    
     emit_i(t);
-    cout<<"poop9\n";
+    
     currprocquad++;
 }
 void reset_operand(vmarg* arg){
@@ -474,12 +472,12 @@ void add_incomplete_jump(unsigned instrNo,unsigned iaddress){
 
 void patch_incomplete_jumps(){
     incomplete_jump* tmp = ij_head;
-    cout <<"ij:"<<ij_total;
+    
     if(ij_total == 0){
         return;
     }
     for(int i = 0;i<ij_total-1;i++){
-        cout << "tmp:"<<tmp <<endl;
+    
         if(tmp->iaddress == currinstruction){
             instructions[tmp->instrNo].result.val = currinstruction;
         }else{
@@ -493,15 +491,15 @@ void patch_incomplete_jumps(){
 void generate_all () {
     unsigned int i;
     for(i = 0; i< currQuad; ++i){
-        cout << "op:"<<quads.at(i).op <<endl;
+        
         (*generators[quads.at(i).op])(&quads.at(i));
     }
-    cout<<"out\n";
+    
     patch_incomplete_jumps();
-    cout<<"out2\n";
+    
     /*Genarating Binary File */
     generate_bfile();
-    cout<<"ou3\n";
+    
     /*Reading Binary File */
     // read_bfile();
 }

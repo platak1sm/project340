@@ -1,0 +1,4 @@
+- Call "make" to compile everything up to phase4
+- Call "make avm" to compile phase5
+- Call ./a.out testfile to generate instruction binary file named xyz.abc
+- Call ./avm.out xyz.abc to run phase5 on the test
